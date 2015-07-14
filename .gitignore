@@ -34,3 +34,5 @@ Thumbs.db
 *.synctex.gz*
 *.toc
 *.dvi
+
+data/*
