@@ -1,14 +1,7 @@
+function detect_pscs(trace_file,param_file,param_ind);
 
-
-%% 
-% addpath Fcns
-
-% load sim_data_twoBursts.mat %uses new way of defining filter
-% trace = y(1,:);
-
-% load('example_traces.mat')
-% trace_ind = randi(15);
-% trace_ind = 53;
+traces = load(trace_file,'traces');
+param_space = load(trace_file
 
 dt = 1/20000;
 

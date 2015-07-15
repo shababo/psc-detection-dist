@@ -5,7 +5,7 @@ function [trials, mcmc, params]  = sampleParams_ARnoise(trace,tau, Tguess, dt)
 %this is accounted for by calciumNoiseVar
 NoiseVar_init=5; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
-p_spike=5/17500;%what percent of the bins hacve a spike in then
+p_spike=9/17500;%what percent of the bins hacve a spike in then
 proposalVar=1;%likeliness to accept moves
 nsweeps=100; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
