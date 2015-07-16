@@ -128,9 +128,9 @@ ampMoves = [0 0];
 tauMoves = [0 0];
 for i = 1:nsweeps
     
-    if mod(i,10) == 0
-        disp(length(ati))
-    end
+%     if mod(i,10) == 0
+%         disp(length(ati))
+%     end
     
     % do burst time moves
     for ii = 1:3
@@ -538,9 +538,9 @@ for i = 1:nsweeps
 %     figure(10);
 %     plot(ci{1});hold on;
 %     plot(CaF{1},'r');hold off
-    if sum(ismember(indreporti,i))
-        fprintf([num2str(indreport(ismember(indreporti,i)),2),', '])
-    end
+%     if sum(ismember(indreporti,i))
+%         fprintf([num2str(indreport(ismember(indreporti,i)),2),', '])
+%     end
 end
 %% Vigi's Clean up
 %details about what the mcmc did
@@ -585,12 +585,12 @@ params.p = p;
 params.phi_0 = phi_0;
 params.Phi_0 = Phi_0;
 
-disp('Below are the moves that were done')
-display(['time: ' num2str(timeMoves(1)/timeMoves(2))])
-display(['add: ' num2str(addMoves(1)/addMoves(2))])
-display(['drop: ' num2str(dropMoves(1)/dropMoves(2))])
-display(['amplitude: ' num2str(ampMoves(1)/ampMoves(2))])
-display(['tau: ' num2str(tauMoves(1)/tauMoves(2))])
+% disp('Below are the moves that were done')
+% display(['time: ' num2str(timeMoves(1)/timeMoves(2))])
+% display(['add: ' num2str(addMoves(1)/addMoves(2))])
+% display(['drop: ' num2str(dropMoves(1)/dropMoves(2))])
+% display(['amplitude: ' num2str(ampMoves(1)/ampMoves(2))])
+% display(['tau: ' num2str(tauMoves(1)/tauMoves(2))])
 
 
 

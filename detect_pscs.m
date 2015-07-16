@@ -32,7 +32,7 @@ results = struct();
 
 parfor trace_ind = 1:size(traces,1)
     
-    trace_ind
+    disp(['trace_ind = ' num2str(trace_ind)])
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
     % figure;plot(trace)
@@ -44,7 +44,7 @@ parfor trace_ind = 1:size(traces,1)
     tic
     tGuess = find_pscs_new(traces(trace_ind,:), params.dt, .002, 10, 0, 0);
     
-    disp(['Starting events: ' num2str(length(tGuess))])
+%     disp(['Starting events: ' num2str(length(tGuess))])
     
     tau = [5 35];
     switch noise_type
@@ -56,6 +56,7 @@ parfor trace_ind = 1:size(traces,1)
             [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_ARnoise(trace,tau,tGuess,params);
     end
     results(trace_ind).runtime = toc;
+    disp(['trace_ind = ' num2str(trace_ind) ', done!'])
 
 % change tau min max and prior (and double check amplitudes and baseline
 % limits
