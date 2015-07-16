@@ -1,6 +1,6 @@
 function detect_pscs(trace_file,param_file,param_ind,noise_type)
 
-parameter_spacetraces = load(trace_file,'traces');
+traces = load(trace_file,'traces');
 load(param_file,'a_min','p_spike','tau1_min','tau1_max','tau2_min','tau2_max');
 
 param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max) length(tau2_min) length(tau2_max)];
