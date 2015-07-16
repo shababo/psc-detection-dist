@@ -1,5 +1,10 @@
 function detect_pscs(trace_file,param_file,param_ind,noise_type)
 
+addpath(genpath('/vega/stats/users/bms2156/psc-detection'));
+
+maxNumCompThreads(12)
+matlabpool(12)
+
 load(trace_file,'traces');
 load(param_file,'a_min','p_spike','tau1_min','tau1_max','tau2_min','tau2_max');
 
@@ -25,7 +30,7 @@ gaussian = 1; line = 2; ar2 = 3;
 
 results = struct();
 
-for trace_ind = 1:size(traces,1)
+parfor trace_ind = 1:size(traces,1)
     
     trace_ind
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
@@ -37,7 +42,7 @@ for trace_ind = 1:size(traces,1)
     %tGuess=[280 430 1345];
     %tGuess=[1345];
     tic
-    tGuess = find_pscs_new(traces(trace_ind,:), dt, .002, 10, 0, 0);
+    tGuess = find_pscs_new(traces(trace_ind,:), params.dt, .002, 10, 0, 0);
     
     disp(['Starting events: ' num2str(length(tGuess))])
     
@@ -58,6 +63,7 @@ for trace_ind = 1:size(traces,1)
 
 end
 
+matlabpool close
 
 %% minimum error sample
 
@@ -78,8 +84,8 @@ for trace_ind = 1:size(traces,1);
     
 end
 
-
-save('0521_nice_l23_detectresults.mat','results')
+savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(randi(1000000))]
+save(savename,'results')
 %%
 % plot MAP
 
