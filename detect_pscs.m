@@ -1,12 +1,25 @@
-function detect_pscs(trace_file,param_file,param_ind);
+function detect_pscs(trace_file,param_file,param_ind,noise_type)
 
-traces = load(trace_file,'traces');
-param_space = load(trace_file
+parameter_spacetraces = load(trace_file,'traces');
+load(param_file,'a_min','p_spike','tau1_min','tau1_max','tau2_min','tau2_max');
 
-dt = 1/20000;
+param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max) length(tau2_min) length(tau2_max)];
+[a_min_i, p_spike_i, tau1_min_i, tau1_max_i, tau2_min_i, tau2_max_i] = ...
+    ind2sub(param_dims,param_ind);
 
+params.a_min = a_min(a_min_i);
+params.p_spike = p_spike(p_spike_i);
+params.tau1_min = tau1_min(tau1_min_i);
+params.tau1_max = tau1_max(tau1_max_i);
+params.tau2_min = tau2_min(tau2_min_i);
+params.tau2_max = tau2_max(tau2_max_i);
+
+
+params.dt = 1/20000;
+
+% noise_types
 gaussian = 1; line = 2; ar2 = 3;
-noise_type = ar2;
+
 
 % traces = traces_1_perm(2,start_t:end_t);
 
@@ -14,8 +27,7 @@ results = struct();
 
 for trace_ind = 1:size(traces,1)
     
-    trace_ind;
-
+    trace_ind
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
     % figure;plot(trace)
@@ -36,7 +48,7 @@ for trace_ind = 1:size(traces,1)
         case line
             [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_linenoise(trace,tau,tGuess,dt);
         case ar2
-            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_ARnoise(trace,tau,tGuess,dt);
+            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_ARnoise(trace,tau,tGuess,params);
     end
     results(trace_ind).runtime = toc;
 
