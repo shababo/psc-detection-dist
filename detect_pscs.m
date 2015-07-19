@@ -55,8 +55,9 @@ parfor trace_ind = 1:size(traces,1)
         case ar2
             [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_ARnoise(trace,tau,tGuess,params);
     end
-    results(trace_ind).runtime = toc;
-    disp(['trace_ind = ' num2str(trace_ind) ', done!'])
+    runtime = toc
+    results(trace_ind).runtime = runtime;    
+    disp(['trace_ind = ' num2str(trace_ind) ', done in ' num2str(runtime) ' secs!'])
 
 % change tau min max and prior (and double check amplitudes and baseline
 % limits
