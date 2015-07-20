@@ -39,7 +39,7 @@ parfor trace_ind = 1:size(traces,1)
 
 
     Par.tic
-    tGuess = find_pscs_new(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
+    tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
     disp(['Starting events: ' num2str(length(tGuess))])
     
     tau = [5 35];
@@ -91,7 +91,7 @@ for trace_ind = 1:size(traces,1);
 end
 
 % savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' regexprep(mat2str(clock),'[| |\]|\d\d\.\d*','')];
-savename = '~/Projects/Mapping/code/psc-detection/data/local_test.mat';
+savename = ['~/Projects/Mapping/code/psc-detection/data/local_test_' regexprep(mat2str(clock),'[| |\]|\d\d\.\d*','') '.mat'];
 save(savename,'results')
 %%
 % plot MAP

@@ -42,7 +42,7 @@ parfor trace_ind = 1:size(traces,1)
     %tGuess=[280 430 1345];
     %tGuess=[1345];
     tic
-    tGuess = find_pscs_new(traces(trace_ind,:), params.dt, .002, 10, 0, 0);
+    tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
     
 %     disp(['Starting events: ' num2str(length(tGuess))])
     
@@ -72,7 +72,7 @@ matlabpool close
 for trace_ind = 1:size(traces,1);
 
     trials = results(trace_ind).trials;
-    times = results(trace_ind).times;
+%     times = results(trace_ind).times;
     mcmc = results(trace_ind).mcmc;
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
@@ -86,7 +86,7 @@ for trace_ind = 1:size(traces,1);
     
 end
 
-savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(randi(1000000))]
+savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' regexprep(mat2str(clock),'[| |\]|\d\d\.\d*','')];
 save(savename,'results')
 %%
 % plot MAP
@@ -94,7 +94,7 @@ save(savename,'results')
 trace_ind = 1;
 
 trials = results(trace_ind).trials;
-times = results(trace_ind).times;
+% times = results(trace_ind).times;
 mcmc = results(trace_ind).mcmc;
 trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
