@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 function event_onsets = find_pscs_new(trace, dt, tau, thresh_val, low_passed, plot_figs)
+=======
+function event_onsets = find_pscs_new(trace, dt, tau, amp_thesh, conv_thresh, low_passed, plot_figs)
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
 
 % tau = .001
 t_vector = (0:length(trace)-1)*dt;
 
 % convolution = zeros(length(trace),1);
 
+<<<<<<< HEAD
 noise_sd = std(trace - smooth(trace,100,'sgolay',4)')
+=======
+noise_sd = std(trace - smooth(trace,100,'sgolay',4)');
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
 
 % mean(trace - smooth(trace,50,'sgolay',4)')
 
@@ -19,15 +27,35 @@ end
 
 template(floor(13*tau/dt):end) = [];
 
+<<<<<<< HEAD
 
 
 template = fliplr(template);
+=======
+template = template *8;
+
+% template = fliplr(template);
+
+figure;
+plot(trace)
+hold on
+plot(950:(950 + length(template) -1),template-29)
+
+
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
 
 
 colored_noise = conv(normrnd(0,noise_sd,size(trace)),template,'same');
 
+<<<<<<< HEAD
 convolution = conv([trace-10 zeros(1,length(template))],template,'same');
 convolution(1:ceil(length(template)/2)-1) = [];
+=======
+
+
+convolution = conv([trace zeros(1,length(template))],template,'same');
+% convolution(1:ceil(length(template)/2)-1) = [];
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
 if length(convolution) > length(trace)
     convolution(length(trace)+1:end) = [];
 end
@@ -38,12 +66,17 @@ if mod(window_size,2) == 0
 end
 
 
+<<<<<<< HEAD
 thresh_vec = smooth([trace zeros(1,window_size)],window_size)';
+=======
+thresh_vec = smooth([(trace - median(trace)) zeros(1,window_size)],window_size)';
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
 % thresh_vec(1:ceil(window_size/2)-1) = [];
 thresh_vec(1:ceil(tau/dt)-1) = [];
 if length(thresh_vec) > length(trace)
     thresh_vec(length(trace)+1:end) = [];
 end
+<<<<<<< HEAD
 thresh_vec = thresh_vec < -thresh_val*noise_sd;
 
 % if plot_figs
@@ -58,6 +91,26 @@ thresh_vec = thresh_vec < -thresh_val*noise_sd;
 %     plot(trace - smooth(trace,100,'sgolay',4)','b')
 %     hold on
 %     plot(smooth(trace,100,'sgolay',4),'r')
+=======
+
+figure; plot(trace); hold on; plot(thresh_vec); title('test')
+thresh_vec = thresh_vec < -amp_thesh;
+
+
+
+% if plot_figs
+    figure;
+    plot(t_vector,trace,'b',t_vector,convolution/max(convolution)*10,'g',t_vector,thresh_vec*10,'r')
+
+
+
+    figure; 
+    plot(trace,'g')
+    hold on
+    plot(trace - smooth(trace,100,'sgolay',4)','b')
+    hold on
+    plot(smooth(trace,100,'sgolay',4),'r')
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
 % end
 % thresh_vec = zeros(size(trace));
 % 
@@ -79,7 +132,11 @@ thresh_vec = thresh_vec < -thresh_val*noise_sd;
 % convolution(convolution < 0) = 0;
 % convolution = convolution/max(convolution);
 convolution = smooth(convolution,floor(tau/dt))';
+<<<<<<< HEAD
 convolution = [zeros(1,prev_samples) convolution(1:end-prev_samples)];
+=======
+% convolution = [zeros(1,prev_samples) convolution(1:end-prev_samples)];
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
 
 % colored_noise(colored_noise < 0) = 0;
 % colored_noise = colored_noise/max(colored_noise);
@@ -91,11 +148,18 @@ convolution = [zeros(1,prev_samples) convolution(1:end-prev_samples)];
 % std(colored_noise)
 
 
+<<<<<<< HEAD
 conv_thresh = 1*std(colored_noise);
 
 event_onsets = find(convolution(2:end-1) > convolution(1:end-2) &...
                     convolution(2:end-1) > convolution(3:end)   &...
                     convolution(2:end-1) > median(convolution(250:1250)) + conv_thresh &...
+=======
+conv_thresh = conv_thresh*std(colored_noise);
+
+event_onsets = find(convolution(2:end-1) > convolution(1:end-2) &...
+                    convolution(2:end-1) > convolution(3:end)   &...
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
                     thresh_vec(2:end-1));
                 
 event_onsets = event_onsets + 1;
@@ -117,15 +181,27 @@ event_onsets = event_onsets + 1;
 % event_onsets(bad_event_idx) = [];
         
 
+<<<<<<< HEAD
 if plot_figs
+=======
+% if plot_figs
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
     norm_conv = convolution/max(convolution)*max(trace);
     norm_conv_thresh = conv_thresh/max(convolution)*max(trace);
     figure;
     plot(t_vector,trace,'b',t_vector,norm_conv,'g');
     hold on
+<<<<<<< HEAD
     plot(t_vector,norm_conv_thresh*ones(size(t_vector)),'r');
+=======
+    plot(t_vector,norm_conv_thresh*ones(size(t_vector)),'r','LineWidth',3);
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476
     hold on
     plot(t_vector,thresh_vec*max(trace),'m');
     hold on
     scatter(t_vector(event_onsets),max(trace)*ones(length(event_onsets),1),'r*')
+<<<<<<< HEAD
 end
+=======
+% end
+>>>>>>> 750ac8ebb89be06861cbeb25e1f2cd5de0369476

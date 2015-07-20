@@ -1,10 +1,9 @@
-function detect_pscs(trace_file,param_file,param_ind,noise_type)
+function detect_pscs_local(trace_file,param_file,param_ind,noise_type)
 
-addpath(genpath('/vega/stats/users/bms2156/psc-detection'));
+delete(gcp('nocreate'))
+this_pool = parpool(2)
 
-maxNumCompThreads(12)
-matlabpool(12)
-
+traces = [];
 load(trace_file,'traces');
 load(param_file,'a_min','p_spike','tau1_min','tau1_max','tau2_min','tau2_max');
 
@@ -29,35 +28,33 @@ gaussian = 1; line = 2; ar2 = 3;
 % traces = traces_1_perm(2,start_t:end_t);
 
 results = struct();
+disp(size(traces,1));
+
+p = Par(size(traces,1));
 
 parfor trace_ind = 1:size(traces,1)
-    
+%     
     disp(['trace_ind = ' num2str(trace_ind)])
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
-    % figure;plot(trace)
 
-    % tGuess=[15 20];
-    % tau = [3 9];
-    %tGuess=[280 430 1345];
-    %tGuess=[1345];
-    tic
-    tGuess = find_pscs_new(traces(trace_ind,:), params.dt, .002, 10, 0, 0);
-    
-%     disp(['Starting events: ' num2str(length(tGuess))])
+    Par.tic
+    tGuess = find_pscs_new(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
+    disp(['Starting events: ' num2str(length(tGuess))])
     
     tau = [5 35];
     switch noise_type
         case gaussian
-            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams(trace,tau,tGuess,dt);
+            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams(trace,tau,tGuess,params);
         case line
-            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_linenoise(trace,tau,tGuess,dt);
+            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_linenoise(trace,tau,tGuess,params);
         case ar2
             [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_ARnoise(trace,tau,tGuess,params);
     end
-    runtime = toc
-    results(trace_ind).runtime = runtime;    
-    disp(['trace_ind = ' num2str(trace_ind) ', done in ' num2str(runtime) ' secs!'])
+
+
+    p(trace_ind) = Par.toc;
+    results(trace_ind).runtime = p(trace_ind).ItStop - p(trace_ind).ItStart;
 
 % change tau min max and prior (and double check amplitudes and baseline
 % limits
@@ -65,14 +62,21 @@ parfor trace_ind = 1:size(traces,1)
 
 end
 
-matlabpool close
+stop(p)
+delete(this_pool)
+
+for i = 1:length(results)
+    disp(results(i).runtime)
+end
+
+
 
 %% minimum error sample
 
 for trace_ind = 1:size(traces,1);
 
     trials = results(trace_ind).trials;
-    times = results(trace_ind).times;
+%     times = results(trace_ind).times;
     mcmc = results(trace_ind).mcmc;
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
@@ -86,7 +90,8 @@ for trace_ind = 1:size(traces,1);
     
 end
 
-savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(randi(1000000))]
+% savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' regexprep(mat2str(clock),'[| |\]|\d\d\.\d*','')];
+savename = '~/Projects/Mapping/code/psc-detection/data/local_test.mat';
 save(savename,'results')
 %%
 % plot MAP
@@ -94,7 +99,7 @@ save(savename,'results')
 trace_ind = 1;
 
 trials = results(trace_ind).trials;
-times = results(trace_ind).times;
+% times = results(trace_ind).times;
 mcmc = results(trace_ind).mcmc;
 trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
