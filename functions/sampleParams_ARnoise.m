@@ -396,14 +396,14 @@ for i = 1:nsweeps
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau1_std = tau1_std + 2*.1*rand*tau1_std/sqrt(i);
+                tau1_std = tau1_std + .1*rand*tau1_std/sqrt(i);
             elseif rand<ratio %accept
                 pr = pr_;
                 diffY = diffY_;
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau1_std = tau1_std + 2*.1*rand*tau1_std/sqrt(i);
+                tau1_std = tau1_std + .1*rand*tau1_std/sqrt(i);
             else
                 %reject - do nothing
                 tau1_std = tau1_std - .1*rand*tau1_std/sqrt(i);
@@ -446,14 +446,14 @@ for i = 1:nsweeps
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau2_std = tau2_std + 2*.1*rand*tau2_std/sqrt(i);
+                tau2_std = tau2_std + .1*rand*tau2_std/sqrt(i);
             elseif rand<ratio %accept
                 pr = pr_;
                 diffY = diffY_;
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau2_std = tau2_std + 2*.1*rand*tau2_std/sqrt(i);
+                tau2_std = tau2_std + .1*rand*tau2_std/sqrt(i);
             else
                 %reject - do nothing
                 tau2_std = tau2_std - .1*rand*tau2_std/sqrt(i);
