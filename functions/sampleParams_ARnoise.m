@@ -534,7 +534,7 @@ for i = 1:nsweeps
 %         keyboard
 %     end
 
-    objective = [objective diffY];
+    objective = [objective sum(diffY.^2)];
 %     figure(10);
 %     plot(ci{1});hold on;
 %     plot(CaF{1},'r');hold off
@@ -542,6 +542,7 @@ for i = 1:nsweeps
 %         fprintf([num2str(indreport(ismember(indreporti,i)),2),', '])
 %     end
 end
+
 %% Vigi's Clean up
 %details about what the mcmc did
 %addMoves, dropMoves, and timeMoves give acceptance probabilities for each subclass of move
@@ -554,7 +555,7 @@ mcmc.N_sto=N_sto;%number of bursts
 
 trials.amp=samples_a;
 trials.base=samples_b;
-trials.curves=samples_pr;
+% trials.curves=samples_pr;
 trials.tau=samples_tau;
 trials.phi=samples_phi;
 trials.noise = samples_noise;

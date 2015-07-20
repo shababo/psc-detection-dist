@@ -1,5 +1,7 @@
 function detect_pscs(trace_file,param_file,param_ind,noise_type)
 
+rng(1234)
+
 addpath(genpath('/vega/stats/users/bms2156/psc-detection'));
 
 maxNumCompThreads(12)
@@ -71,18 +73,7 @@ matlabpool close
 
 for trace_ind = 1:size(traces,1);
 
-    trials = results(trace_ind).trials;
-%     times = results(trace_ind).times;
-    mcmc = results(trace_ind).mcmc;
-    trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
-
-    errP = zeros(1,length(trials.curves));
-    for i = 1:length(trials.curves)
-        errP(i) = sum((trials.curves{i}-trace).^2);
-    end
-    % figure;plot(errP)
-
-    [results(trace_ind).min_err_ind results(trace_ind).min_err_ind] = min(errP);
+    [results(trace_ind).min_err, results(trace_ind).min_err_ind] = min(results(trace_ind).trials.obj);
     
 end
 
