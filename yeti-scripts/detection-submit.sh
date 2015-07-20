@@ -5,7 +5,7 @@
 #Torque directives
 #PBS -N psc-detection
 #PBS -W group_list=yetistats
-#PBS -l nodes=1:ppn=12,walltime=04:00:00,mem=8000mb
+#PBS -l nodes=1:ppn=12,walltime=06:00:00,mem=16000mb
 #PBS -M shababo@berkeley.edu
 #PBS -m abe
 #PBS -V
