@@ -1,7 +1,7 @@
 function detect_pscs_local(trace_file,param_file,param_ind,noise_type)
 
 delete(gcp('nocreate'))
-this_pool = parpool(2)
+this_pool = parpool(4)
 
 traces = [];
 load(trace_file,'traces');
@@ -113,21 +113,21 @@ end
 
 
 
-    
-figure
-plot(-trace,'c')
-hold on
-plot(-trials.curves{mi},'b','LineWidth',2)
-hold on;
-if fit_noise
-    plot(-curve_no_line_noise+20,'b','LineWidth',2);
-    curve_no_line_noise = remove_line_noise(trials.curves{mi},trials.phi{mi},trials.a_s{mi},60*dt,trace);
-    hold on;
-end
-plot(-trace-20,'b')
-hold off
-axis tight
-ylim([-50 50])
+%     
+% figure
+% plot(-trace,'c')
+% hold on
+% plot(-trials.curves{mi},'b','LineWidth',2)
+% hold on;
+% if fit_noise
+%     plot(-curve_no_line_noise+20,'b','LineWidth',2);
+%     curve_no_line_noise = remove_line_noise(trials.curves{mi},trials.phi{mi},trials.a_s{mi},60*dt,trace);
+%     hold on;
+% end
+% plot(-trace-20,'b')
+% hold off
+% axis tight
+% ylim([-50 50])
 % axis off
 
 
