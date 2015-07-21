@@ -77,6 +77,6 @@ for trace_ind = 1:size(traces,1);
     
 end
 
-savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' regexprep(mat2str(clock),'[| |\]|\d\d\.\d*','')];
+savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' regexprep(mat2str(clock),'[| |\]|\.\d*','')];
 save(savename,'results')
 
