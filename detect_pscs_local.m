@@ -2,8 +2,11 @@ function detect_pscs_local(trace_file,param_file,param_ind,noise_type)
 
 rng(1234)
 
-delete(gcp('nocreate'))
-this_pool = parpool(4)
+% delete(gcp('nocreate'))
+% this_pool = parpool(4)
+
+savename = ['~/Projects/Mapping/code/psc-detection/data/local_test_' num2str(noise_type) '_' num2str(param_ind) '_' num2str(params.a_min) '.mat'];
+
 
 traces = [];
 load(trace_file,'traces');
@@ -14,13 +17,25 @@ param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max) le
     ind2sub(param_dims,param_ind);
 
 
-params.a_min = 10;
-params.p_spike = p_spike(floor(length(p_spike)/2));
-params.tau1_min = tau1_min(floor(length(tau1_min)/2));
-params.tau1_max = tau1_max(floor(length(tau1_max)/2));
-params.tau2_min = tau2_min(floor(length(tau2_min)/2));
-params.tau2_max = tau2_max(floor(length(tau2_max)/2));
+% params.a_min = 5;
+% params.p_spike = p_spike(floor(length(p_spike)/2));
+% params.tau1_min = tau1_min(floor(length(tau1_min)/2));
+% params.tau1_max = tau1_max(floor(length(tau1_max)/2));
+% params.tau2_min = tau2_min(floor(length(tau2_min)/2));
+% params.tau2_max = tau2_max(floor(length(tau2_max)/2));
 
+params.a_min = a_min(a_min_i);
+params.p_spike = p_spike(p_spike_i);
+params.tau1_min = tau1_min(tau1_min_i);
+params.tau1_max = tau1_max(tau1_max_i);
+params.tau2_min = tau2_min(tau2_min_i);
+params.tau2_max = tau2_max(tau2_max_i);
+
+if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
+    results = 'infeasible parameter set';
+    savename = ['z-' savename];
+    save(savename,'results')
+end
 
 params.dt = 1/20000;
 
@@ -34,13 +49,13 @@ results = struct();
 disp(size(traces,1));
 
 % p = Par(size(traces,1));
-tic
-parfor trace_ind = 1:size(traces,1)
+% tic
+for trace_ind = 1:size(traces,1)
 %     
     disp(['trace_ind = ' num2str(trace_ind)])
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
-
+tic
 %     Par.tic
     tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
     disp(['Starting events: ' num2str(length(tGuess))])
@@ -54,6 +69,7 @@ parfor trace_ind = 1:size(traces,1)
         case ar2
             [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_ARnoise(trace,tau,tGuess,params);
     end
+runtime = toc
 
 
 %     p(trace_ind) = Par.toc;
@@ -64,9 +80,8 @@ parfor trace_ind = 1:size(traces,1)
 % amplitude threshold probably will help/is necessary.
 
 end
-runtime = toc
 % stop(p)
-delete(this_pool)
+% delete(this_pool)
 
 % for i = 1:length(results)
 %     disp(results(i).runtime)
@@ -84,7 +99,6 @@ for trace_ind = 1:size(traces,1);
 end
 
 % savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' regexprep(mat2str(clock),'[| |\]|\d\d\.\d*','')];
-savename = ['~/Projects/Mapping/code/psc-detection/data/local_test_' num2str(noise_type) '_' num2str(param_ind) '_' num2str(params.a_min) '.mat'];
 save(savename,'results','runtime')
 
 

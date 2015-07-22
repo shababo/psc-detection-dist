@@ -1,4 +1,4 @@
-function event_onsets = find_pscs_new(trace, dt, tau, amp_thesh, conv_thresh, low_passed, plot_figs)
+function event_onsets = find_pscs(trace, dt, tau, amp_thesh, conv_thresh, low_passed, plot_figs)
 
 % tau = .001
 t_vector = (0:length(trace)-1)*dt;
@@ -23,10 +23,10 @@ template = template *8;
 
 % template = fliplr(template);
 
-figure;
-plot(trace)
-hold on
-plot(950:(950 + length(template) -1),template-29)
+% figure;
+% plot(trace)
+% hold on
+% plot(950:(950 + length(template) -1),template-29)
 
 
 
@@ -54,23 +54,23 @@ if length(thresh_vec) > length(trace)
     thresh_vec(length(trace)+1:end) = [];
 end
 
-figure; plot(trace); hold on; plot(thresh_vec); title('test')
+% figure; plot(trace); hold on; plot(thresh_vec); title('test')
 thresh_vec = thresh_vec < -amp_thesh;
 
 
 
 % if plot_figs
-    figure;
-    plot(t_vector,trace,'b',t_vector,convolution/max(convolution)*10,'g',t_vector,thresh_vec*10,'r')
-
-
-
-    figure; 
-    plot(trace,'g')
-    hold on
-    plot(trace - smooth(trace,100,'sgolay',4)','b')
-    hold on
-    plot(smooth(trace,100,'sgolay',4),'r')
+%     figure;
+%     plot(t_vector,trace,'b',t_vector,convolution/max(convolution)*10,'g',t_vector,thresh_vec*10,'r')
+% 
+% 
+% 
+%     figure; 
+%     plot(trace,'g')
+%     hold on
+%     plot(trace - smooth(trace,100,'sgolay',4)','b')
+%     hold on
+%     plot(smooth(trace,100,'sgolay',4),'r')
 % end
 % thresh_vec = zeros(size(trace));
 % 
@@ -130,14 +130,14 @@ event_onsets = event_onsets + 1;
         
 
 % if plot_figs
-    norm_conv = convolution/max(convolution)*max(trace);
-    norm_conv_thresh = conv_thresh/max(convolution)*max(trace);
-    figure;
-    plot(t_vector,trace,'b',t_vector,norm_conv,'g');
-    hold on
-    plot(t_vector,norm_conv_thresh*ones(size(t_vector)),'r','LineWidth',3);
-    hold on
-    plot(t_vector,thresh_vec*max(trace),'m');
-    hold on
-    scatter(t_vector(event_onsets),max(trace)*ones(length(event_onsets),1),'r*')
+%     norm_conv = convolution/max(convolution)*max(trace);
+%     norm_conv_thresh = conv_thresh/max(convolution)*max(trace);
+%     figure;
+%     plot(t_vector,trace,'b',t_vector,norm_conv,'g');
+%     hold on
+%     plot(t_vector,norm_conv_thresh*ones(size(t_vector)),'r','LineWidth',3);
+%     hold on
+%     plot(t_vector,thresh_vec*max(trace),'m');
+%     hold on
+%     scatter(t_vector(event_onsets),max(trace)*ones(length(event_onsets),1),'r*')
 % end

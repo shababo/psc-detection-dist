@@ -3,6 +3,7 @@ function detect_pscs(trace_file,param_file,param_ind,noise_type)
 rng(1234)
 
 addpath(genpath('/vega/stats/users/bms2156/psc-detection'));
+savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(size(traces,1)) '-' num2str(noise_type) '-' num2str(param_ind) '.mat'];
 
 %maxNumCompThreads(12)
 %matlabpool(12)
@@ -21,12 +22,16 @@ params.tau1_max = tau1_max(tau1_max_i);
 params.tau2_min = tau2_min(tau2_min_i);
 params.tau2_max = tau2_max(tau2_max_i);
 
+if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
+    results = 'infeasible parameter set';
+    savename = ['z-' savename];
+    save(savename,'results')
+end
 
 params.dt = 1/20000;
 
 % noise_types
 gaussian = 1; line = 2; ar2 = 3;
-
 
 % traces = traces_1_perm(2,start_t:end_t);
 
@@ -77,6 +82,6 @@ for trace_ind = 1:size(traces,1);
     
 end
 
-savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(size(traces,1)) '-' num2str(noise_type) '-' num2str(param_ind) '.mat'];
+
 save(savename,'results','noise_type','param_ind')
 
