@@ -1,4 +1,4 @@
-function [samples_s, trials, mcmc, params]  = sampleParams(trace,tau, Tguess,params)
+function [trials, mcmc, params]  = sampleParams(trace,tau, Tguess,params)
 %parameters
 %noise level here matters for the proposal distribution (how much it 
 %should trust data for proposals vs how much it should mix based on uniform prior)
@@ -512,9 +512,9 @@ mcmc.noisevar = NoiseVar;
 
 trials.amp=samples_a;
 trials.base=samples_b;
-trials.curves=samples_pr;
+%trials.curves=samples_pr;
 trials.tau=samples_tau;
-trials.obj = objective;
+trials.obj = -objective;
 trials.times = samples_s;
 
 params.NoiseVar = NoiseVar_init; 
