@@ -512,7 +512,7 @@ mcmc.noisevar = NoiseVar;
 
 trials.amp=samples_a;
 trials.base=samples_b;
-trials.curves=samples_pr;
+% trials.curves=samples_pr;
 trials.tau=samples_tau;
 trials.obj = objective;
 trials.times = samples_s;
