@@ -74,9 +74,10 @@ matlabpool close
 for trace_ind = 1:size(traces,1);
 
     [results(trace_ind).min_err, results(trace_ind).min_err_ind] = min(results(trace_ind).trials.obj);
+    results(trace_ind).noise_type = noise_type;
     
 end
 
-savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' regexprep(mat2str(clock),'[| |\]|\.\d*','')];
+savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(size(traces,1)) '-' num2str(noise_type) '-' num2str(param_ind) '.mat'];
 save(savename,'results')
 
