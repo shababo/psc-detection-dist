@@ -13,12 +13,13 @@ param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max) le
 [a_min_i, p_spike_i, tau1_min_i, tau1_max_i, tau2_min_i, tau2_max_i] = ...
     ind2sub(param_dims,param_ind);
 
-params.a_min = a_min(a_min_i);
-params.p_spike = p_spike(p_spike_i);
-params.tau1_min = tau1_min(tau1_min_i);
-params.tau1_max = tau1_max(tau1_max_i);
-params.tau2_min = tau2_min(tau2_min_i);
-params.tau2_max = tau2_max(tau2_max_i);
+
+params.a_min = 10;
+params.p_spike = p_spike(floor(length(p_spike)/2));
+params.tau1_min = tau1_min(floor(length(tau1_min)/2));
+params.tau1_max = tau1_max(floor(length(tau1_max)/2));
+params.tau2_min = tau2_min(floor(length(tau2_min)/2));
+params.tau2_max = tau2_max(floor(length(tau2_max)/2));
 
 
 params.dt = 1/20000;
@@ -32,15 +33,15 @@ gaussian = 1; line = 2; ar2 = 3;
 results = struct();
 disp(size(traces,1));
 
-p = Par(size(traces,1));
-
+% p = Par(size(traces,1));
+tic
 parfor trace_ind = 1:size(traces,1)
 %     
     disp(['trace_ind = ' num2str(trace_ind)])
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
 
-    Par.tic
+%     Par.tic
     tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
     disp(['Starting events: ' num2str(length(tGuess))])
     
@@ -55,21 +56,21 @@ parfor trace_ind = 1:size(traces,1)
     end
 
 
-    p(trace_ind) = Par.toc;
-    results(trace_ind).runtime = p(trace_ind).ItStop - p(trace_ind).ItStart;
+%     p(trace_ind) = Par.toc;
+%     results(trace_ind).runtime = p(trace_ind).ItStop - p(trace_ind).ItStart;
 
 % change tau min max and prior (and double check amplitudes and baseline
 % limits
 % amplitude threshold probably will help/is necessary.
 
 end
-
-stop(p)
+runtime = toc
+% stop(p)
 delete(this_pool)
 
-for i = 1:length(results)
-    disp(results(i).runtime)
-end
+% for i = 1:length(results)
+%     disp(results(i).runtime)
+% end
 
 
 
@@ -83,8 +84,8 @@ for trace_ind = 1:size(traces,1);
 end
 
 % savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' regexprep(mat2str(clock),'[| |\]|\d\d\.\d*','')];
-savename = ['~/Projects/Mapping/code/psc-detection/data/local_test_' regexprep(mat2str(clock),'[| |\]|\d\d\.\d*','') '.mat'];
-save(savename,'results')
+savename = ['~/Projects/Mapping/code/psc-detection/data/local_test_' num2str(noise_type) '_' num2str(param_ind) '_' num2str(params.a_min) '.mat'];
+save(savename,'results','runtime')
 
 
 

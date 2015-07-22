@@ -57,7 +57,7 @@ for trace_ind = 1:size(traces,1)
         case ar2
             [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_ARnoise(trace,tau,tGuess,params);
     end
-    runtime = toc
+    runtime = toc;
     results(trace_ind).runtime = runtime;    
     disp(['trace_ind = ' num2str(trace_ind) ', done in ' num2str(runtime) ' secs!'])
 
@@ -77,6 +77,6 @@ for trace_ind = 1:size(traces,1);
     
 end
 
-savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' regexprep(mat2str(clock),'[| |\]|\.\d*','')];
-save(savename,'results')
+savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(size(traces,1)) '-' num2str(noise_type) '-' num2str(param_ind) '.mat'];
+save(savename,'results','noise_type','param_ind')
 

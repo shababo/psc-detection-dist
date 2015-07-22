@@ -32,6 +32,8 @@ gaussian = 1; line = 2; ar2 = 3;
 
 results = struct();
 
+tic
+
 parfor trace_ind = 1:size(traces,1)
     
     disp(['trace_ind = ' num2str(trace_ind)])
@@ -43,7 +45,7 @@ parfor trace_ind = 1:size(traces,1)
     % tau = [3 9];
     %tGuess=[280 430 1345];
     %tGuess=[1345];
-    tic
+%     tic
     tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
     
 %     disp(['Starting events: ' num2str(length(tGuess))])
@@ -51,14 +53,14 @@ parfor trace_ind = 1:size(traces,1)
     tau = [5 35];
     switch noise_type
         case gaussian
-            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams(trace,tau,tGuess,dt);
+            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams(trace,tau,tGuess,params);
         case line
-            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_linenoise(trace,tau,tGuess,dt);
+            [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_linenoise(trace,tau,tGuess,params);
         case ar2
             [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams_ARnoise(trace,tau,tGuess,params);
     end
-    runtime = toc
-    results(trace_ind).runtime = runtime;    
+%     runtime = toc
+%     results(trace_ind).runtime = runtime;    
     disp(['trace_ind = ' num2str(trace_ind) ', done in ' num2str(runtime) ' secs!'])
 
 % change tau min max and prior (and double check amplitudes and baseline
@@ -67,6 +69,7 @@ parfor trace_ind = 1:size(traces,1)
 
 end
 
+runtime = toc;
 matlabpool close
 
 %% minimum error sample
@@ -79,5 +82,5 @@ for trace_ind = 1:size(traces,1);
 end
 
 savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(size(traces,1)) '-' num2str(noise_type) '-' num2str(param_ind) '.mat'];
-save(savename,'results')
+save(savename,'results','runtime','noise_type','param_ind')
 

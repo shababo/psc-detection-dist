@@ -7,26 +7,21 @@ function [trials, mcmc, params]  = sampleParams_ARnoise(trace,tau, Tguess, param
 %this is accounted for by calciumNoiseVar
 NoiseVar_init=5; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
-p_spike=9/17500;%params.p_spike;%9/17500;%what percent of the bins hacve a spike in then
+p_spike=params.p_spike;
 proposalVar=100000;%likeliness to accept moves
 nsweeps=100; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
-% tau1_std = 1; %proposal variance of tau parameters 
-% tau2_std = 1; %proposal variance of tau parameters
-% tau_min = 5;
-% tau_max = 40;
 tau1_std = 2/20000/params.dt; %proposal variance of tau parameters
-tau2_std = 10/20000/params.dt; %proposal variance of tau para meters
-tau1_min = 1;%params.tau1_min;
-tau1_max = 20;%params.tau1_max;
-tau2_min = 5;%params.tau2_min;
-tau2_max = 75;%params.tau2_max;
-
-
+tau2_std = 10/20000/params.dt; %proposal variance of tau parameters
+tau1_min = params.tau1_min;
+tau1_max = params.tau1_max;
+tau2_min = params.tau2_min;
+tau2_max = params.tau2_max;
+%all of these are multiplied by big A
 a_std = .2; %proposal variance of amplitude
-a_min = 5;%params.a_min;
+a_min = params.a_min;
 a_max = Inf;
 b_std = .3; %propasal variance of baseline
 b_min = 0;
