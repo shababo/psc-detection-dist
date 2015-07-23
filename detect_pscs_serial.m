@@ -1,4 +1,4 @@
-function detect_pscs(trace_file,param_file,param_ind,noise_type)
+function detect_pscs_serial(trace_file,param_file,param_ind,noise_type)
 
 rng(1234)
 
@@ -27,6 +27,7 @@ if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
     results = 'infeasible parameter set';
     savename = [savename(1:end-4) '-z.mat'];
     save(savename,'results')
+    return
 end
 
 params.dt = 1/20000;
