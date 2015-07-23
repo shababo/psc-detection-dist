@@ -122,7 +122,7 @@ tauMoves = [0 0];
 for i = 1:nsweeps
     
 %     if mod(i,10) == 0
-        disp(length(ati))
+%         disp(length(ati))
 %     end
     
     % do burst time moves
@@ -526,7 +526,7 @@ for i = 1:nsweeps
 %         keyboard
 %     end
 
-    objective = [objective sum(diffY.^2)];
+    objective = [objective -predAR(diffY,phi,p,1)];
 %     figure(10);
 %     plot(ci{1});hold on;
 %     plot(CaF{1},'r');hold off
