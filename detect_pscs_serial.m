@@ -3,13 +3,14 @@ function detect_pscs(trace_file,param_file,param_ind,noise_type)
 rng(1234)
 
 addpath(genpath('/vega/stats/users/bms2156/psc-detection'));
-savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(size(traces,1)) '-' num2str(noise_type) '-' num2str(param_ind) '.mat'];
 
 %maxNumCompThreads(12)
 %matlabpool(12)
 
 load(trace_file,'traces');
 load(param_file,'a_min','p_spike','tau1_min','tau1_max','tau2_min','tau2_max');
+
+savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(size(traces,1)) '-' num2str(noise_type) '-' num2str(param_ind) '.mat'];
 
 param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max) length(tau2_min) length(tau2_max)];
 [a_min_i, p_spike_i, tau1_min_i, tau1_max_i, tau2_min_i, tau2_max_i] = ...
@@ -24,7 +25,7 @@ params.tau2_max = tau2_max(tau2_max_i);
 
 if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
     results = 'infeasible parameter set';
-    savename = ['z-' savename];
+    savename = [savename(1:end-4) '-z.mat'];
     save(savename,'results')
 end
 
