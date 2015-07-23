@@ -13,11 +13,9 @@ nsweeps=100; %number of sweeps of sampler
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
 tau1_std = 2/20000/params.dt; %proposal variance of tau parameters
-tau2_std = 10/20000/params.dt; %proposal variance of tau parameters
-tau1_min = params.tau1_min;
-tau1_max = params.tau1_max;
-tau2_min = params.tau2_min;
-tau2_max = params.tau2_max;
+tau2_std = 2/20000/params.dt; %proposal variance of tau parameters
+tau_min = params.tau_min;%params.tau1_min;
+tau_max = params.tau_max;%params.tau1_max;
 %all of these are multiplied by big A
 a_std = .2; %proposal variance of amplitude
 a_min = params.a_min;
@@ -115,7 +113,7 @@ for i = 1:nsweeps
 %     if mod(i,10) == 0
 %         disp(length(ati))
 %     end
-    
+    i
     % do burst time moves
     for ii = 1:3
         %guess on time and amplitude
@@ -357,16 +355,11 @@ for i = 1:nsweeps
             tau_(1) = tau_(1)+(tau1_std*randn); %with bouncing off min and max
 %             count1 = 0;
 %             count2 = 0;
-            while tau_(1)>tau1_max || tau_(1)<tau1_min
-                
-                if tau_(1)<tau1_min
-%                     count1 = count1 + 1;
-%                     count1
-                    tau_(1) = tau1_min+(tau1_min-tau_(1));
-                elseif tau_(1)>tau1_max
-%                     count2 = count2 + 1;
-%                     count2
-                    tau_(1) = tau1_max-(tau_(1)-tau1_max);
+           while tau_(1)>tau(2) || tau_(1)<tau_min
+                if tau_(1)<tau_min
+                    tau_(1) = tau_min+(tau_min-tau_(1));
+                elseif tau_(1)>tau(2)
+                    tau_(1) = tau(2)-(tau_(1)-tau(2));
                 end
             end 
 
@@ -388,17 +381,17 @@ for i = 1:nsweeps
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau1_std = tau1_std + 2*.1*rand*tau1_std/sqrt(i);
+%                 tau1_std = tau1_std + 2*.1*rand*tau1_std/sqrt(i);
             elseif rand<ratio %accept
                 pr = pr_;
                 logC = logC_;
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau1_std = tau1_std + 2*.1*rand*tau1_std/sqrt(i);
+%                 tau1_std = tau1_std + 2*.1*rand*tau1_std/sqrt(i);
             else
                 %reject - do nothing
-                tau1_std = tau1_std - .1*rand*tau1_std/sqrt(i);
+%                 tau1_std = tau1_std - .1*rand*tau1_std/sqrt(i);
                 tauMoves = tauMoves + [0 1];
             end
         end
@@ -414,18 +407,13 @@ for i = 1:nsweeps
             tau_(2) = tau_(2)+(tau2_std*randn);
 %             count1 = 0;
 %             count2 = 0;
-            while tau_(2)>tau2_max || tau_(2)<tau2_min
-                
-                if tau_(2)<tau2_min
-%                     count1 = count1 + 1;
-%                     count1
-                    tau_(2) = tau2_min+(tau2_min-tau_(2));
-                elseif tau_(2)>tau2_max
-%                     count2 = count2 + 1;
-%                     count2
-                    tau_(2) = tau2_max-(tau_(2)-tau2_max);
+            while tau_(2)>tau_max || tau_(2)<tau_(1)
+                if tau_(2)<tau_(1)
+                    tau_(2) = tau_(1)+(tau_(1)-tau_(2));
+                elseif tau_(2)>tau_max
+                    tau_(2) = tau_max-(tau_(2)-tau_max);
                 end
-            end  
+            end   
 
             ef_ = genEfilt(tau_,fBins);%exponential filter
 
@@ -445,17 +433,17 @@ for i = 1:nsweeps
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau2_std = tau2_std + 2*.1*rand*tau2_std/sqrt(i);
+%                 tau2_std = tau2_std + 2*.1*rand*tau2_std/sqrt(i);
             elseif rand<ratio %accept
                 pr = pr_;
                 logC = logC_;
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau2_std = tau2_std + 2*.1*rand*tau2_std/sqrt(i);
+%                 tau2_std = tau2_std + 2*.1*rand*tau2_std/sqrt(i);
             else
                 %reject - do nothing
-                tau2_std = tau2_std - .1*rand*tau2_std/sqrt(i);
+%                 tau2_std = tau2_std - .1*rand*tau2_std/sqrt(i);
                 tauMoves = tauMoves + [0 1];
             end
         end
@@ -522,10 +510,9 @@ params.proposalVar = proposalVar;
 params.nsweeps = nsweeps;
 params.tau1_std = tau1_std; %proposal variance of tau parameters
 params.tau2_std = tau2_std; %proposal variance of tau parameters
-params.tau1_min = tau1_min;
-params.tau1_max = tau1_max;
-params.tau2_min = tau2_min;
-params.tau2_max = tau2_max;
+params.tau_min = tau_min;
+params.tau_max = tau_max;
+
 params.a_std = a_std; %proposal variance of amplitude
 params.a_min = a_min;
 params.a_max = a_max;

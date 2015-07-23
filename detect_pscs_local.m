@@ -5,36 +5,29 @@ rng(1234)
 % delete(gcp('nocreate'))
 % this_pool = parpool(4)
 
-savename = ['~/Projects/Mapping/code/psc-detection/data/local_test_' num2str(noise_type) '_' num2str(param_ind) '_' num2str(params.a_min) '.mat'];
 
 
 traces = [];
 load(trace_file,'traces');
-load(param_file,'a_min','p_spike','tau1_min','tau1_max','tau2_min','tau2_max');
+load(param_file,'a_min','p_spike','tau_min','tau_max');
 
-param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max) length(tau2_min) length(tau2_max)];
-[a_min_i, p_spike_i, tau1_min_i, tau1_max_i, tau2_min_i, tau2_max_i] = ...
+param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max)];
+[a_min_i, p_spike_i, tau_min_i, tau_max_i] = ...
     ind2sub(param_dims,param_ind);
-
-
-% params.a_min = 5;
-% params.p_spike = p_spike(floor(length(p_spike)/2));
-% params.tau1_min = tau1_min(floor(length(tau1_min)/2));
-% params.tau1_max = tau1_max(floor(length(tau1_max)/2));
-% params.tau2_min = tau2_min(floor(length(tau2_min)/2));
-% params.tau2_max = tau2_max(floor(length(tau2_max)/2));
 
 params.a_min = a_min(a_min_i);
 params.p_spike = p_spike(p_spike_i);
-params.tau1_min = tau1_min(tau1_min_i);
-params.tau1_max = tau1_max(tau1_max_i);
-params.tau2_min = tau2_min(tau2_min_i);
-params.tau2_max = tau2_max(tau2_max_i);
+params.tau_min = tau_min(tau_min_i);
+params.tau_max = tau_max(tau_max_i);
 
-if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
+savename = ['~/Projects/Mapping/code/psc-detection/data/local_test_' num2str(noise_type) '_' num2str(param_ind)  '.mat'];
+
+
+if params.tau_min >= params.tau_max
     results = 'infeasible parameter set';
     savename = ['z-' savename];
     save(savename,'results')
+    return
 end
 
 params.dt = 1/20000;
@@ -60,7 +53,7 @@ tic
     tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
     disp(['Starting events: ' num2str(length(tGuess))])
     
-    tau = [5 35];
+    tau = [params.tau_min params.tau_max];
     switch noise_type
         case gaussian
             [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams(trace,tau,tGuess,params);

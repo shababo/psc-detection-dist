@@ -8,22 +8,20 @@ addpath(genpath('/vega/stats/users/bms2156/psc-detection'));
 %matlabpool(12)
 
 load(trace_file,'traces');
-load(param_file,'a_min','p_spike','tau1_min','tau1_max','tau2_min','tau2_max');
+load(param_file,'a_min','p_spike','tau_min','tau_max');
 
 savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(size(traces,1)) '-' num2str(noise_type) '-' num2str(param_ind) '.mat'];
 
-param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max) length(tau2_min) length(tau2_max)];
-[a_min_i, p_spike_i, tau1_min_i, tau1_max_i, tau2_min_i, tau2_max_i] = ...
+param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max)];
+[a_min_i, p_spike_i, tau_min_i, tau_max_i] = ...
     ind2sub(param_dims,param_ind);
 
 params.a_min = a_min(a_min_i);
 params.p_spike = p_spike(p_spike_i);
-params.tau1_min = tau1_min(tau1_min_i);
-params.tau1_max = tau1_max(tau1_max_i);
-params.tau2_min = tau2_min(tau2_min_i);
-params.tau2_max = tau2_max(tau2_max_i);
+params.tau_min = tau_min(tau_min_i);
+params.tau_max = tau_max(tau_max_i);
 
-if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
+if params.tau_min >= params.tau_max
     results = 'infeasible parameter set';
     savename = [savename(1:end-4) '-z.mat'];
     save(savename,'results')
@@ -55,7 +53,7 @@ for trace_ind = 1:size(traces,1)
     
 %     disp(['Starting events: ' num2str(length(tGuess))])
     
-    tau = [5 35];
+    tau = [params.tau_min params.tau_max];
     switch noise_type
         case gaussian
             [results(trace_ind).trials, results(trace_ind).mcmc results(trace_ind).params]  = sampleParams(trace,tau,tGuess,params);

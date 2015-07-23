@@ -8,18 +8,23 @@ maxNumCompThreads(12)
 matlabpool(12)
 
 load(trace_file,'traces');
-load(param_file,'a_min','p_spike','tau1_min','tau1_max','tau2_min','tau2_max');
+load(param_file,'a_min','p_spike','tau_min','tau_max');
 
-param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max) length(tau2_min) length(tau2_max)];
-[a_min_i, p_spike_i, tau1_min_i, tau1_max_i, tau2_min_i, tau2_max_i] = ...
+param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max)];
+[a_min_i, p_spike_i, tau_min_i, tau_max_i] = ...
     ind2sub(param_dims,param_ind);
 
 params.a_min = a_min(a_min_i);
 params.p_spike = p_spike(p_spike_i);
-params.tau1_min = tau1_min(tau1_min_i);
-params.tau1_max = tau1_max(tau1_max_i);
-params.tau2_min = tau2_min(tau2_min_i);
-params.tau2_max = tau2_max(tau2_max_i);
+params.tau_min = tau_min(tau_min_i);
+params.tau_max = tau_max(tau_max_i);
+
+if params.tau_min >= params.tau_max
+    results = 'infeasible parameter set';
+    savename = [savename(1:end-4) '-z.mat'];
+    save(savename,'results')
+    return
+end
 
 
 params.dt = 1/20000;
