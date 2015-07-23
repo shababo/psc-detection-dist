@@ -113,7 +113,7 @@ for i = 1:nsweeps
 %     if mod(i,10) == 0
 %         disp(length(ati))
 %     end
-    i
+    
     % do burst time moves
     for ii = 1:3
         %guess on time and amplitude

@@ -12,7 +12,7 @@ load(param_file,'a_min','p_spike','tau_min','tau_max');
 
 savename = ['/vega/stats/users/bms2156/psc-detection/data/detection-results-' num2str(size(traces,1)) '-' num2str(noise_type) '-' num2str(param_ind) '.mat'];
 
-param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max)];
+param_dims = [length(a_min) length(p_spike) length(tau_min) length(tau_max)];
 [a_min_i, p_spike_i, tau_min_i, tau_max_i] = ...
     ind2sub(param_dims,param_ind);
 

@@ -11,7 +11,7 @@ traces = [];
 load(trace_file,'traces');
 load(param_file,'a_min','p_spike','tau_min','tau_max');
 
-param_dims = [length(a_min) length(p_spike) length(tau1_min) length(tau1_max)];
+param_dims = [length(a_min) length(p_spike) length(tau_min) length(tau_max)];
 [a_min_i, p_spike_i, tau_min_i, tau_max_i] = ...
     ind2sub(param_dims,param_ind);
 
