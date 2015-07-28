@@ -1,3 +1,4 @@
+function PlotMCMC(results,trace)
 
 %% multiple samples for same trace
 figure(1)
