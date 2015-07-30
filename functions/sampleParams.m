@@ -8,7 +8,7 @@ NoiseVar_init=5; %inial noise estimate
 % p_spike=1/100000000000000000000000000000000;%what percent of the bins hacve a spike in then
 p_spike=params.p_spike;
 proposalVar=100000;%likeliness to accept moves
-nsweeps=100; %number of sweeps of sampler
+nsweeps=200; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;

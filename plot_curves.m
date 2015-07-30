@@ -29,6 +29,6 @@ for i = 1:size(traces,1)
 end
 
 figure;
-plot_trace_stack(traces,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[.4 .4 1]),[],size(traces,2)-1)
+plot_trace_stack(traces,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[.4 .4 1]),[],size(traces,2)-1,125)
 hold on
-plot_trace_stack(map_curves,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 0 1]),[],size(traces,2)-1)
+plot_trace_stack(map_curves,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 0 1]),[],size(traces,2)-1,125)
