@@ -8,8 +8,8 @@ function [trials, mcmc, params]  = sampleParams_ARnoise(trace,tau, Tguess, param
 NoiseVar_init=5; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
 p_spike=params.p_spike;
-proposalVar=100000;%likeliness to accept moves
-nsweeps=100; %number of sweeps of sampler
+proposalVar=10;
+nsweeps=1000; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
@@ -36,7 +36,11 @@ nu_0 = 5; %prior on shared burst time - ntrials
 sig2_0 = .1; %prior on shared burst time - variance
 
 %noise model is AR(p)
-p = 2;
+if isfield(params, 'p')
+    p = params.p;
+else
+    p = 2;
+end
 % phi prior
 phi_0 = zeros(p,1);
 Phi_0 = 10*eye(p); %inverse covariance 3
@@ -47,7 +51,7 @@ maxNbursts = Inf;
 
 indreport=.1:.1:1;
 indreporti=round(nsweeps*indreport);
-% fprintf('Progress:')
+fprintf('Progress:')
 
 % initialize some parameters
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
@@ -161,16 +165,16 @@ for i = 1:nsweeps
                 pr = pr_;
                 diffY = diffY_;
                 timeMoves = timeMoves + [1 1];
-                proposalVar = proposalVar + 2*.1*rand*proposalVar/sqrt(i);
+                proposalVar = proposalVar + .1*rand*proposalVar/(i);
             elseif rand<ratio %accept
                 si = si_;
                 pr = pr_;
                 diffY = diffY_;
                 timeMoves = timeMoves + [1 1];
-                proposalVar = proposalVar + 2*.1*rand*proposalVar/sqrt(i);
+                proposalVar = proposalVar + .1*rand*proposalVar/(i);
             else
                 %reject - do nothing
-                proposalVar = proposalVar - .1*rand*proposalVar/sqrt(i);
+                proposalVar = proposalVar - .1*rand*proposalVar/(i);
                 timeMoves = timeMoves + [0 1];
             end
         end
@@ -210,17 +214,17 @@ for i = 1:nsweeps
                 pr = pr_;
                 diffY = diffY_;
                 ampMoves = ampMoves + [1 1];
-                a_std = a_std + 2*.1*rand*a_std/sqrt(i);
+                a_std = a_std + 2*.1*rand*a_std/(i);
             elseif rand<ratio %accept
                 ai = ai_;
                 si = si_;
                 pr = pr_;
                 diffY = diffY_;
                 ampMoves = ampMoves + [1 1];
-                a_std = a_std + 2*.1*rand*a_std/sqrt(i);
+                a_std = a_std + 2*.1*rand*a_std/(i);
             else
                 %reject - do nothing
-                a_std = a_std - .1*rand*a_std/sqrt(i);
+                a_std = a_std - .1*rand*a_std/(i);
                 ampMoves = ampMoves + [0 1];
             end
         end
@@ -252,14 +256,14 @@ for i = 1:nsweeps
             baseline = tmp_b_;
             pr = pr_;
             diffY = diffY_;
-            b_std = b_std + 2*.1*rand*b_std/sqrt(i);
+            b_std = b_std + 2*.1*rand*b_std/(i);
         elseif rand<ratio %accept
             baseline = tmp_b_;
             pr = pr_;
             diffY = diffY_;
-            b_std = b_std + 2*.1*rand*b_std/sqrt(i);
+            b_std = b_std + 2*.1*rand*b_std/(i);
         else
-            b_std = b_std - .1*rand*b_std/sqrt(i);
+            b_std = b_std - .1*rand*b_std/(i);
             %reject - do nothing
         end
     end
@@ -388,17 +392,17 @@ for i = 1:nsweeps
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-               tau1_std = tau1_std + .1*rand*tau1_std/sqrt(i);
+               tau1_std = tau1_std + .1*rand*tau1_std/(i);
             elseif rand<ratio %accept
                 pr = pr_;
                 diffY = diffY_;
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-               tau1_std = tau1_std + .1*rand*tau1_std/sqrt(i);
+               tau1_std = tau1_std + .1*rand*tau1_std/(i);
             else
                 %reject - do nothing
-               tau1_std = tau1_std - .1*rand*tau1_std/sqrt(i);
+               tau1_std = tau1_std - .1*rand*tau1_std/(i);
                 tauMoves = tauMoves + [0 1];
             end
         end
@@ -438,17 +442,17 @@ for i = 1:nsweeps
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau2_std = tau2_std + .1*rand*tau2_std/sqrt(i);
+                tau2_std = tau2_std + .1*rand*tau2_std/(i);
             elseif rand<ratio %accept
                 pr = pr_;
                 diffY = diffY_;
                 taus{ni} = tau_;
                 efs{ni} = ef_;
                 tauMoves = tauMoves + [1 1];
-                tau2_std = tau2_std + .1*rand*tau2_std/sqrt(i);
+                tau2_std = tau2_std + .1*rand*tau2_std/(i);
             else
                 %reject - do nothing
-                tau2_std = tau2_std - .1*rand*tau2_std/sqrt(i);
+                tau2_std = tau2_std - .1*rand*tau2_std/(i);
                 tauMoves = tauMoves + [0 1];
             end
         end
@@ -531,9 +535,9 @@ for i = 1:nsweeps
 %     figure(10);
 %     plot(ci{1});hold on;
 %     plot(CaF{1},'r');hold off
-%     if sum(ismember(indreporti,i))
-%         fprintf([num2str(indreport(ismember(indreporti,i)),2),', '])
-%     end
+    if sum(ismember(indreporti,i))
+        fprintf([num2str(indreport(ismember(indreporti,i)),2),', '])
+    end
 end
 
 %% Vigi's Clean up
