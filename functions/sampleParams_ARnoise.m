@@ -9,7 +9,7 @@ NoiseVar_init=5; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
 p_spike=params.p_spike;
 proposalVar=10;
-nsweeps=1000; %number of sweeps of sampler
+nsweeps=100; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
@@ -480,12 +480,11 @@ for i = 1:nsweeps
 
     %     keyboard
         sample_phi = 1;
-        count = 1;
         while sample_phi
             phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
-            if all(abs(roots(phi))<1) %check stability
+%             if all(abs(roots(phi))<1) %check stability
                 sample_phi = 0;
-            end
+%             end
         end
         
     end
