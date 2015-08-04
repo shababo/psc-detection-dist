@@ -9,7 +9,7 @@ NoiseVar_init=5; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
 p_spike=params.p_spike;
 proposalVar=10;
-nsweeps=100; %number of sweeps of sampler
+nsweeps=1000; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
@@ -466,7 +466,7 @@ for i = 1:nsweeps
     %%%%%%%%%%%%%%%%
     % estimate phi (ignore initial condition boundary effects)
     %%%%%%%%%%%%%%%%
-    if p>0
+    if p>0 %&& i>(nsweeps/100)
         e = diffY'; % this is Tx1 (after transpose)
         E = [];
         for ip = 1:p
@@ -478,13 +478,16 @@ for i = 1:nsweeps
 
         phi_cond_mean = Phi_n\(Phi_0*phi_0 + NoiseVar^(-1)*E'*e);
 
-    %     keyboard
+%         keyboard
         sample_phi = 1;
         while sample_phi
             phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
-%             if all(abs(roots(phi))<1) %check stability
+
+            phi_poly = -phi;
+            phi_poly(1) = 1;
+            if all(abs(roots(phi_poly))<1) %check stability
                 sample_phi = 0;
-%             end
+            end
         end
         
     end
@@ -532,6 +535,8 @@ for i = 1:nsweeps
 
     objective = [objective -predAR(diffY,phi,p,1)];
 %     figure(10);
+%     plot(diffY_)
+%     drawnow
 %     plot(ci{1});hold on;
 %     plot(CaF{1},'r');hold off
     if sum(ismember(indreporti,i))

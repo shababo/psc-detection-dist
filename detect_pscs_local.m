@@ -2,8 +2,8 @@ function detect_pscs_local(trace_file,params_in,param_ind,noise_type)
 
 rng(1234)
 
-delete(gcp('nocreate'))
-this_pool = parpool(4)
+% delete(gcp('nocreate'))
+% this_pool = parpool(4)
 
 
 
@@ -57,7 +57,7 @@ disp(size(traces,1));
 
 % p = Par(size(traces,1));
 % tic
-parfor trace_ind = 1:size(traces,1)
+for trace_ind = 1:size(traces,1)
 %     
     disp(['trace_ind = ' num2str(trace_ind)])
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
@@ -90,7 +90,7 @@ end
 % stop(p)
 
 
-delete(this_pool)
+% delete(this_pool)
 
 % for i = 1:length(results)
 %     disp(results(i).runtime)
