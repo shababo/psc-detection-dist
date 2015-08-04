@@ -13,9 +13,11 @@ load(trace_file,'traces');
 if isnumeric(params_in)
     
     params.a_min = params_in(1);
-    params.tau_min = params_in(2);
-    params.tau_max = params_in(3);
-    params.p_spike = params_in(4);
+    params.tau1_min = params_in(2);
+    params.tau1_max = params_in(3);
+    params.tau2_min = params_in(4);
+    params.tau2_max = params_in(5);
+    params.p_spike = params_in(6);
     
 elseif isstr(params_in)
     
@@ -29,15 +31,17 @@ elseif isstr(params_in)
 
     params.a_min = a_min(a_min_i);
     params.p_spike = p_spike(p_spike_i);
-    params.tau_min = tau_min(tau_min_i);
-    params.tau_max = tau_max(tau_max_i);
+    params.tau1_min = tau1_min(tau1_min_i);
+    params.tau1_max = tau1_max(tau1_max_i);
+    params.tau2_min = tau2_min(tau2_min_i);
+    params.tau2_max = tau2_max(tau2_max_i);
 end
 
 
 savename = ['/home/shababo/projects/mapping/code/psc-detection/data/local_test_' num2str(noise_type) '_' num2str(param_ind)  '.mat'];
 
 
-if params.tau_min >= params.tau_max
+if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
     results = 'infeasible parameter set';
     savename = [savename(1:end-4) '-z.mat'];
     save(savename,'results')
@@ -67,14 +71,14 @@ for trace_ind = 1:size(traces,1)
     tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
     disp(['Starting events: ' num2str(length(tGuess))])
     
-    tau = [params.tau_min params.tau_max];
+    tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])];
     switch noise_type
-        case gaussian
-            [results(trace_ind).trials, results(trace_ind).mcmc, results(trace_ind).params]  = sampleParams(trace,tau,tGuess,params);
-        case line
-            [results(trace_ind).trials, results(trace_ind).mcmc, results(trace_ind).params]  = sampleParams_linenoise(trace,tau,tGuess,params);
+%         case gaussian
+%             [results(trace_ind).trials, results(trace_ind).mcmc, results(trace_ind).params]  = sampleParams(trace,tau,tGuess,params);
+%         case line
+%             [results(trace_ind).trials, results(trace_ind).mcmc, results(trace_ind).params]  = sampleParams_linenoise(trace,tau,tGuess,params);
         case ar2
-            [results(trace_ind).trials, results(trace_ind).mcmc, results(trace_ind).params]  = sampleParams_ARnoise(trace,tau,tGuess,params);
+            [results(trace_ind).trials, results(trace_ind).mcmc, results(trace_ind).params]  = sampleParams_ARnoise_splittau(trace,tau,tGuess,params);
     end
 % runtime = toc
 
@@ -98,7 +102,7 @@ end
 
 
 
-%% minimum error sample
+%% map sample
 
 for trace_ind = 1:size(traces,1);
 
