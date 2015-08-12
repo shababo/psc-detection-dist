@@ -39,7 +39,7 @@ sig2_0 = .1; %prior on shared burst time - variance
 p = 2;
 % phi prior
 phi_0 = zeros(p,1);
-Phi_0 = 3*eye(p); %inverse covariance
+Phi_0 = 10*eye(p); %inverse covariance 3
 
 adddrop = 5;
 % maxNbursts = length(Tguess);
@@ -476,6 +476,7 @@ for i = 1:nsweeps
 
     %     keyboard
         sample_phi = 1;
+        count = 1;
         while sample_phi
             phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
             if all(abs(roots(phi))<1) %check stability
