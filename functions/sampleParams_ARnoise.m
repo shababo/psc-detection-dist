@@ -485,7 +485,7 @@ for i = 1:nsweeps
 
             phi_poly = -phi;
             phi_poly(1) = 1;
-            if all(abs(roots(phi_poly))<1) %check stability
+            if all(abs(roots(phi_poly))<1) %check stability roots of z^p - phi_1 z^{p-1} - phi_2 z^{p-1}...
                 sample_phi = 0;
             end
         end
