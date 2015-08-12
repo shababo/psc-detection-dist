@@ -1,4 +1,4 @@
-function [trials, mcmc, params]  = sampleParams_ARnoise(trace,tau, Tguess, params)
+function [trials, mcmc, params]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
 
@@ -9,21 +9,23 @@ NoiseVar_init=5; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
 p_spike=params.p_spike;
 proposalVar=10;
-nsweeps=1000; %number of sweeps of sampler
+nsweeps=500; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
 tau1_std = 2/20000/params.dt; %proposal variance of tau parameters
 tau2_std = 2/20000/params.dt; %proposal variance of tau parameters
-tau_min = params.tau_min;
-tau_max = params.tau_max;
+tau1_min = params.tau1_min;
+tau1_max = params.tau1_max;
+tau2_min = params.tau2_min;
+tau2_max = params.tau2_max;
 %all of these are multiplied by big A
 a_std = .2; %proposal variance of amplitude
 a_min = params.a_min;
 a_max = Inf;
-b_std = .3; %propasal variance of baseline
-b_min = 0;
-b_max = 30;
+b_std = 2; %propasal variance of baseline  % was at 0.3 ... increased it for in vivo data
+b_min = -50;
+b_max = 50;
 exclusion_bound = 1;%dont let bursts get within x bins of eachother. this should be in time
 % maxNbursts = 3;%if we want to add bursts, whats the maximum bnumber that we will look for?
 
@@ -31,7 +33,7 @@ Dt=1; %bin unit - don't change this
 % A=400; % scale factor for all magnitudes for this calcium data setup
 A=1; % scale factor for all magnitudes for this calcium data setup
 % b=0; %initial baseline value
-b=median(trace); %initial baseline value
+b=min(trace); %initial baseline value
 nu_0 = 5; %prior on shared burst time - ntrials
 sig2_0 = .1; %prior on shared burst time - variance
 
@@ -39,7 +41,7 @@ sig2_0 = .1; %prior on shared burst time - variance
 if isfield(params, 'p')
     p = params.p;
 else
-    p = 2;
+    p = 4;
 end
 % phi prior
 phi_0 = zeros(p,1);
@@ -157,6 +159,7 @@ for i = 1:nsweeps
 
             %accept or reject
             %for prior: (1) use ratio or(2) set prior to 1.
+            
             prior_ratio = 1;
 
             ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1) - predAR(diffY,phi,p,1) )))*prior_ratio;            
@@ -358,19 +361,21 @@ for i = 1:nsweeps
         end
     end
     
-    
+ 
     %% this is the section that updates tau
-    % update tau (via random walk sampling)
+    % update tau (via random walk sampling)   
     for ii = 1:1
         for ni = 1:N 
             % update both tau values
             tau_ = taus{ni};
             tau_(1) = tau_(1)+(tau1_std*randn); %with bouncing off min and max
-            while tau_(1)>tau(2) || tau_(1)<tau_min
-                if tau_(1)<tau_min
+            tau_max = min([tau_(2) tau1_max]);
+            tau_min = tau1_min;
+            while tau_(1)>tau_max || tau_(1)<tau_min
+                if tau_(1) < tau_min
                     tau_(1) = tau_min+(tau_min-tau_(1));
-                elseif tau_(1)>tau(2)
-                    tau_(1) = tau(2)-(tau_(1)-tau(2));
+                elseif tau_(1)>tau_max
+                    tau_(1) = tau_max -(tau_(1)-tau_max);
                 end
             end 
 
@@ -416,14 +421,15 @@ for i = 1:nsweeps
             % update both tau values
             tau_ = taus{ni};    
             tau_(2) = tau_(2)+(tau2_std*randn);
+            tau_min = max([tau_(1) tau2_min]);
+            tau_max = tau2_max;
             while tau_(2)>tau_max || tau_(2)<tau_(1)
-                if tau_(2)<tau_(1)
-                    tau_(2) = tau_(1)+(tau_(1)-tau_(2));
+                if tau_(2)<tau_min
+                    tau_(2) = tau_min+(tau_min-tau_(2));
                 elseif tau_(2)>tau_max
                     tau_(2) = tau_max-(tau_(2)-tau_max);
                 end
             end  
-
             ef_ = genEfilt_ar(tau_,fBins);%exponential filter
 
             %remove all old bumps and replace them with new bumps    
@@ -480,13 +486,12 @@ for i = 1:nsweeps
 
 %         keyboard
         sample_phi = 1;
-        count = 1;
         while sample_phi
             phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
 
             phi_poly = -phi;
             phi_poly(1) = 1;
-            if all(abs(roots(phi_poly))<1) %check stability roots of z^p - phi_1 z^{p-1} - phi_2 z^{p-1}...
+            if all(abs(roots(phi_poly))<1) %check stability
                 sample_phi = 0;
             end
         end
@@ -569,8 +574,12 @@ params.proposalVar = proposalVar;
 params.nsweeps = nsweeps;
 params.tau1_std = tau1_std; %proposal variance of tau parameters
 params.tau2_std = tau2_std; %proposal variance of tau parameters
-params.tau_min = tau_min;
-params.tau_max = tau_max;
+params.tau1_min = tau1_min;
+params.tau1_max = tau1_max;
+params.tau2_min = tau2_min;
+params.tau2_max = tau2_max;
+params.tau_min = tau1_min;
+params.tau_max = tau2_max;
 params.a_std = a_std; %proposal variance of amplitude
 params.a_min = a_min;
 params.a_max = a_max;
