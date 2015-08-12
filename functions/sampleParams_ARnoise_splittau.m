@@ -9,7 +9,7 @@ NoiseVar_init=5; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
 p_spike=params.p_spike;
 proposalVar=10;
-nsweeps=1000; %number of sweeps of sampler
+nsweeps=500; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
@@ -159,6 +159,7 @@ for i = 1:nsweeps
 
             %accept or reject
             %for prior: (1) use ratio or(2) set prior to 1.
+            
             prior_ratio = 1;
 
             ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1) - predAR(diffY,phi,p,1) )))*prior_ratio;            
@@ -360,13 +361,15 @@ for i = 1:nsweeps
         end
     end
     
-    
+ 
+    %% this is the section that updates tau
+    % update tau (via random walk sampling)   
     for ii = 1:1
         for ni = 1:N 
             % update both tau values
             tau_ = taus{ni};
             tau_(1) = tau_(1)+(tau1_std*randn); %with bouncing off min and max
-            tau_max = min([tau(2) tau1_max]);
+            tau_max = min([tau_(2) tau1_max]);
             tau_min = tau1_min;
             while tau_(1)>tau_max || tau_(1)<tau_min
                 if tau_(1) < tau_min
@@ -418,7 +421,7 @@ for i = 1:nsweeps
             % update both tau values
             tau_ = taus{ni};    
             tau_(2) = tau_(2)+(tau2_std*randn);
-            tau_min = max([tau(1) tau2_min]);
+            tau_min = max([tau_(1) tau2_min]);
             tau_max = tau2_max;
             while tau_(2)>tau_max || tau_(2)<tau_(1)
                 if tau_(2)<tau_min
@@ -427,7 +430,6 @@ for i = 1:nsweeps
                     tau_(2) = tau_max-(tau_(2)-tau_max);
                 end
             end  
-
             ef_ = genEfilt_ar(tau_,fBins);%exponential filter
 
             %remove all old bumps and replace them with new bumps    
