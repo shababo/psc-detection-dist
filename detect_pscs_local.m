@@ -3,12 +3,14 @@ function detect_pscs_local(trace_file,params_in,param_ind,noise_type)
 rng(1234)
 
 delete(gcp('nocreate'))
-this_pool = parpool()
+% this_pool = parpool()
 
 
 
 traces = [];
 load(trace_file,'traces');
+
+traces = traces(1,:);
 
 if isnumeric(params_in)
     
@@ -49,6 +51,7 @@ if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
 end
 
 params.dt = 1/20000;
+params.p = 2;
 
 % noise_types
 gaussian = 1; line = 2; ar2 = 3;
@@ -61,7 +64,7 @@ disp(size(traces,1));
 
 % p = Par(size(traces,1));
 % tic
-parfor trace_ind = 1:size(traces,1)
+for trace_ind = 1:size(traces,1)
 %     
     disp(['trace_ind = ' num2str(trace_ind)])
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
@@ -94,7 +97,7 @@ end
 % stop(p)
 
 
-delete(this_pool)
+% delete(this_pool)
 
 % for i = 1:length(results)
 %     disp(results(i).runtime)

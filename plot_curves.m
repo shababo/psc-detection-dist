@@ -1,12 +1,15 @@
 function plot_curves(traces_file, results_file)
 
 load(traces_file)
+traces = traces(1,:);
+
 load(results_file)
 
 T = size(traces,2);
 fBins = 2000;
 
 map_curves = zeros(size(traces));
+
 
 for i = 1:size(traces,1)
     

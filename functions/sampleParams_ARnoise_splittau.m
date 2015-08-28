@@ -39,9 +39,10 @@ sig2_0 = .1; %prior on shared burst time - variance
 
 %noise model is AR(p)
 if isfield(params, 'p')
-    p = params.p;
+    p = params.p
 else
-    p = 4;
+    disp('manual')
+    p = 4
 end
 % phi prior
 phi_0 = zeros(p,1);
