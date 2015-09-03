@@ -1,9 +1,9 @@
 % function output = scratch(linescan)
 zero_ind = 6000;
-duration = 4000;
+duration = 400;
 fs = 20000;
 
-dirname = '~/projects/mapping/data/0810/';
+dirname = '~/Desktop/0810/';
 
 files = {'0810_cell02.mat','0810_cell04.mat','0810_cell06.mat','0810_cell08.mat','0810_cellXX.mat'};
 %,'0810_cell07.mat'
@@ -53,8 +53,8 @@ for i = 1:num_cells
     end
 end
 
-
-condition_stds = cell(num_condtions,1);
+%%
+condition_stds = cell(num_conditions,1);
 for j = 1:num_conditions
     temp = [];
     for i = 1:num_cells
@@ -77,22 +77,47 @@ figure;
 set(gcf,'defaultAxesColorOrder',jet(num_conditions))
 colors = {'r','m','g','c','b'};
 for j = num_conditions:-1:1
-    shadedErrorBar(time,condition_means{j} - condition_means{j}(zero_ind),condition_stds{j}/sqrt(num_cells),colors{j},1)
+%     shadedErrorBar(time,condition_means{j} - condition_means{j}(zero_ind),condition_stds{j}/sqrt(num_cells),colors{j},1)
+    plot(time,condition_means{j} - condition_means{j}(zero_ind),colors{j},'linewidth',2)
     hold on
 end
 hold off
-% legend(fliplr(condition_labels))
+legend(fliplr(condition_labels))
+
+xlabel('time (sec)')
+ylabel('current (pA)')
+
 
 ylim([-140 20])
 xlim([-.02 .1])
 
 %% plot summary
 
+wavelengths = [950 900 850 800 750];
 figure
-plot([950 900 850 800 750],mean(normalized_cell_current_max))
+for i = 1:num_cells
+    plot(wavelengths,normalized_cell_current_max(i,:),'bo-');
+    hold on;
+end
+scatter([950 900 850 800 750],mean(normalized_cell_current_max),75,'b','filled')
+%%
+figure
+for i = 1:length(wavelengths)
+    scatter(wavelengths(i)*ones(size(normalized_cell_charge,1),1),normalized_cell_charge(:,i),40,'b');
+    hold on;
+end
+scatter([950 900 850 800 750],mean(normalized_cell_charge),75,'b','filled')
+%%
+
 
 figure
-plot([950 900 850 800 750],mean(normalized_cell_charge))
+for i = 1:num_cells
+    plot(wavelengths,cell_current_max(i,:),'bo-');
+    hold on;
+end
+scatter([950 900 850 800 750],mean(cell_current_max),75,'b','filled')
+
+
     
     
     

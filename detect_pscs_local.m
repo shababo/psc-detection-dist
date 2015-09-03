@@ -2,15 +2,21 @@ function detect_pscs_local(trace_file,params_in,param_ind,noise_type)
 
 rng(1234)
 
-delete(gcp('nocreate'))
-% this_pool = parpool()
+% delete(gcp('nocreate'))
+% this_pool = parpool();
 
 
 
 traces = [];
 load(trace_file,'traces');
 
-traces = traces(1,:);
+start_ind = 6585+1125;
+duration = 400; %2150;
+traces = traces(1,start_ind:(start_ind + duration));
+
+params.start_ind = start_ind; params.duration = duration;
+
+% traces = traces(1,:);
 
 if isnumeric(params_in)
     
@@ -40,7 +46,7 @@ elseif isstr(params_in)
 end
 
 
-savename = ['/home/shababo/projects/mapping/code/psc-detection/data/local_test_' num2str(noise_type) '_' num2str(param_ind)  '.mat'];
+savename = ['data/local_test_' num2str(noise_type) '_' num2str(param_ind)  '.mat'];
 
 
 if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
@@ -69,7 +75,7 @@ for trace_ind = 1:size(traces,1)
     disp(['trace_ind = ' num2str(trace_ind)])
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
-% tic
+tic
 %     Par.tic
     tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
     disp(['Starting events: ' num2str(length(tGuess))])
@@ -83,7 +89,7 @@ for trace_ind = 1:size(traces,1)
         case ar2
             [results(trace_ind).trials, results(trace_ind).mcmc, results(trace_ind).params]  = sampleParams_ARnoise_splittau(trace,tau,tGuess,params);
     end
-% runtime = toc
+runtime = toc
 
 
 %     p(trace_ind) = Par.toc;

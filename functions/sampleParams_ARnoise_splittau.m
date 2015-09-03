@@ -1,7 +1,6 @@
 function [trials, mcmc, params]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
-
 %noise level here matters for the proposal distribution (how much it 
 %should trust data for proposals vs how much it should mix based on uniform prior)
 %this is accounted for by calciumNoiseVar
@@ -9,7 +8,7 @@ NoiseVar_init=5; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
 p_spike=params.p_spike;
 proposalVar=10;
-nsweeps=500; %number of sweeps of sampler
+nsweeps=400; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
@@ -39,14 +38,22 @@ sig2_0 = .1; %prior on shared burst time - variance
 
 %noise model is AR(p)
 if isfield(params, 'p')
-    p = params.p
+    p = params.p;
 else
     disp('manual')
-    p = 4
+    p = 2;
 end
 % phi prior
 phi_0 = zeros(p,1);
 Phi_0 = 10*eye(p); %inverse covariance 3
+
+circ_ind = zeros(p,length(trace));
+for i = 1:p
+    circ_ind(i,:) = [ones(1,i) 1:length(trace)-i];
+end
+mask = [triu(ones(p),1) ones(p,length(trace)-p)];
+assignin('base','circ_ind',circ_ind)
+assignin('base','mask',mask)
 
 adddrop = 5;
 % maxNbursts = length(Tguess);
@@ -58,7 +65,7 @@ fprintf('Progress:')
 
 % initialize some parameters
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
-fBins = 2000;
+fBins = 500;
 ef = genEfilt_ar(tau,fBins);%exponential filter
 ef_init = ef;
 
@@ -163,7 +170,7 @@ for i = 1:nsweeps
             
             prior_ratio = 1;
 
-            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1) - predAR(diffY,phi,p,1) )))*prior_ratio;            
+            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) )))*prior_ratio;            
             if ratio>1 %accept
                 si = si_;
                 pr = pr_;
@@ -211,7 +218,7 @@ for i = 1:nsweeps
 
             %accept or reject - include a prior?
             prior_ratio = 1;
-            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1) - predAR(diffY,phi,p,1) )))*prior_ratio;
+            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) )))*prior_ratio;
             if ratio>1 %accept
                 ai = ai_;
                 si = si_;
@@ -255,7 +262,7 @@ for i = 1:nsweeps
 
         %accept or reject - include a prior?
         prior_ratio = 1;
-        ratio = exp(sum((1/(2*NoiseVar))*(  predAR(diffY_,phi,p,1) - predAR(diffY,phi,p,1)  )))*prior_ratio;
+        ratio = exp(sum((1/(2*NoiseVar))*(  predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask)  )))*prior_ratio;
         if ratio>1 %accept
             baseline = tmp_b_;
             pr = pr_;
@@ -304,7 +311,7 @@ for i = 1:nsweeps
 %                 hold off
 %                 drawnow
 %                 pause
-                ratio = exp(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1) - predAR(diffY,phi,p,1) )))*(rprob/fprob)*(m(1)/(nBins(1)-m(1))); %posterior times reverse prob/forward prob
+                ratio = exp(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) )))*(rprob/fprob)*(m(1)/(nBins(1)-m(1))); %posterior times reverse prob/forward prob
                 if (ratio>1)||(ratio>rand) %accept
                     ati = ati_;
                     sti = sti_;
@@ -344,7 +351,7 @@ for i = 1:nsweeps
 
                 %accept or reject
                 %posterior times reverse prob/forward prob
-                ratio = exp(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1) - predAR(diffY,phi,p,1) )))*(rprob/fprob)*((nBins(1)-m(1))/m(1)); 
+                ratio = exp(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) )))*(rprob/fprob)*((nBins(1)-m(1))/m(1)); 
                 if (ratio>1)||(ratio>rand)%accept
                     ati = ati_;
                     sti = sti_;
@@ -391,7 +398,7 @@ for i = 1:nsweeps
             %accept or reject
             prior_ratio = 1;
 %             prior_ratio = (gampdf(tau_(1),1.5,1))/(gampdf(tau(1),1.5,1));
-            ratio = exp(sum(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1) - predAR(diffY,phi,p,1) ))))*prior_ratio;
+            ratio = exp(sum(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) ))))*prior_ratio;
             if ratio>1 %accept
                 pr = pr_;
                 diffY = diffY_;
@@ -442,7 +449,7 @@ for i = 1:nsweeps
             %accept or reject
             prior_ratio = 1;
 %             prior_ratio = gampdf(tau_(2),12,1)/gampdf(tau(2),12,1);
-            ratio = exp(sum(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1) - predAR(diffY,phi,p,1) ))))*prior_ratio;
+            ratio = exp(sum(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) ))))*prior_ratio;
             if ratio>1 %accept
                 pr = pr_;
                 diffY = diffY_;
@@ -505,7 +512,7 @@ for i = 1:nsweeps
     % re-estimate the noise variance
     if ~isempty(sti)
         df = (numel(pr)); %DOF (possibly numel(ci(ti,:))-1)
-        d1 = -predAR(diffY,phi,p,1)/df; 
+        d1 = -predAR(diffY,phi,p,1,circ_ind,mask)/df; 
         nu0 = nu_0; %nu_0 or 0
         d0 = sig2_0; %sig2_0 or 0
         
@@ -540,7 +547,7 @@ for i = 1:nsweeps
 %         keyboard
 %     end
 
-    objective = [objective -predAR(diffY,phi,p,1)];
+    objective = [objective -predAR(diffY,phi,p,1,circ_ind,mask)];
 %     figure(10);
 %     plot(diffY_)
 %     drawnow
