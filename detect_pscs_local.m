@@ -2,8 +2,8 @@ function detect_pscs_local(trace_file,params_in,param_ind,noise_type)
 
 rng(1234)
 
-% delete(gcp('nocreate'))
-% this_pool = parpool();
+delete(gcp('nocreate'))
+this_pool = parpool();
 
 
 
@@ -70,12 +70,12 @@ disp(size(traces,1));
 
 % p = Par(size(traces,1));
 % tic
-for trace_ind = 1:size(traces,1)
+parfor trace_ind = 1:size(traces,1)
 %     
     disp(['trace_ind = ' num2str(trace_ind)])
     trace = max(traces(trace_ind,:)) - traces(trace_ind,:);
 
-tic
+% tic
 %     Par.tic
     tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
     disp(['Starting events: ' num2str(length(tGuess))])
@@ -89,7 +89,7 @@ tic
         case ar2
             [results(trace_ind).trials, results(trace_ind).mcmc, results(trace_ind).params]  = sampleParams_ARnoise_splittau(trace,tau,tGuess,params);
     end
-runtime = toc
+% runtime = toc
 
 
 %     p(trace_ind) = Par.toc;
@@ -103,7 +103,7 @@ end
 % stop(p)
 
 
-% delete(this_pool)
+delete(this_pool)
 
 % for i = 1:length(results)
 %     disp(results(i).runtime)
