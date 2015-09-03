@@ -1,7 +1,7 @@
 function plot_curves(traces_file, results_file)
 
 load(traces_file)
-traces = traces(1,:);
+% traces = traces(1,:);
 
 load(results_file)
 
