@@ -3,12 +3,12 @@ function plot_curves(traces_file, results_file)
 load(traces_file)
 
 load(results_file)
-traces = traces(1,results(1).params.start_ind:(results(1).params.start_ind + results(1).params.duration));
+traces = traces(:,results(1).params.start_ind:(results(1).params.start_ind + results(1).params.duration));
 
 
 
 T = size(traces,2);
-fBins = 2000;
+fBins = results(1).params.fBins;
 
 map_curves = zeros(size(traces));
 

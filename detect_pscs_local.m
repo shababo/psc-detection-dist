@@ -1,4 +1,4 @@
-function detect_pscs_local(trace_file,params_in,param_ind,noise_type)
+function detect_pscs_local(trace_file,params_in,param_ind,noise_type,event_sign)
 
 rng(1234)
 
@@ -10,9 +10,9 @@ this_pool = parpool();
 traces = [];
 load(trace_file,'traces');
 
-start_ind = 6585+1125;
-duration = 400; %2150;
-traces = traces(1,start_ind:(start_ind + duration));
+start_ind = 1;
+duration = size(traces,2) - 1; %2150;
+traces = event_sign*traces(:,start_ind:(start_ind + duration));
 
 params.start_ind = start_ind; params.duration = duration;
 

@@ -52,8 +52,8 @@ for i = 1:p
     circ_ind(i,:) = [ones(1,i) 1:length(trace)-i];
 end
 mask = [triu(ones(p),1) ones(p,length(trace)-p)];
-assignin('base','circ_ind',circ_ind)
-assignin('base','mask',mask)
+% assignin('base','circ_ind',circ_ind)
+% assignin('base','mask',mask)
 
 adddrop = 5;
 % maxNbursts = length(Tguess);
@@ -65,7 +65,7 @@ fprintf('Progress:')
 
 % initialize some parameters
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
-fBins = 500;
+fBins = 60000;
 ef = genEfilt_ar(tau,fBins);%exponential filter
 ef_init = ef;
 
@@ -602,6 +602,7 @@ params.p_spike = p_spike;
 params.p = p;
 params.phi_0 = phi_0;
 params.Phi_0 = Phi_0;
+params.fBins = fBins;
 
 % disp('Below are the moves that were done')
 % display(['time: ' num2str(timeMoves(1)/timeMoves(2))])

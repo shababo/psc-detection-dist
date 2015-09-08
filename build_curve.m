@@ -1,6 +1,6 @@
 function curve = build_curve(results,trace_ind, num_samples)
 
-fBins = 2000;
+fBins = results(1).params.fBins;
 
 min_i = results(trace_ind).min_err_ind;
     
