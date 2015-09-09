@@ -8,7 +8,7 @@ NoiseVar_init=5; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
 p_spike=params.p_spike;
 proposalVar=10;
-nsweeps=400; %number of sweeps of sampler
+nsweeps=4000; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
@@ -66,7 +66,7 @@ fprintf('Progress:')
 % initialize some parameters
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
 fBins = 60000;
-ef = genEfilt_ar(tau,fBins);%exponential filter
+ef = genEfilt_ar([(tau1_max-tau1_min)/2 (tau2_max-tau2_min)/2],fBins);%exponential filter
 ef_init = ef;
 
 samples_a  = cell(1,nsweeps);

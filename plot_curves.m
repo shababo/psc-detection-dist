@@ -8,7 +8,11 @@ traces = traces(:,results(1).params.start_ind:(results(1).params.start_ind + res
 
 
 T = size(traces,2);
-fBins = results(1).params.fBins;
+if isfield(results(1).params,'fBins')
+    fBins = results(1).params.fBins;
+else
+    fBins = 4000;
+end
 
 map_curves = zeros(size(traces));
 

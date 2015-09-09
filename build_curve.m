@@ -1,6 +1,10 @@
 function curve = build_curve(results,trace_ind, num_samples)
 
-fBins = results(1).params.fBins;
+if isfield(results(1).params,'fBins')
+    fBins = results(1).params.fBins;
+else
+    fBins = 4000;
+end
 
 min_i = results(trace_ind).min_err_ind;
     
