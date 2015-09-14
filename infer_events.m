@@ -1,6 +1,7 @@
-function detect_pscs_local(trace_file,params_in,param_ind,noise_type,event_sign)
+function detect_pscs_local(traces, params)
 
-rng(1234)
+if params.rand == 1
+    rng(params.seed)
 
 delete(gcp('nocreate'))
 this_pool = parpool();
@@ -9,7 +10,6 @@ this_pool = parpool();
 
 traces = [];
 load(trace_file,'traces');
-
 
 start_ind = 1;
 duration = size(traces,2) - 1; %2150;

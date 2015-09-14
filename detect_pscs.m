@@ -1,39 +1,25 @@
-function detect_pscs(trace_file,param_file,param_ind,noise_type)
+function detect_pscs(traces,params)
 
-rng(1234)
+params = get_params;
 
-addpath(genpath('/vega/stats/users/bms2156/psc-detection'));
+if params.tau_min >= params.tau_max
+    results = 'infeasible parameter set';
+    save(params.savename,'results','params')
+    return
+end
+
+if params.rand
+    rng(params.seed)
+end
+
+addpath(genpath(params.source_path));
 
 maxNumCompThreads(12)
 matlabpool(12)
 
-load(trace_file,'traces');
-load(param_file,'a_min','p_spike','tau_min','tau_max');
-
-param_dims = [length(a_min) length(p_spike) length(tau_min) length(tau_max)];
-[a_min_i, p_spike_i, tau_min_i, tau_max_i] = ...
-    ind2sub(param_dims,param_ind);
-
-params.a_min = a_min(a_min_i);
-params.p_spike = p_spike(p_spike_i);
-params.tau_min = tau_min(tau_min_i);
-params.tau_max = tau_max(tau_max_i);
-
-if params.tau_min >= params.tau_max
-    results = 'infeasible parameter set';
-    savename = [savename(1:end-4) '-z.mat'];
-    save(savename,'results')
-    return
+if ~isnumeric(traces)
+    load(traces,'traces');
 end
-
-
-params.dt = 1/20000;
-
-% noise_types
-gaussian = 1; line = 2; ar2 = 3;
-
-
-% traces = traces_1_perm(2,start_t:end_t);
 
 results = struct();
 
