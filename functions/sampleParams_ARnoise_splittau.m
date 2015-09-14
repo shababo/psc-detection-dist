@@ -4,27 +4,29 @@ function [trials, mcmc, params]  = sampleParams_ARnoise_splittau(trace,tau, Tgue
 %noise level here matters for the proposal distribution (how much it 
 %should trust data for proposals vs how much it should mix based on uniform prior)
 %this is accounted for by calciumNoiseVar
-NoiseVar_init=5; %inial noise estimate
+noise_var_init = params.noise_var_init; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
-p_spike=params.p_spike;
-proposalVar=10;
-nsweeps=4000; %number of sweeps of sampler
+p_spike = params.p_spike;
+time_proposal_var = params.time_proposal_var;
+num_sweeps = params.num_sweeps; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
-tau1_std = 2/20000/params.dt; %proposal variance of tau parameters
-tau2_std = 2/20000/params.dt; %proposal variance of tau parameters
-tau1_min = params.tau1_min;
-tau1_max = params.tau1_max;
-tau2_min = params.tau2_min;
-tau2_max = params.tau2_max;
+tau1_std = params.tau1_prop_std/params.dt; %proposal variance of tau parameters
+tau2_std = params.tau2_prop_std/params.dt; %proposal variance of tau parameters
+tau1_min = params.tau1_min/params.dt;
+tau1_max = params.tau1_max/params.dt;
+tau2_min = params.tau2_min/params.dt;
+tau2_max = params.tau2_max/params.dt;
+
 %all of these are multiplied by big A
-a_std = .2; %proposal variance of amplitude
+
+a_std = params.amp_prop_std; %proposal variance of amplitude
 a_min = params.a_min;
-a_max = Inf;
-b_std = 2; %propasal variance of baseline  % was at 0.3 ... increased it for in vivo data
-b_min = -50;
-b_max = 50;
+a_max = params.inference.a_max;
+b_std = params.baseline_prop_std; %propasal variance of baseline  % was at 0.3 ... increased it for in vivo data
+b_min = params.b_min;
+b_max = params.b_max;
 exclusion_bound = 1;%dont let bursts get within x bins of eachother. this should be in time
 % maxNbursts = 3;%if we want to add bursts, whats the maximum bnumber that we will look for?
 
@@ -36,50 +38,43 @@ b=min(trace); %initial baseline value
 nu_0 = 5; %prior on shared burst time - ntrials
 sig2_0 = .1; %prior on shared burst time - variance
 
-%noise model is AR(p)
-if isfield(params, 'p')
-    p = params.p;
-else
-    disp('manual')
-    p = 2;
-end
+
+p = params.p;
+
 % phi prior
-phi_0 = zeros(p,1);
-Phi_0 = 10*eye(p); %inverse covariance 3
+phi_0 = params.phi_0;
+Phi_0 = params.Phi_0; 
 
-circ_ind = zeros(p,length(trace));
-for i = 1:p
-    circ_ind(i,:) = [ones(1,i) 1:length(trace)-i];
-end
-mask = [triu(ones(p),1) ones(p,length(trace)-p)];
-% assignin('base','circ_ind',circ_ind)
-% assignin('base','mask',mask)
+adddrop = params.add_drop_sweeps;
+spike_time_sweeps = params.spike_time_sweeps;
+amp_sweeps = params.amp_sweeps;
+baseline_sweeps = params.baseline_sweeps;
+tau1_sweeps = params.tau1_sweeps;
+tau2_sweeps = params.tau2_sweeps;
 
-adddrop = 5;
-% maxNbursts = length(Tguess);
 maxNbursts = Inf;
 
 indreport=.1:.1:1;
-indreporti=round(nsweeps*indreport);
+indreporti=round(num_sweeps*indreport);
 fprintf('Progress:')
 
 % initialize some parameters
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
-fBins = 60000;
+fBins = params.kernel_samples;
 ef = genEfilt_ar([(tau1_max-tau1_min)/2 (tau2_max-tau2_min)/2],fBins);%exponential filter
 ef_init = ef;
 
-samples_a  = cell(1,nsweeps);
-samples_b = cell(1,nsweeps);
-samples_s = cell(1,nsweeps);
-samples_pr = cell(1,nsweeps);
-samples_tau = cell(1,nsweeps);
-samples_phi = cell(1,nsweeps);
-samples_noise = cell(1,nsweeps);
+samples_a  = cell(1,num_sweeps);
+samples_b = cell(1,num_sweeps);
+samples_s = cell(1,num_sweeps);
+samples_pr = cell(1,num_sweeps);
+samples_tau = cell(1,num_sweeps);
+samples_phi = cell(1,num_sweeps);
+samples_noise = cell(1,num_sweeps);
 N_sto = [];
 objective = [];
 
-NoiseVar = NoiseVar_init; %separate calcium per trial
+NoiseVar = noise_var_init; %separate calcium per trial
 baseline = b;
 
 % intiailize burst train and predicted calcium
@@ -133,20 +128,20 @@ dropMoves = [0 0];
 timeMoves = [0 0];
 ampMoves = [0 0];
 tauMoves = [0 0];
-for i = 1:nsweeps
+for i = 1:num_sweeps
     
 %     if mod(i,10) == 0
 %         disp(length(ati))
 %     end
     
     % do burst time moves
-    for ii = 1:3
+    for ii = 1:spike_time_sweeps
         %guess on time and amplitude
         si = sti;
         ai = ati;
         for ni = 1:N%for each burst
             tmpi = si(ni);
-            tmpi_ = si(ni)+(proposalVar*randn); %add in noise 
+            tmpi_ = si(ni)+(time_proposal_var*randn); %add in noise 
             % bouncing off edges
             while tmpi_>nBins || tmpi_<0
                 if tmpi_<0
@@ -176,16 +171,16 @@ for i = 1:nsweeps
                 pr = pr_;
                 diffY = diffY_;
                 timeMoves = timeMoves + [1 1];
-                proposalVar = proposalVar + .1*rand*proposalVar/(i);
+                time_proposal_var = time_proposal_var + .1*rand*time_proposal_var/(i);
             elseif rand<ratio %accept
                 si = si_;
                 pr = pr_;
                 diffY = diffY_;
                 timeMoves = timeMoves + [1 1];
-                proposalVar = proposalVar + .1*rand*proposalVar/(i);
+                time_proposal_var = time_proposal_var + .1*rand*time_proposal_var/(i);
             else
                 %reject - do nothing
-                proposalVar = proposalVar - .1*rand*proposalVar/(i);
+                time_proposal_var = time_proposal_var - .1*rand*time_proposal_var/(i);
                 timeMoves = timeMoves + [0 1];
             end
         end
@@ -194,7 +189,7 @@ for i = 1:nsweeps
 
     
     % update amplitude of each burst
-    for ii = 1:5
+    for ii = 1:amp_sweeps
         si = sti; 
         ai = ati;
         for ni = 1:N
@@ -244,7 +239,7 @@ for i = 1:nsweeps
 
     
     % update baseline of each trial
-    for ii = 1:1
+    for ii = 1:baseline_sweeps
         %sample with random walk proposal
         tmp_b = baseline;
         tmp_b_ = tmp_b+(b_std*randn); %with bouncing off min and max
@@ -372,7 +367,7 @@ for i = 1:nsweeps
  
     %% this is the section that updates tau
     % update tau (via random walk sampling)   
-    for ii = 1:1
+    for ii = 1:tau1_sweeps
         for ni = 1:N 
             % update both tau values
             tau_ = taus{ni};
@@ -424,7 +419,7 @@ for i = 1:nsweeps
 
      %% this is the section that updates tau
     % update tau (via random walk sampling)
-    for ii = 1:1  
+    for ii = 1:tau2_sweeps
         for ni = 1:N 
             % update both tau values
             tau_ = taus{ni};    
@@ -480,7 +475,7 @@ for i = 1:nsweeps
     %%%%%%%%%%%%%%%%
     % estimate phi (ignore initial condition boundary effects)
     %%%%%%%%%%%%%%%%
-    if p>0 %&& i>(nsweeps/100)
+    if p>0 %&& i>(num_sweeps/100)
         e = diffY'; % this is Tx1 (after transpose)
         E = [];
         for ip = 1:p
@@ -570,46 +565,14 @@ mcmc.N_sto=N_sto;%number of bursts
 
 trials.amp=samples_a;
 trials.base=samples_b;
-% trials.curves=samples_pr;
 trials.tau=samples_tau;
 trials.phi=samples_phi;
 trials.noise = samples_noise;
 trials.obj = objective;
 trials.times = samples_s;
 
-params.NoiseVar = NoiseVar_init; 
-params.proposalVar = proposalVar;
-params.nsweeps = nsweeps;
-params.tau1_std = tau1_std; %proposal variance of tau parameters
-params.tau2_std = tau2_std; %proposal variance of tau parameters
-params.tau1_min = tau1_min;
-params.tau1_max = tau1_max;
-params.tau2_min = tau2_min;
-params.tau2_max = tau2_max;
-params.tau_min = tau1_min;
-params.tau_max = tau2_max;
-params.a_std = a_std; %proposal variance of amplitude
-params.a_min = a_min;
-params.a_max = a_max;
-params.b_std = b_std; %propasal variance of baseline
-params.b_min = b_min;
-params.b_max = b_max;
-params.exclusion_bound = exclusion_bound;
-params.Dt=Dt; %bin unit - don't change this
-params.A=A; % scale factor for all magnitudes for this calcium data setup
-params.b=b; %initial baseline value
-params.p_spike = p_spike;
-params.p = p;
-params.phi_0 = phi_0;
-params.Phi_0 = Phi_0;
-params.fBins = fBins;
 
-% disp('Below are the moves that were done')
-% display(['time: ' num2str(timeMoves(1)/timeMoves(2))])
-% display(['add: ' num2str(addMoves(1)/addMoves(2))])
-% display(['drop: ' num2str(dropMoves(1)/dropMoves(2))])
-% display(['amplitude: ' num2str(ampMoves(1)/ampMoves(2))])
-% display(['tau: ' num2str(tauMoves(1)/tauMoves(2))])
+
 
 
 

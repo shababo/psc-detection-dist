@@ -1,5 +1,7 @@
-function event_onsets = find_pscs(trace, dt, tau, amp_thesh, conv_thresh, low_passed, plot_figs)
+function event_onsets = find_pscs(trace, dt, tau, amp_thesh, conv_thresh)
 
+plot_figs = 0;
+low_passed = 0;
 % tau = .001
 t_vector = (0:length(trace)-1)*dt;
 
