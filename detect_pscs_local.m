@@ -12,7 +12,7 @@ load(trace_file,'traces');
 
 start_ind = 6585+1125;
 duration = 400; %2150;
-traces = traces(1,start_ind:(start_ind + duration));
+traces = traces(:,start_ind:(start_ind + duration));
 
 params.start_ind = start_ind; params.duration = duration;
 

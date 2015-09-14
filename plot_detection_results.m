@@ -7,8 +7,8 @@ target_feature_mat = [];
 max_tau1 = Inf;
 max_tau2 = Inf;
 min_amp = 0;
-min_time = 6400;
-max_time = 8400;
+min_time = 0;
+max_time = Inf;
 
 
 
@@ -58,8 +58,10 @@ end
 figure
 hist(event_times/20000,15)
 
+size(target_feature_mat)
+
 figure
-plotmatrix(target_feature_mat,var_names)
+plotmatrix(target_feature_mat)
 
 
 
