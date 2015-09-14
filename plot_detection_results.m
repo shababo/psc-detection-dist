@@ -8,7 +8,9 @@ min_tau1 = 0;
 min_tau2 = 0;
 max_tau1 = Inf;
 max_tau2 = Inf;
-min_amp = 10;
+
+
+min_amp = 5;
 min_time = 1;
 max_time = Inf;%.015*20000;
 hot_time_min = .05;
@@ -102,8 +104,10 @@ end
 figure
 gplotmatrix(target_feature_mat,target_feature_mat,groups)
 
+size(target_feature_mat)
+
 figure
-plotmatrix(target_feature_mat,var_names)
+plotmatrix(target_feature_mat)
 
 %%
 

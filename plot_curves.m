@@ -36,7 +36,7 @@ for i = 1:size(traces,1)
                                             2, 1, 1);
                                         
     end
-    map_curves(i,:) = -this_curve + results(i).trials.base{min_i};
+    map_curves(i,:) = this_curve + results(i).trials.base{min_i};
 end
 
 

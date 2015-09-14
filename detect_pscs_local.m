@@ -10,6 +10,7 @@ this_pool = parpool();
 traces = [];
 load(trace_file,'traces');
 
+
 start_ind = 1;
 duration = size(traces,2) - 1; %2150;
 traces = event_sign*traces(:,start_ind:(start_ind + duration));
