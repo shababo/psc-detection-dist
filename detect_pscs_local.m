@@ -58,7 +58,7 @@ if params.tau1_min >= params.tau1_max || params.tau2_min >= params.tau2_max
 end
 
 params.dt = 1/20000;
-params.p = 2;
+params.p = 4;
 
 % noise_types
 gaussian = 1; line = 2; ar2 = 3;
@@ -78,7 +78,7 @@ parfor trace_ind = 1:size(traces,1)
 
 % tic
 %     Par.tic
-    tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, 2, 1, 0, 0);
+    tGuess = find_pscs(traces(trace_ind,:), params.dt, .002, params.a_min, 1, 0, 0);
     disp(['Starting events: ' num2str(length(tGuess))])
     
     tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])];

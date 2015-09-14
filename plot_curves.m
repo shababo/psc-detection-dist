@@ -36,15 +36,15 @@ for i = 1:size(traces,1)
                                             2, 1, 1);
                                         
     end
-    map_curves(i,:) = -this_curve + results(i).trials.base{min_i};
+    map_curves(i,:) = this_curve + results(i).trials.base{min_i};
 end
 
 
 figure;
 plot_trace_stack(traces,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),[],size(traces,2)-1,offset)
 hold on
-plot_trace_stack(map_curves,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 0 1]),[],size(traces,2)-1,offset)
-
+plot_trace_stack(-map_curves,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 0 1]),[],size(traces,2)-1,offset)
+hold off
 % % figure;
 % % traces = traces(2:4:end,:);
 % plot_trace_stack(traces,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[.4 .4 1]),[],size(traces,2)-1,50)

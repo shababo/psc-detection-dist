@@ -6,9 +6,10 @@ function [trials, mcmc, params]  = sampleParams_ARnoise_splittau(trace,tau, Tgue
 %this is accounted for by calciumNoiseVar
 noise_var_init = params.noise_var_init; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
-p_spike = params.p_spike;
-time_proposal_var = params.time_proposal_var;
-num_sweeps = params.num_sweeps; %number of sweeps of sampler
+
+p_spike=params.p_spike;
+proposalVar=10;
+nsweeps=300; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
@@ -60,7 +61,8 @@ fprintf('Progress:')
 
 % initialize some parameters
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
-fBins = params.kernel_samples;
+
+fBins = 10000;
 ef = genEfilt_ar([(tau1_max-tau1_min)/2 (tau2_max-tau2_min)/2],fBins);%exponential filter
 ef_init = ef;
 
