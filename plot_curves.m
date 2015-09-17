@@ -43,7 +43,7 @@ end
 figure;
 plot_trace_stack(traces,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),[],size(traces,2)-1,offset)
 hold on
-plot_trace_stack(-map_curves,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 0 1]),[],size(traces,2)-1,offset)
+plot_trace_stack(-1*map_curves,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 0 1]),[],size(traces,2)-1,offset)
 hold off
 % % figure;
 % % traces = traces(2:4:end,:);

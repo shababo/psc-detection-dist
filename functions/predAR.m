@@ -1,4 +1,4 @@
-function diffY_lags1 = predAR(diffY,phi,p,do_neg_SS,circ_ind,mask)
+function diffY_lags1 = predAR(diffY,phi,p,do_neg_SS)
     diffY_lags1 = diffY;
     for ip = 1:p
         diffY_lags1((1+ip):end) = diffY_lags1((1+ip):end) - phi(1+ip)*diffY(1:(end-ip));

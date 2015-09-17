@@ -1,4 +1,4 @@
-function [trials, mcmc, params]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
+function [trials, mcmc]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
 %noise level here matters for the proposal distribution (how much it 
@@ -8,8 +8,8 @@ noise_var_init = params.noise_var_init; %inial noise estimate
 % p_spike=1/40;%what percent of the bins hacve a spike in then
 
 p_spike=params.p_spike;
-proposalVar=10;
-nsweeps=300; %number of sweeps of sampler
+time_proposal_var = params.time_proposal_var;
+num_sweeps = params.num_sweeps; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
 % tau_std = 1;
@@ -24,16 +24,16 @@ tau2_max = params.tau2_max/params.dt;
 
 a_std = params.amp_prop_std; %proposal variance of amplitude
 a_min = params.a_min;
-a_max = params.inference.a_max;
+a_max = params.a_max;
 b_std = params.baseline_prop_std; %propasal variance of baseline  % was at 0.3 ... increased it for in vivo data
 b_min = params.b_min;
 b_max = params.b_max;
-exclusion_bound = 1;%dont let bursts get within x bins of eachother. this should be in time
+exclusion_bound = params.exclusion_bound;%dont let bursts get within x bins of eachother. this should be in time
 % maxNbursts = 3;%if we want to add bursts, whats the maximum bnumber that we will look for?
 
-Dt=1; %bin unit - don't change this
+Dt=params.Dt; %bin unit - don't change this
 % A=400; % scale factor for all magnitudes for this calcium data setup
-A=1; % scale factor for all magnitudes for this calcium data setup
+A=params.A; % scale factor for all magnitudes for this calcium data setup
 % b=0; %initial baseline value
 b=min(trace); %initial baseline value
 nu_0 = 5; %prior on shared burst time - ntrials
@@ -62,8 +62,8 @@ fprintf('Progress:')
 % initialize some parameters
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
 
-fBins = 10000;
-ef = genEfilt_ar([(tau1_max-tau1_min)/2 (tau2_max-tau2_min)/2],fBins);%exponential filter
+event_samples = params.event_samples;
+ef = genEfilt_ar([(tau1_max-tau1_min)/2 (tau2_max-tau2_min)/2],event_samples);%exponential filter
 ef_init = ef;
 
 samples_a  = cell(1,num_sweeps);
@@ -167,7 +167,7 @@ for i = 1:num_sweeps
             
             prior_ratio = 1;
 
-            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) )))*prior_ratio;            
+            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) )))*prior_ratio;            
             if ratio>1 %accept
                 si = si_;
                 pr = pr_;
@@ -215,7 +215,7 @@ for i = 1:num_sweeps
 
             %accept or reject - include a prior?
             prior_ratio = 1;
-            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) )))*prior_ratio;
+            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) )))*prior_ratio;
             if ratio>1 %accept
                 ai = ai_;
                 si = si_;
@@ -259,7 +259,7 @@ for i = 1:num_sweeps
 
         %accept or reject - include a prior?
         prior_ratio = 1;
-        ratio = exp(sum((1/(2*NoiseVar))*(  predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask)  )))*prior_ratio;
+        ratio = exp(sum((1/(2*NoiseVar))*(  predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 )  )))*prior_ratio;
         if ratio>1 %accept
             baseline = tmp_b_;
             pr = pr_;
@@ -298,17 +298,17 @@ for i = 1:num_sweeps
                 [si_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,ef_init,a_init,tau,trace,tmpi, N+1, Dt, A); %adds all trials' bursts at same time
                 sti_ = si_;
                 ati_ = [ati_ a_init];
-                fprob = 1/nBins(1);%forward probability
-                rprob = 1/(N+1);%reverse (remove at that spot) probability
+                fprob = 1;%1/nBins(1);%forward probability
+                rprob = 1;%1/(N+1);%reverse (remove at that spot) probability
                 %accept or reject
 %                 figure(120)
 %                 plot(trace)
 %                 hold on
 %                 plot(pr_,'r')
-%                 hold off
+%                 hold offm
 %                 drawnow
 %                 pause
-                ratio = exp(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) )))*(rprob/fprob)*(m(1)/(nBins(1)-m(1))); %posterior times reverse prob/forward prob
+                ratio = exp(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) )))*(rprob/fprob)*m/(N+1);%(m(1)/(nBins(1)-m(1))); %posterior times reverse prob/forward prob
                 if (ratio>1)||(ratio>rand) %accept
                     ati = ati_;
                     sti = sti_;
@@ -341,14 +341,14 @@ for i = 1:num_sweeps
                 ati_(tmpi) = [];
 
                 %reverse probability
-                rprob = 1/nBins(1);
+                rprob = 1;%1/nBins(1);
 
                 %compute forward prob
-                fprob = 1/N;
+                fprob = 1;%1/N;
 
                 %accept or reject
                 %posterior times reverse prob/forward prob
-                ratio = exp(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) )))*(rprob/fprob)*((nBins(1)-m(1))/m(1)); 
+                ratio = exp(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) )))*(rprob/fprob)*N/m;%((nBins(1)-m(1))/m(1)); 
                 if (ratio>1)||(ratio>rand)%accept
                     ati = ati_;
                     sti = sti_;
@@ -384,7 +384,7 @@ for i = 1:num_sweeps
                 end
             end 
 
-            ef_ = genEfilt_ar(tau_,fBins);%exponential filter
+            ef_ = genEfilt_ar(tau_,event_samples);%exponential filter
 
             %remove all old bumps and replace them with new bumps    
             diffY_ = diffY;
@@ -395,7 +395,7 @@ for i = 1:num_sweeps
             %accept or reject
             prior_ratio = 1;
 %             prior_ratio = (gampdf(tau_(1),1.5,1))/(gampdf(tau(1),1.5,1));
-            ratio = exp(sum(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) ))))*prior_ratio;
+            ratio = exp(sum(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) ))))*prior_ratio;
             if ratio>1 %accept
                 pr = pr_;
                 diffY = diffY_;
@@ -419,7 +419,8 @@ for i = 1:num_sweeps
     end
     
 
-     %% this is the section that updates tau
+%% this is the section that updates tau
+
     % update tau (via random walk sampling)
     for ii = 1:tau2_sweeps
         for ni = 1:N 
@@ -435,7 +436,7 @@ for i = 1:num_sweeps
                     tau_(2) = tau_max-(tau_(2)-tau_max);
                 end
             end  
-            ef_ = genEfilt_ar(tau_,fBins);%exponential filter
+            ef_ = genEfilt_ar(tau_,event_samples);%exponential filter
 
             %remove all old bumps and replace them with new bumps    
             diffY_ = diffY;
@@ -446,7 +447,7 @@ for i = 1:num_sweeps
             %accept or reject
             prior_ratio = 1;
 %             prior_ratio = gampdf(tau_(2),12,1)/gampdf(tau(2),12,1);
-            ratio = exp(sum(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1,circ_ind,mask) - predAR(diffY,phi,p,1,circ_ind,mask) ))))*prior_ratio;
+            ratio = exp(sum(sum((1./(2*NoiseVar)).*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) ))))*prior_ratio;
             if ratio>1 %accept
                 pr = pr_;
                 diffY = diffY_;
@@ -509,7 +510,7 @@ for i = 1:num_sweeps
     % re-estimate the noise variance
     if ~isempty(sti)
         df = (numel(pr)); %DOF (possibly numel(ci(ti,:))-1)
-        d1 = -predAR(diffY,phi,p,1,circ_ind,mask)/df; 
+        d1 = -predAR(diffY,phi,p,1 )/df; 
         nu0 = nu_0; %nu_0 or 0
         d0 = sig2_0; %sig2_0 or 0
         
@@ -544,14 +545,14 @@ for i = 1:num_sweeps
 %         keyboard
 %     end
 
-    objective = [objective -predAR(diffY,phi,p,1,circ_ind,mask)];
+    objective = [objective -nBins/2*log(NoiseVar) + predAR(diffY,phi,p,1 )/(2*NoiseVar) + N*log(m) - log(factorial(N))];
 %     figure(10);
 %     plot(diffY_)
 %     drawnow
 %     plot(ci{1});hold on;
 %     plot(CaF{1},'r');hold off
     if sum(ismember(indreporti,i))
-        fprintf([num2str(indreport(ismember(indreporti,i)),2),', '])
+        fprintf([num2str(indreport(ismember(indreporti,i)),2),','])
     end
 end
 
