@@ -15,15 +15,15 @@ params.seed = 1234;
 params.dt = 1/20000;
 
 % direction of events: upward is 1, downard is -1
-params.event_sign = -1;
+params.event_sign = 1;
 
 %% subtraces
 
 % first sample, if you want to start at 1, omit
-params.start_ind = .33*20000;
+% params.start_ind = .33*20000;
 
 % if you want to go to the end of the traces, omit
-params.duration = 20000*.1;
+% params.duration = 20000*.1;
 
 % if you want all traces, omit
 % params.traces_ind = 1:10;
