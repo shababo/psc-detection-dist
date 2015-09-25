@@ -32,7 +32,7 @@ params.event_sign = 1;
 
 % event amplitude bounds
 params.a_max = Inf;
-params.a_min = 5;
+params.a_min = 10;
 
 % baseline bounds
 params.b_min = -50;
@@ -42,13 +42,13 @@ params.b_max = 50;
 params.feature_names = {'amplitude','tau 1','tau 2','time'};
 % params.kernel = @kernel_function;
 params.tau1_min = 1/20000;
-params.tau1_max = 30/20000;
-params.tau2_min = 20/20000;
-params.tau2_max = 125/20000;
+params.tau1_max = 60/20000;
+params.tau2_min = 75/20000;
+params.tau2_max = 300/20000;
 params.event_samples = 6*params.tau2_max/params.dt;
 
 % poisson/rate
-params.p_spike = 1e-4;
+params.p_spike = 1e-3;
 
 
 % ar noise model
@@ -60,7 +60,7 @@ params.noise_var_init = 5;
 
 %% sampling params
 
-params.num_sweeps = 4000;
+params.num_sweeps = 1000;
 params.burn_in_sweeps = 0;
 
 % sampling spike times
