@@ -117,7 +117,28 @@ for i = 1:num_cells
 end
 scatter([950 900 850 800 750],mean(cell_current_max),75,'b','filled')
 
+%%
 
+subsweeps = sqgridSweeps(11:13,18:20);
+
+subsweeps = subsweeps(:);
+
+figure;
+
+for i = 1:length(subsweeps)
+    
+    plot(mean(subsweeps{i},2))
+    hold on
+end
+hold off
+
+figure;
+
+for i = 1:length(subsweeps)
+    
+    plot(-mean(subsweeps{i},2)/min(mean(subsweeps{i},2)'))
+    hold on
+end
     
     
     
