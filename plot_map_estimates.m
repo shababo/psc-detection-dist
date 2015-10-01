@@ -1,4 +1,4 @@
-function plot_map_estimates(results_file, trace_offset)
+function plot_map_estimates(results_file, trace_offset, varargin)
 
 load(results_file)
 load(params.traces_filename)
@@ -15,6 +15,11 @@ traces = traces(:,params.start_ind:(params.start_ind + params.duration - 1));
 
 if isfield(params,'traces_ind')
     traces = traces(params.traces_ind,:);
+end
+
+if ~isempty(varargin) && ~isempty(varargin{1})
+    traces_ind = varargin{1};
+    traces = traces(traces_ind,:);
 end
 
 T = size(traces,2);
