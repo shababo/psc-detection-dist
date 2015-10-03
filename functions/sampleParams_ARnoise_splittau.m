@@ -1,4 +1,4 @@
-function [trials, mcmc]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
+function [trials, mcmc, runtime]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
 %noise level here matters for the proposal distribution (how much it 
@@ -573,8 +573,6 @@ trials.phi=samples_phi;
 trials.noise = samples_noise;
 trials.obj = objective;
 trials.times = samples_s;
-
-
 
 
 
