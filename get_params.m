@@ -7,7 +7,7 @@ params.dt = 1/20000;
 
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
-params.event_sign = -1;
+params.event_sign = 1;
 
 %% subtraces
 
@@ -18,13 +18,13 @@ params.event_sign = -1;
 % params.duration = 20000*.1;
 
 % if you want all traces, omit
-params.traces_ind = randsample(80,18);
+% params.traces_ind = randsample(80,18);
 
 %% inference params
 
 % event amplitude bounds
 params.a_max = Inf;
-params.a_min = 2.5;
+params.a_min = .5;
 
 % baseline bounds
 params.b_min = -50;
@@ -42,20 +42,20 @@ params.tau1_min = 1/20000;
 % 
 % % poisson/rate
 % params.p_spike = 1e-3;
-params.tau1_max = 30/20000;
+params.tau1_max = 20/20000;
 % min and max for "decay time" in seconds
 params.tau2_min = 10/20000;
-params.tau2_max = 300/20000;
+params.tau2_max = 200/20000;
 % how long to make kernel in samples
 params.event_samples = 6*params.tau2_max/params.dt;
 
 % poisson/rate - that is the probability of seeing a spike/sample
-params.p_spike = 1e-9;
+params.p_spike = .0005;%1e-4;
 
 
 
 % ar noise model
-params.p = 4; % how many time steps to regress on
+params.p = 2; % how many time steps to regress on
 params.phi_0 = zeros(params.p,1);
 params.Phi_0 = 10*eye(params.p); %inverse covariance 3
 
@@ -65,7 +65,7 @@ params.noise_var_init = 5;
 
 
 % how long to run the sampler
-params.num_sweeps = 300;
+params.num_sweeps = 1000;
 params.burn_in_sweeps = 0;
 
 % sampling spike times

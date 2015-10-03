@@ -13,13 +13,13 @@ end
 % the file were your traces are, traces should be saved in this mat file in
 % an N x T matrix called 'traces' where N = number of traces and T = number
 % of samples
-params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/psc_traceset_01.mat';
+params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces.mat';
 load(params.traces_filename,'traces');
 
 % the directory to save the results in
 params.savepath = 'data/';
 % name of the file to save results in
-params.savename = 'test-traceset-results-0002.mat';
+params.savename = 'simulated-data-longer-traces-0000.mat';
 params.full_save_string = [params.savepath '/' params.savename];
 
 % check that you're not writing over a previous results file
