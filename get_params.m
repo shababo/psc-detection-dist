@@ -212,12 +212,14 @@ if ~isfield(params,'savepath')
 end
 if ~isfield(params,'savename')
     if params.cluster
-        savefile_basename = 'data/cluster-param-files/params-pspike-%g-amin-%g-num_sweeps-%g-results-0000.mat';
+        savefile_basename = 'params-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e-results-0000.mat';
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
+        params.savename = strrep(params.savename,'+','');
     else
         params.savename = 'simulated-data-longer-traces-epsc-0001.mat';
     end
 end
+
 params.full_save_string = [params.savepath '/' params.savename];
 
 
