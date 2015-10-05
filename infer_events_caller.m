@@ -1,36 +1,30 @@
-function infer_events_caller
-
+function infer_events_caller(varargin)
 % if you are loading params from a mat file (for example a previous run)
 % if you are going to use the get_params function comment out
 % paramfile = 'data/emx_ipscs_3cells3traces-results-0008.mat';
 
-if exist('paramfile','var')
-    load(paramfile,'params');
-else
-    params = get_params;
+% varargin{1}: paramfile
+
+params = struct();
+
+% load params from file if given
+if ~isempty(varargin) && ~isempty(varargin{1})
+    load(varargin{1},'params');
 end
 
-% the file were your traces are, traces should be saved in this mat file in
-% an N x T matrix called 'traces' where N = number of traces and T = number
-% of samples
-params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces.mat';
-load(params.traces_filename,'traces');
-
-% the directory to save the results in
-params.savepath = 'data/';
-% name of the file to save results in
-params.savename = 'simulated-data-longer-traces-0000.mat';
-params.full_save_string = [params.savepath '/' params.savename];
+% fill with default params
+params = get_params(params);
 
 % check that you're not writing over a previous results file
 if exist(params.full_save_string, 'file') == 2
     disp('****ABORTING: THE REQUESTED RESULTS FILE NAME ALREADY EXISTS****')
+    disp(params.full_save_string)
     return
 end
 
 % test savefile before we do inference
-results = 'temp';
+results = 'temp'; 
 save(params.full_save_string,'results','params','-v7.3')
 
 % infer the events!!!
-infer_events(traces,params)
+infer_events(params)

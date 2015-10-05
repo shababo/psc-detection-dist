@@ -20,6 +20,7 @@ end
 if ~isempty(varargin) && ~isempty(varargin{1})
     traces_ind = varargin{1};
     traces = traces(traces_ind,:);
+    true_signal = true_signal(traces_ind,:);
 end
 
 T = size(traces,2);

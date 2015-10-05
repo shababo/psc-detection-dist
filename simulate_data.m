@@ -5,7 +5,7 @@
 rng(1234)
 
 % Simulate K calcium imaging observed neurons
-K = 5;
+K = 10;
 
 % Simulation: Given sampling, what indicator timecourse. Also depends on spike rate
 % Sampling rate
@@ -14,13 +14,13 @@ K = 5;
 % Firing rate
 % Poisson or periodic
 
-T = 10000; %bins - start not too long
+T = 20000; %bins - start not too long
 binSize = 1/20000; %ms
 tau_r = .5; %ms
 tau_f = 7; %ms
 tau_r_bounds = [1 10];
 tau_f_bounds = [10 100];
-firing_rate = 50; %spike/sec 
+firing_rate = 20; %spike/sec 
 c_noise = 2.5; %calcium signal std
 baseline = 0;
 A = 1; %magnitude scale of spike response
