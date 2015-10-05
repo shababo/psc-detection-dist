@@ -1,8 +1,8 @@
 function plot_map_estimates_sim(results_file, trace_offset, varargin)
 
 load(results_file)
-% load(params.traces_filename)
-load('/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
+load(params.traces_filename)
+% load('/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
 
 if ~isfield(params,'start_ind')
     params.start_ind = 1;
