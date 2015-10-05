@@ -21,6 +21,7 @@
 #echo $noise_type
 parmfile_base=${paramfile##*/}
 paramfile_base = ${paramfile_base%.*}
+echo $paramfile_base
 matlab -nosplash -nodisplay -nodesktop -r "infer_events_caller('$paramfile')" > matlab-output/matoutfile-${PBS_JOBID}-${paramfile_base}
 
 #Command below is to execute Matlab code for Job Array (Example 4) so that each part writes own output
