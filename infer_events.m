@@ -1,12 +1,23 @@
-function infer_events(traces, params)
+function infer_events(params)
 
 if params.rand == 1
     rng(params.seed)
 end
 
 
-delete(gcp('nocreate'))
-this_pool = parpool();
+if params.cluster
+    
+    addpath(genpath(params.source_path));
+
+    maxNumCompThreads(12)
+    matlabpool(12)
+    
+else
+    
+    delete(gcp('nocreate'))
+    this_pool = parpool();
+
+end
 
 
 if ~isfield(params,'start_ind')
@@ -17,9 +28,15 @@ if ~isfield(params,'duration')
     params.duration = size(traces,2);
 end
 
+% the file were your traces are, traces should be saved in this mat file in
+% an N x T matrix called 'traces' where N = number of traces and T = number
+% of samples
+load(params.traces_filename,'traces');
+
+% grab section in time
 traces = traces(:,params.start_ind:(params.start_ind + params.duration - 1));
 
-
+% grab subset of traces
 if isfield(params,'traces_ind')
     traces = traces(params.traces_ind,:);
 end
@@ -50,7 +67,11 @@ parfor trace_ind = 1:size(traces,1)
 
 end
 
-delete(this_pool)
+if params.cluster
+    matlabpool close
+else
+    delete(this_pool)
+end
 
 disp('finding min err...')
 % map sample

@@ -15,11 +15,13 @@
 #PBS -e localhost:/vega/stats/users/bms2156/log
 
 #Command to execute Matlab code
-echo $trace_file
-echo $param_file
-echo $param_ind
-echo $noise_type
-matlab -nosplash -nodisplay -nodesktop -r "detect_pscs_serial('$trace_file','$param_file', $param_ind, $noise_type)" > matlab-output/matoutfile-${PBS_JOBID}-${noise_type}-${param_ind}
+#echo $trace_file
+#echo $param_file
+#echo $param_ind
+#echo $noise_type
+parmfile_base=${paramfile##*/}
+paramfile_base = ${paramfile_base%.*}
+matlab -nosplash -nodisplay -nodesktop -r "infer_events_caller('$paramfile')" > matlab-output/matoutfile-${PBS_JOBID}-${paramfile_base}
 
 #Command below is to execute Matlab code for Job Array (Example 4) so that each part writes own output
 #matlab -nosplash -nodisplay -nodesktop -r "simPoissGLM($LAMBDA)" > matoutfile.$PBS_ARRAYID
