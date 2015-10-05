@@ -6,7 +6,7 @@ function infer_events_caller(varargin)
 % varargin{1}: paramfile
 
 params = struct();
-
+        
 % load params from file if given
 if ~isempty(varargin) && ~isempty(varargin{1})
     load(varargin{1},'params');

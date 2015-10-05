@@ -205,7 +205,7 @@ end
 
 if ~isfield(params,'savepath')
     if params.cluster
-        params.savepath = '/vega/stats/users/bms2156/psc-detection/data/';
+        params.savepath = '/vega/stats/users/bms2156/psc-detection/data';
     else
         params.savepath = 'data/';
     end
