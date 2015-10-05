@@ -16,8 +16,6 @@ K = 10;
 
 T = 20000; %bins - start not too long
 binSize = 1/20000; %ms
-tau_r = .5; %ms
-tau_f = 7; %ms
 tau_r_bounds = [1 10];
 tau_f_bounds = [10 100];
 firing_rate = 20; %spike/sec 
@@ -29,6 +27,8 @@ Y = zeros(K,T);
 C = zeros(K,T);
 Y_AR = zeros(K,T);
 Spk = cell(1,K);
+taus = cell(1,K);
+amplitudes = cell(1,K);
 
 periodic = 0; %if zero, uses poisson spiketrain.
 
@@ -69,6 +69,9 @@ for ki = 1:K
 
     N = 0;
     Dt = 1;
+    
+    trace_amps = [];
+    trace_taus = {};
 
     for i = 1:length(startingSpikeTimes)        
         tmpi = startingSpikeTimes(i); 
@@ -94,6 +97,8 @@ for ki = 1:K
         ci = cti_;
         logC = logC_;
         N = length(ssi); %number of spikes in spiketrain
+        trace_amps = [trace_amps a_init];
+        trace_taus{i} = tau;
     end
 
     y = ci + c_noise*randn(nc,T);
@@ -115,6 +120,8 @@ for ki = 1:K
     C(ki,:) = ci;
     Y_AR(ki,:) = y_ar;
     Spk{ki} = startingSpikeTimes;
+    amplitudes{ki} = trace_amps;
+    taus{ki} = trace_taus;
 end
 
 figure;
