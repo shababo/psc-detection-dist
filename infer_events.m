@@ -24,6 +24,8 @@ if ~isfield(params,'start_ind')
     params.start_ind = 1;
 end
 
+load(params.traces_filename,'traces')
+
 if ~isfield(params,'duration')
     params.duration = size(traces,2);
 end
@@ -31,7 +33,7 @@ end
 % the file were your traces are, traces should be saved in this mat file in
 % an N x T matrix called 'traces' where N = number of traces and T = number
 % of samples
-load(params.traces_filename,'traces');
+% load(params.traces_filename,'traces');
 
 % grab section in time
 traces = traces(:,params.start_ind:(params.start_ind + params.duration - 1));
