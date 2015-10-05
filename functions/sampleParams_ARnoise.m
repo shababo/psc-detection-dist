@@ -122,7 +122,7 @@ tauMoves = [0 0];
 for i = 1:nsweeps
     
 %     if mod(i,10) == 0
-        disp(length(ati))
+%        disp(length(ati))
 %     end
     
     % do burst time moves
