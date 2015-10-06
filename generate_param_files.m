@@ -1,7 +1,7 @@
 %% save parameter files for cluster
 
 p_spike = [1e-9 1e-8 1e-7 1e-6 1e-5 1e-4 1e-3 1e-2];
-a_min = [0 1e-2 1e-1 1e0 1e1 1e2 5e-2 5e-1 5e0 5e1 5e2];
+a_min = [0 1e-2 1e-1 1e0 1e1 5e-2 5e-1 5e0];
 num_sweeps = [1e1 1e2 1e3 1e4];
 
 savefile_basename = 'data/cluster-param-files/params-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';

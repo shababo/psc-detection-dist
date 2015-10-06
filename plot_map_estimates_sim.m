@@ -1,8 +1,14 @@
 function plot_map_estimates_sim(results_file, trace_offset, varargin)
 
 load(results_file)
-% load(params.traces_filename)
-load('/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
+
+% try
+%     load(params.traces_filename)
+% catch
+%     load('data/sim-temp.mat')
+% end
+
+load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
 
 if ~isfield(params,'start_ind')
     params.start_ind = 1;
@@ -79,6 +85,11 @@ plot_trace_stack(true_signal,zeros(size(traces)),[],bsxfun(@plus,zeros(length(tr
 hold off
 
 title(strrep(results_file,'_','-'))
+
+if length(varargin) > 1 && varargin{2}
+    [dir,name,~] = fileparts(results_file);
+    savefig([dir '/' name '.fig'])
+end
 
 
 
