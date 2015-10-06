@@ -1,11 +1,14 @@
 function plot_map_estimates_sim(results_file, trace_offset, varargin)
 
 load(results_file)
-try
-    load(params.traces_filename)
-catch
-    load('data/sim-temp.mat')
-end
+
+% try
+%     load(params.traces_filename)
+% catch
+%     load('data/sim-temp.mat')
+% end
+
+load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
 
 if ~isfield(params,'start_ind')
     params.start_ind = 1;
@@ -74,14 +77,19 @@ axes(ax1) % sets ax1 to current axes
 text(.025,0.6,descr)
 
 axes(ax2)
-plot_trace_stack(traces,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),[],size(traces,2)-1,trace_offset);%,'-')
+plot_trace_stack(traces,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),[],size(traces,2)-1,trace_offset,'-')
 hold on
-plot_trace_stack(params.event_sign*map_curves,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 0 1]),[],size(traces,2)-1,trace_offset);%,'-')
+plot_trace_stack(params.event_sign*map_curves,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 0 1]),[],size(traces,2)-1,trace_offset,'-')
 hold on
-plot_trace_stack(true_signal,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 1 0]),[],size(traces,2)-1,trace_offset);%,'--')
+plot_trace_stack(true_signal,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 1 0]),[],size(traces,2)-1,trace_offset,'--')
 hold off
 
 title(strrep(results_file,'_','-'))
+
+if length(varargin) > 1 && varargin{2}
+    [dir,name,~] = fileparts(results_file);
+    savefig([dir '/' name '.fig'])
+end
 
 
 

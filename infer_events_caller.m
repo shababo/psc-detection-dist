@@ -9,7 +9,10 @@ params = struct();
         
 % load params from file if given
 if ~isempty(varargin) && ~isempty(varargin{1})
+    varargin{1}
     load(varargin{1},'params');
+else
+    disp('no argument passed...')
 end
 
 % fill with default params

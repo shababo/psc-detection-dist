@@ -5,7 +5,7 @@
 #Torque directives
 #PBS -N psc-detection
 #PBS -W group_list=yetistats
-#PBS -l nodes=1:ppn=12,walltime=02:00:00,mem=8000mb
+#PBS -l nodes=1:ppn=12,walltime=00:30:00,mem=8000mb
 #PBS -M shababo@berkeley.edu
 #PBS -m abe
 #PBS -V
@@ -19,10 +19,10 @@
 #echo $param_file
 #echo $param_ind
 #echo $noise_type
-paramfile_base=${param_file##*/}
-paramfile_base=${paramfile_base%.*}
-echo $paramfile_base
-matlab -nosplash -nodisplay -nodesktop -r "infer_events_caller('$param_file')" > matlab-output/matoutfile-${PBS_JOBID}-${paramfile_base}
+resultsfile_base=${results_file##*/}
+resultsfile_base=${resultsfile_base%.*}
+echo $resultsfile_base
+matlab -nosplash -nodisplay -nodesktop -r "score_detection('$results_file', 20, 0)" > matlab-output/matoutfile-${PBS_JOBID}-${resultsfile_base}
 
 #Command below is to execute Matlab code for Job Array (Example 4) so that each part writes own output
 #matlab -nosplash -nodisplay -nodesktop -r "simPoissGLM($LAMBDA)" > matoutfile.$PBS_ARRAYID
