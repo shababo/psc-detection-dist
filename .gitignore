@@ -38,3 +38,9 @@ Thumbs.db
 data/*
 
 matoutfile
+
+*.trc
+*.h5
+*.npz
+*.npy
+*.dat

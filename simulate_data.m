@@ -134,5 +134,5 @@ plot(Y' - 20*repmat(0:(K-1),T,1))
 subplot(313)
 plot(Y_AR' - 20*repmat(0:(K-1),T,1))
 
-traces = Y_AR;
+traces = -Y_AR;
 

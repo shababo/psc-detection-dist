@@ -9,6 +9,7 @@ load(results_file)
 % end
 
 load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
+% load('/home/shababo/Desktop/simulated-data-longer-traces-epsc.mat')
 
 if ~isfield(params,'start_ind')
     params.start_ind = 1;

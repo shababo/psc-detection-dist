@@ -189,16 +189,16 @@ end
 %% plot ROC
 
 figure
-for i = 1:size(roc,1)
+for i = 2:size(roc,1)
     plot(roc(i,:,end,1),roc(i,:,end,2),'-o'); hold on
 end
 hold off
 legend
-title('each line is diff a_min, within varies p_spike')
-
+title('each line is diff a_{min}, within varies p_{spike}')
+%%
 figure
 for i = 1:size(roc,2)
-    plot(roc(:,i,end,1),roc(:,i,end,2),'-o'); hold on
+    plot(roc(2:end,i,end,1),roc(2:end,i,end,2),'-o'); hold on
 end
 hold off
 legend
@@ -207,8 +207,8 @@ title('each line is diff p_spike, within varies a_min')
 
 %%
     figure
-for i = 1:size(roc,1)
-    plot(squeeze(roc(i,end-2,:,1)),squeeze(roc(i,end-2,:,2)),'-o'); hold on
+for i = 2:size(roc,1)
+    plot(squeeze(roc(i,end,:,1)),squeeze(roc(i,end,:,2)),'-o'); hold on
 end
 hold off
 legend
