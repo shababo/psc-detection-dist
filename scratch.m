@@ -213,3 +213,12 @@ end
 hold off
 legend
 title('each line is diff p_spike, within varies a_min')
+
+%% plot ROC
+
+figure
+for i = 1:size(roc,2)
+    plot(roc(:,i,1),roc(:,i,2),'-o'); hold on
+end
+hold off
+legend
