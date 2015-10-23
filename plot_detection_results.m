@@ -28,7 +28,7 @@ for j = 1:length(results)
 %     if ~any(j == [18 21 31 32])
         
 %         if isfield(results(j).trials,'curves')
-%             traces(j,:) = results(j).trials.curves{results(j).min_err_ind}(min_time:end);
+%             traces(j,:) = results(j).trials.curves{results(j).map_ind}(min_time:end);
 %         else
 %             traces(j,:) = build_curve(results,j, .05*20000);
 %         end
@@ -37,13 +37,13 @@ for j = 1:length(results)
         time_constants = zeros(0,2);
         good_events = [];
         
-        for k = 1:length(results(j).trials.tau{results(j).min_err_ind})
-            if ~isempty(results(j).trials.tau{results(j).min_err_ind}{k})
-                if all(results(j).trials.tau{results(j).min_err_ind}{k} > [min_tau1 min_tau2]) && all(results(j).trials.tau{results(j).min_err_ind}{k} < [max_tau1 max_tau2]) && results(j).trials.times{results(j).min_err_ind}(k) > min_time && results(j).trials.times{results(j).min_err_ind}(k) < max_time && results(j).trials.amp{results(j).min_err_ind}(k) > min_amp
+        for k = 1:length(results(j).trials.tau{results(j).map_ind})
+            if ~isempty(results(j).trials.tau{results(j).map_ind}{k})
+                if all(results(j).trials.tau{results(j).map_ind}{k} > [min_tau1 min_tau2]) && all(results(j).trials.tau{results(j).map_ind}{k} < [max_tau1 max_tau2]) && results(j).trials.times{results(j).map_ind}(k) > min_time && results(j).trials.times{results(j).map_ind}(k) < max_time && results(j).trials.amp{results(j).map_ind}(k) > min_amp
                     good_events = [good_events k];
-                    taus = [taus; results(j).trials.tau{results(j).min_err_ind}{k}];
+                    taus = [taus; results(j).trials.tau{results(j).map_ind}{k}];
                     
-                    tau = results(j).trials.tau{results(j).min_err_ind}{k};
+                    tau = results(j).trials.tau{results(j).map_ind}{k};
                     this_curve = zeros(1,800);
                     ef = genEfilt_ar(tau,400);
                     [~, this_curve, ~] = addSpike_ar(1000,...
@@ -67,11 +67,11 @@ for j = 1:length(results)
         end
         
         
-        times = results(j).trials.times{results(j).min_err_ind}(good_events);
+        times = results(j).trials.times{results(j).map_ind}(good_events);
         event_times = [event_times times];
         
 
-        new_features = [results(j).trials.amp{results(j).min_err_ind}(good_events)' taus results(j).trials.times{results(j).min_err_ind}(good_events)'/20000];
+        new_features = [results(j).trials.amp{results(j).map_ind}(good_events)' taus results(j).trials.times{results(j).map_ind}(good_events)'/20000];
         target_feature_mat = [target_feature_mat; new_features];
 
 end

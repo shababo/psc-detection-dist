@@ -58,7 +58,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = .5;
+    params.a_min = 15;
 end
 
 % baseline bounds
@@ -76,7 +76,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 1/20000;
+    params.tau1_min = .01/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -86,14 +86,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 20/20000;
+    params.tau1_max = 10/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 10/20000;
+    params.tau2_min = 1/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 200/20000;
+    params.tau2_max = 50/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -102,7 +102,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-6;%1e-4;
+    params.p_spike = 1e-2;%1e-4;
 end
 
 
@@ -127,7 +127,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 1000;
+    params.num_sweeps = 10000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -197,9 +197,9 @@ end
 %% filenames
 if ~isfield(params,'traces_filename')
     if params.cluster
-        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/simulated-data-longer-traces-epsc.mat';
+        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/high-rate.mat';
     else
-        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat';
+        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/high-rate.mat';
     end
 end
 
@@ -216,7 +216,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'simulated-data-longer-traces-epsc-0001.mat';
+        params.savename = 'high-rate-0014.mat';
     end
 end
 
