@@ -15,7 +15,7 @@ if params.cluster
 else
     
     delete(gcp('nocreate'))
-    this_pool = parpool();
+%     this_pool = parpool();
 
 end
 
@@ -53,7 +53,7 @@ end
 results = struct();
 disp(['About to run inference on: ' num2str(size(traces,1)) ' traces...']);
 
-parfor trace_ind = 1:size(traces,1)
+for trace_ind = 1:size(traces,1)
 %     
     disp(['Starting trace #' num2str(trace_ind)])
     trace = params.event_sign*traces(trace_ind,:);
@@ -64,15 +64,18 @@ parfor trace_ind = 1:size(traces,1)
     
     tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
     
-    [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
-
+    if params.direct_stim
+        [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
+    else
+        [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
+    end
 
 end
 
 if params.cluster
     matlabpool close
 else
-    delete(this_pool)
+%     delete(this_pool)
 end
 
 disp('finding min err...')

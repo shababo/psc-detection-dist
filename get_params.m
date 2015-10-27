@@ -58,7 +58,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 15;
+    params.a_min = 1;
 end
 
 % baseline bounds
@@ -76,7 +76,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = .01/20000;
+    params.tau1_min = 1/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -90,10 +90,10 @@ if ~isfield(params,'tau1_max')
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 1/20000;
+    params.tau2_min = 10/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 50/20000;
+    params.tau2_max = 200/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -102,7 +102,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-2;%1e-4;
+    params.p_spike = 1e-4;%1e-4;
 end
 
 
@@ -122,12 +122,46 @@ if ~isfield(params,'noise_var_init')
     params.noise_var_init = 5;
 end
 
+%% direct stim
+
+if ~isfield(params,'direct_stim')
+    params.direct_stim = 1;
+end
+
+if ~isfield(params,'stim_tau_rise')
+    params.stim_tau_rise = 2.5000e-04;
+end
+if ~isfield(params,'stim_tau_fall')
+    params.stim_tau_fall = .02;
+end
+
+if ~isfield(params,'stim_amp_std')
+    params.stim_amp_std = 10; %pA
+end
+
+if ~isfield(params,'stim_amp_min')
+    params.stim_amp_min = 0;
+end
+
+if ~isfield(params,'stim_amp_max')
+    params.stim_amp_max = Inf;
+end
+
+if ~isfield(params,'stim_init')
+    params.stim_init = 30;
+end
+
+if ~isfield(params,'stim_in')
+    params.stim_in = [zeros(1,5000) ones(1,1000) zeros(1,20000-6000)];
+end
+
+
 %% sampling params
 
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 10000;
+    params.num_sweeps = 2000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -199,7 +233,7 @@ if ~isfield(params,'traces_filename')
     if params.cluster
         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/high-rate.mat';
     else
-        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/high-rate.mat';
+        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/one-direct-stim-w-events2.mat';
     end
 end
 
@@ -216,7 +250,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'high-rate-0014.mat';
+        params.savename = 'one-direct-stim-w-events2-0000.mat';
     end
 end
 

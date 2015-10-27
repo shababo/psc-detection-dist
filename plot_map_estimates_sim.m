@@ -1,4 +1,4 @@
-function plot_map_estimates_sim(results_file, trace_offset, varargin)
+function map = plot_map_estimates_sim(results_file, trace_offset, varargin)
 
 load(results_file)
 
@@ -102,6 +102,7 @@ if length(varargin) > 1 && varargin{2}
     savefig([dir '/' name '.fig'])
 end
 
+map = params.event_sign*map_curves;
 
 
 
