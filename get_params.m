@@ -1,5 +1,4 @@
 function params = get_params(varargin)
-% passable params: all!
 
 if ~isempty(varargin)
     params = varargin{1};
@@ -76,7 +75,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 1/20000;
+    params.tau1_min = .1/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -231,7 +230,7 @@ end
 %% filenames
 if ~isfield(params,'traces_filename')
     if params.cluster
-        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/high-rate.mat';
+        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/simulated-epscs-1027.mat';
     else
         params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/one-direct-stim-w-events2.mat';
     end
@@ -246,7 +245,7 @@ if ~isfield(params,'savepath')
 end
 if ~isfield(params,'savename')
     if params.cluster
-        savefile_basename = 'params-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e-results-0000.mat';
+        savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
