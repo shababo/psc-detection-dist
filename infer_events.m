@@ -15,7 +15,7 @@ if params.cluster
 else
     
     delete(gcp('nocreate'))
-%     this_pool = parpool();
+    this_pool = parpool();
 
 end
 
@@ -53,7 +53,7 @@ end
 results = struct();
 disp(['About to run inference on: ' num2str(size(traces,1)) ' traces...']);
 
-for trace_ind = 1:size(traces,1)
+parfor trace_ind = 1:size(traces,1)
 %     
     disp(['Starting trace #' num2str(trace_ind)])
     trace = params.event_sign*traces(trace_ind,:);
@@ -75,7 +75,7 @@ end
 if params.cluster
     matlabpool close
 else
-%     delete(this_pool)
+    delete(this_pool)
 end
 
 disp('finding min err...')

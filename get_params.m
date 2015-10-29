@@ -40,11 +40,11 @@ end
 
 % first sample, if you want to start at 1, omit
 if ~isfield(params,'start_ind')
-%     params.start_ind = .33*20000;
+    params.start_ind = .3*20000;
 end
 % if you want to go to the end of the traces, omit
 if ~isfield(params,'duration')
-%     params.duration = 20000*.1;
+    params.duration = 20000*.2;
 end
 
 % if you want all traces, omit
@@ -58,7 +58,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 1;
+    params.a_min = 5;
 end
 
 % baseline bounds
@@ -76,7 +76,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 1/20000;
+    params.tau1_min = .1/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -90,10 +90,10 @@ if ~isfield(params,'tau1_max')
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 10/20000;
+    params.tau2_min = 1/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 200/20000;
+    params.tau2_max = 100/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -102,7 +102,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-4;%1e-4;
+    params.p_spike = 1e-5;%1e-4;
 end
 
 
@@ -125,7 +125,7 @@ end
 %% direct stim
 
 if ~isfield(params,'direct_stim')
-    params.direct_stim = 1;
+    params.direct_stim = 0;
 end
 
 if ~isfield(params,'stim_tau_rise')
@@ -233,7 +233,7 @@ if ~isfield(params,'traces_filename')
     if params.cluster
         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/high-rate.mat';
     else
-        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/one-direct-stim-w-events2.mat';
+        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/evoked_pscs.mat';
     end
 end
 
@@ -250,7 +250,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'one-direct-stim-w-events2-0000.mat';
+        params.savename = 'evoked_pscs-0001.mat';
     end
 end
 
