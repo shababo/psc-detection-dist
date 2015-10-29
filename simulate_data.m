@@ -4,8 +4,8 @@
 
 rng(1234)
 
-% Simulate K calcium imaging observed neurons
-K = 1;
+% Simulate K voltage-clamp observed neurons
+K = 10;
 
 % Simulation: Given sampling, what indicator timecourse. Also depends on spike rate
 % Sampling rate
@@ -18,8 +18,8 @@ T = 20000; %bins - start not too long
 binSize = 1/20000; %ms
 tau_r_bounds = [1 10];
 tau_f_bounds = [10 100];
-firing_rate = 10; %spike/sec 
-c_noise = 2.0; %calcium signal std
+firing_rate = 20; %spike/sec 
+c_noise = 2.5; %calcium signal std
 baseline = 0;
 A = 1; %magnitude scale of spike response
 
@@ -42,8 +42,8 @@ p_spike = n_spike/T;
 
 times = cumsum(binSize*1e-3*ones(1,T),2); % in sec
 
-a_min = 2;
-a_max = 15;
+a_min = .5;
+a_max = 10;
 nc = 1; %trials
 
 for ki = 1:K
@@ -54,7 +54,9 @@ for ki = 1:K
         s_int = T/n_spike;
         startingSpikeTimes = [startingSpikeTimes s_int:s_int:(T-10)];
     else
-        startingSpikeTimes = times(rand(1,T)<p_spike)/(binSize*1e-3);
+        num_spikes = poissrnd(n_spike);
+        startingSpikeTimes = T*rand(1,num_spikes);
+%         startingSpikeTimes = times(rand(1,T)<p_spike)/(binSize*1e-3);
     end
     ci = baseline*ones(nc,T); %initial calcium is set to baseline 
 
@@ -101,10 +103,10 @@ for ki = 1:K
         trace_taus{i} = tau;
     end
     
-    % add direct stim
+    % add direct stim - SET TO ZERO RIGHT NOW
     stim_tau_rise = 5;
     stim_tau_fall = 400;
-    stim_amp = 50;
+    stim_amp = 0;
     stim_start = 5000;
     stim_duration = 1000;
     stim_in = [zeros(1,stim_start) ones(1,stim_duration) zeros(1,T-stim_start-stim_duration)];
@@ -118,7 +120,7 @@ for ki = 1:K
 
 
     
-    c_noise = 2.0;
+    c_noise = 2.5;
     p = 2;
     phi = [1, .3, .35]; %this determines what the AR noise looks like.
     U = c_noise*randn(nc,T);
@@ -143,22 +145,22 @@ end
 
 figure;
 ax1 = subplot(311);
-plot(-C' - 10*repmat(0:(K-1),T,1))
+plot(-C' - 20*repmat(0:(K-1),T,1))
 
 ax2 = subplot(312);
-% plot(-Y' - 20*repmat(0:(K-1),T,1))
+plot(-Y' - 20*repmat(0:(K-1),T,1))
 
-% ax3 = subplot(413);
+ax3 = subplot(313);
 plot(-Y_AR' - 20*repmat(0:(K-1),T,1))
 % xlim([1 2000])
 % ylim([-20 20])
 
-ax4 = subplot(313);
-plot(map_est)
+%ax4 = subplot(313);
+%plot(map_est)
 % xlim([1 2000])
 % ylim([-20 20])
 
-% linkaxes([ax2 ax3])
+linkaxes([ax1 ax2 ax3])
 
 traces = -Y_AR;
 
