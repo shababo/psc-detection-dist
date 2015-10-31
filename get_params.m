@@ -5,7 +5,7 @@ if ~isempty(varargin)
 end
 
 if ~isfield(params,'cluster')
-    params.cluster = 0;
+    params.cluster = 1;
 end
 
 %% use an rng seed
@@ -124,7 +124,7 @@ end
 %% direct stim
 
 if ~isfield(params,'direct_stim')
-    params.direct_stim = 1;
+    params.direct_stim = 0;
 end
 
 if ~isfield(params,'stim_tau_rise')
@@ -228,22 +228,22 @@ if ~isfield(params,'source_path')
 end
 
 %% filenames
-if ~isfield(params,'traces_filename')
+%if ~isfield(params,'traces_filename')
     if params.cluster
         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/simulated-epscs-1027.mat';
     else
         params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/one-direct-stim-w-events2.mat';
     end
-end
+%end
 
-if ~isfield(params,'savepath')
+%if ~isfield(params,'savepath')
     if params.cluster
         params.savepath = '/vega/stats/users/bms2156/psc-detection/data';
     else
         params.savepath = 'data/';
     end
-end
-if ~isfield(params,'savename')
+%end
+%if ~isfield(params,'savename')
     if params.cluster
         savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
@@ -251,7 +251,7 @@ if ~isfield(params,'savename')
     else
         params.savename = 'one-direct-stim-w-events2-0000.mat';
     end
-end
+%end
 
 params.full_save_string = [params.savepath '/' params.savename];
 

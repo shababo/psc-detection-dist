@@ -1,14 +1,15 @@
 function score_detection(resultsfile, tolerance, plot_results)
-
+disp(resultsfile)
 load(resultsfile)
 
-if isstr(results)
+if isstr(results) || exist('timing_score','var')
+    disp('above file already scored')
     return
 end
 
 params.timing_score_tolerance = tolerance;
-% load(params.traces_filename,'true_event_times')
-load('/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
+load(params.traces_filename,'true_event_times')
+% load('/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
 
 num_traces = length(results);
 

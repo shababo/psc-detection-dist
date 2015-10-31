@@ -6,7 +6,7 @@
 
 
 dirname="/vega/stats/users/bms2156/psc-detection/data/cluster-param-files"
-for param_file in "$dirname"/*; #486
+for param_file in "$dirname"/*-pspike-*.mat; #486
 do
 
 	response=`qsub -v param_file=$param_file /vega/stats/users/bms2156/psc-detection/yeti-scripts/detection-submit.sh`

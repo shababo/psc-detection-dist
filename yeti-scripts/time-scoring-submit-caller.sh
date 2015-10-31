@@ -6,11 +6,11 @@
 
 
 dirname="/vega/stats/users/bms2156/psc-detection/data"
-for results_file in "$dirname"/params-pspike*; #486
+for results_file in "$dirname"/simulated-epscs-1027*; #486
 do
 
 	response=`qsub -v results_file=$results_file /vega/stats/users/bms2156/psc-detection/yeti-scripts/time-scoring-submit.sh`
-	echo $param_file
+	echo $results_file
 	echo $response
 	sleep 5 
 done
