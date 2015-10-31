@@ -28,11 +28,14 @@ stim_tau_rise = params.stim_tau_rise/params.dt;
 stim_tau_fall = params.stim_tau_fall/params.dt;
 
 stim_tau_rise_min = 0;%params.stim_tau_rise/params.dt;
-stim_tau_rise_max = Inf;%params.stim_tau_rise/params.dt;
-stim_tau_fall_min = 0;%params.stim_tau_fall/params.dt;
-stim_tau_fall_max = Inf;%params.stim_tau_fall/params.dt;
+stim_tau_rise_max = 20;%params.stim_tau_rise/params.dt;
+stim_tau_fall_min = 10;%params.stim_tau_fall/params.dt;
+stim_tau_fall_max = 1000;%params.stim_tau_fall/params.dt;
 stim_tau_rise_std = 1;
-stim_tau_fall_std = 1;
+stim_tau_fall_std = 10;
+
+stim_tau_rise = 10;
+stim_tau_fall = 100;
 
 stim_amp_std = 10; %pA
 stim_amp_min = 0;
