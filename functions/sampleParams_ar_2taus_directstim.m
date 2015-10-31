@@ -26,11 +26,20 @@ tau2_max = params.tau2_max/params.dt;
 
 stim_tau_rise = params.stim_tau_rise/params.dt;
 stim_tau_fall = params.stim_tau_fall/params.dt;
+
+stim_tau_rise_min = 0;%params.stim_tau_rise/params.dt;
+stim_tau_rise_max = Inf;%params.stim_tau_rise/params.dt;
+stim_tau_fall_min = 0;%params.stim_tau_fall/params.dt;
+stim_tau_fall_max = Inf;%params.stim_tau_fall/params.dt;
+stim_tau_rise_std = 1;
+stim_tau_fall_std = 1;
+
 stim_amp_std = 10; %pA
 stim_amp_min = 0;
 stim_amp_max = Inf;
-stim_init = 0;
-stim_amp = stim_init;
+
+
+stim_amp = params.stim_amp_init;
 stim_in = params.stim_in;
 nBins_stim = length(stim_in);
 if nBins_stim < nBins
@@ -651,7 +660,7 @@ for ii = 1:1
     % estimate noise
     %%%%%%%%%%%%%%%%%%%%%
     % re-estimate the noise variance
-    if ~isempty(sti)
+%     if ~isempty(sti)
         df = (numel(pr)); %DOF (possibly numel(ci(ti,:))-1)
         d1 = -predAR(diffY,phi,p,1 )/df; 
         nu0 = nu_0; %nu_0 or 0
@@ -663,7 +672,7 @@ for ii = 1:1
 %         if ~isfinite(NoiseVar)
 %             keyboard
 %         end
-    end
+%     end
 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

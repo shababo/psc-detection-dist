@@ -69,9 +69,9 @@ axes(ax1) % sets ax1 to current axes
 text(.025,0.6,descr)
 
 axes(ax2)
-plot_trace_stack(traces,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),[],size(traces,2)-1,trace_offset)
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-')
 hold on
-plot_trace_stack(params.event_sign*map_curves,zeros(size(traces)),[],bsxfun(@plus,zeros(length(traces),3),[0 0 1]),[],size(traces,2)-1,trace_offset)
+plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-')
 hold off
 
 title(strrep(results_file,'_','-'))

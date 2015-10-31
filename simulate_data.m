@@ -5,7 +5,7 @@
 rng(1234)
 
 % Simulate K voltage-clamp observed neurons
-K = 10;
+K = 1;
 
 % Simulation: Given sampling, what indicator timecourse. Also depends on spike rate
 % Sampling rate
@@ -119,10 +119,11 @@ for ki = 1:K
     d = ci + stim_response;
 
 
+%     sigmasq = 2.0;
+    c_noise = sqrt(sigmasq);
     
-    c_noise = 2.5;
-    p = 2;
-    phi = [1, .3, .35]; %this determines what the AR noise looks like.
+%     phi = [1, 1.4, -.58]; %this determines what the AR noise looks like.
+    p = length(phi) - 1;
     U = c_noise*randn(nc,T);
     er = zeros(T,1);
 
@@ -145,13 +146,24 @@ end
 
 figure;
 ax1 = subplot(311);
-plot(-C' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+title('True Current')
 
 ax2 = subplot(312);
-plot(-Y' - 20*repmat(0:(K-1),T,1))
+plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack((-Y' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+title('AR(0) Noise Process')
 
 ax3 = subplot(313);
-plot(-Y_AR' - 20*repmat(0:(K-1),T,1))
+plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',20,zeros(K,3),'-',[.1 10])
+title('AR(10) Noise Process')
+xlimits = get(gca,'xlim')
+ylimits = get(gca,'ylim')
+set(ax2,'xlim',xlimits)
+set(ax2,'ylim',ylimits)
+set(ax3,'xlim',xlimits)
+set(ax3,'ylim',ylimits)
 % xlim([1 2000])
 % ylim([-20 20])
 
@@ -160,7 +172,7 @@ plot(-Y_AR' - 20*repmat(0:(K-1),T,1))
 % xlim([1 2000])
 % ylim([-20 20])
 
-linkaxes([ax1 ax2 ax3])
+% linkaxes([ax1 ax2 ax3])
 
 traces = -Y_AR;
 

@@ -1,4 +1,4 @@
-function plot_trace_stack(traces, offset_step, colors, linespec)
+function plot_trace_stack(traces, offset_step, colors, linespec, bar_limits)
 
 offset = 0;
 stim_start = 1;
@@ -61,8 +61,18 @@ for trial = 1:size(traces,1)
     
 end
 
-% axis tight
-% axis off
+if ~isempty(bar_limits)
+   
+    bar_corner_time = trial_length/10/20000;
+    bar_corner_y = -offset;
+    
+    plot([bar_corner_time; bar_corner_time], -offset + [0; bar_limits(2)], '-k',  bar_corner_time + [0; bar_limits(1)], [-offset; -offset], '-k', 'LineWidth', 2)
+    text(bar_corner_time - bar_limits(1)/2,bar_corner_y + bar_limits(2)/2, [num2str(bar_limits(2)) ' pA'], 'HorizontalAlignment','right')
+    text(bar_corner_time + bar_limits(1)/2,bar_corner_y - bar_limits(2)/2, [num2str(bar_limits(1)*1000) ' ms'], 'HorizontalAlignment','center')
+end
+
+axis tight
+axis off
 
 hold off
 
