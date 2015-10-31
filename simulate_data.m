@@ -15,7 +15,7 @@ K = 1;
 % Poisson or periodic
 
 T = 20000; %bins - start not too long
-binSize = 1/20000; %ms
+binSize = 1/20000; %
 tau_r_bounds = [1 10];
 tau_f_bounds = [10 100];
 firing_rate = 20; %spike/sec 
@@ -32,7 +32,7 @@ amplitudes = cell(1,K);
 
 periodic = 0; %if zero, uses poisson spiketrain.
 
-tau = [mean(tau_r_bounds)/binSize mean(tau_f_bounds)/binSize]; %time constants in bin-uni20ts
+tau = [mean(tau_r_bounds)/binSize mean(tau_f_bounds)/binSize]; %time constants in bin-units
 
 % compute exponential filter(s)
 ef=genEfilt(tau,T);

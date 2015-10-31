@@ -1,5 +1,6 @@
 function plot_trace_stack(traces, offset_step, colors, linespec, bar_limits)
 
+
 offset = 0;
 stim_start = 1;
 time_after_stim = 1; %1000
