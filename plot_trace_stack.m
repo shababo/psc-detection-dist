@@ -1,4 +1,4 @@
-function plot_trace_stack(traces, offset_step, colors, linespec)
+function plot_trace_stack(traces, offset_step, colors, linespec, varargin)
 
 offset = 0;
 stim_start = 1;
