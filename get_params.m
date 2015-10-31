@@ -8,6 +8,9 @@ if ~isfield(params,'cluster')
     params.cluster = 1;
 end
 
+if ~isfield(params,'par')
+    params.par = 0;
+end
 %% use an rng seed
 
 if ~isfield(params,'rand')
@@ -39,7 +42,7 @@ end
 
 % first sample, if you want to start at 1, omit
 if ~isfield(params,'start_ind')
-%     params.start_ind = .33*20000;
+%     params.start_ind = .3*20000;
 end
 % if you want to go to the end of the traces, omit
 if ~isfield(params,'duration')
@@ -49,6 +52,7 @@ end
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
+%     params.traces_ind = 9;
 end
 %% inference params
 
@@ -57,7 +61,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 1;
+    params.a_min = .05;
 end
 
 % baseline bounds
@@ -75,7 +79,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = .1/20000;
+    params.tau1_min = 1/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -92,7 +96,7 @@ if ~isfield(params,'tau2_min')
     params.tau2_min = 10/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 200/20000;
+    params.tau2_max = 100/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -118,7 +122,7 @@ if ~isfield(params,'Phi_0')
 end
 
 if ~isfield(params,'noise_var_init')
-    params.noise_var_init = 5;
+    params.noise_var_init = 2.5;
 end
 
 %% direct stim
@@ -160,7 +164,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 2000;
+    params.num_sweeps = 500;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -232,7 +236,7 @@ end
     if params.cluster
         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/simulated-epscs-1027.mat';
     else
-        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/one-direct-stim-w-events2.mat';
+        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/for-paper/fig1-example-trace.mat';
     end
 %end
 
@@ -249,7 +253,7 @@ end
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'one-direct-stim-w-events2-0000.mat';
+        params.savename = 'fig1-example-trace-0003.mat';
     end
 %end
 

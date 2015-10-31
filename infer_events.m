@@ -5,20 +5,6 @@ if params.rand == 1
 end
 
 
-if params.cluster
-    
-    addpath(genpath(params.source_path));
-
-    maxNumCompThreads(12)
-    matlabpool(12)
-    
-else
-    
-    delete(gcp('nocreate'))
-%     this_pool = parpool();
-
-end
-
 
 if ~isfield(params,'start_ind')
     params.start_ind = 1;
@@ -53,29 +39,65 @@ end
 results = struct();
 disp(['About to run inference on: ' num2str(size(traces,1)) ' traces...']);
 
-parfor trace_ind = 1:size(traces,1)
-%     
-    disp(['Starting trace #' num2str(trace_ind)])
-    trace = params.event_sign*traces(trace_ind,:);
-    trace = trace - min(trace);
+if params.par
+    
+    if params.cluster
 
-    event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
-        params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
-    
-    tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
-    
-    if params.direct_stim
-        [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
+        addpath(genpath(params.source_path));
+
+        maxNumCompThreads(12)
+        matlabpool(12)
+
     else
-        [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
+
+        delete(gcp('nocreate'))
+        this_pool = parpool();
+
+    end
+    
+    parfor trace_ind = 1:size(traces,1)
+    %     
+        disp(['Starting trace #' num2str(trace_ind)])
+        trace = params.event_sign*traces(trace_ind,:);
+        trace = trace - min(trace);
+
+        event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
+            params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
+
+        tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
+
+        if params.direct_stim
+            [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
+        else
+            [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
+        end
+
+    end
+    
+    
+    if params.cluster
+        matlabpool close
+    else
+        delete(this_pool)
     end
 
-end
-
-if params.cluster
-    matlabpool close
 else
-%     delete(this_pool)
+    for trace_ind = 1:size(traces,1)
+        disp(['Starting trace #' num2str(trace_ind)])
+        trace = params.event_sign*traces(trace_ind,:);
+        trace = trace - min(trace);
+
+        event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
+            params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
+
+        tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
+
+        if params.direct_stim
+            [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
+        else
+            [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
+        end
+    end
 end
 
 disp('finding min err...')
@@ -90,6 +112,5 @@ disp('saving...')
 save(params.full_save_string,'results','params','-v7.3')
 
 disp('done')
-
 
 

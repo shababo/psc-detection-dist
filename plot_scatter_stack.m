@@ -1,5 +1,4 @@
-function plot_trace_stack(traces, offset_step, colors, linespec, varargin)
-
+function plot_scatter_stack(traces, offset_step, varargin)
 
 offset = 0;
 stim_start = 1;
@@ -48,8 +47,8 @@ for trial = 1:size(traces,1)
 %     end
     
     trace_to_plot = traces(trial,:);
-    
-    plot((0:trial_length-1)/20000,trace_to_plot - offset - median(trace_to_plot),linespec,'LineWidth',2,'Color',colors(ceil(trial/2),:))
+    sample_inds = find(trace_to_plot);
+    scatter(sample_inds/20000,ones(1,length(sample_inds)) - offset +15,(trace_to_plot(sample_inds).^.5)*500,'filled')
     hold on
    
 %     if ~isempty(events)
@@ -62,22 +61,8 @@ for trial = 1:size(traces,1)
     
 end
 
-if ~isempty(varargin)
-    bar_limits = varargin{1};
-
-    if ~isempty(bar_limits)
-
-        bar_corner_time = trial_length/10/20000;
-        bar_corner_y = -offset;
-
-        plot([bar_corner_time; bar_corner_time], -offset + [0; bar_limits(2)], '-k',  bar_corner_time + [0; bar_limits(1)], [-offset; -offset], '-k', 'LineWidth', 2)
-        text(bar_corner_time - bar_limits(1)/2,bar_corner_y + bar_limits(2)/2, [num2str(bar_limits(2)) ' pA'], 'HorizontalAlignment','right')
-        text(bar_corner_time + bar_limits(1)/2,bar_corner_y - bar_limits(2)/2, [num2str(bar_limits(1)*1000) ' ms'], 'HorizontalAlignment','center')
-    end
-end
-
-axis tight
-axis off
+% axis tight
+% axis off
 
 hold off
 

@@ -222,3 +222,24 @@ for i = 1:size(roc,2)
 end
 hold off
 legend
+
+%% plot noise examples noise model figure
+
+% load('data/work/example_noise_traces_work.mat')
+
+figure;
+subplot(221)
+plot_trace_stack(traces,20,zeros(3,3),'-',[.010 10])
+title('Voltage Clamp Recordings')
+
+subplot(222)
+plot_trace_stack(ar2_sim_data,20,zeros(3,3),'-',[.010 10])
+title('Simulated Noise From Fits - AR(2)')
+
+subplot(223)
+plot_trace_stack(ar6_sim_data,20,zeros(3,3),'-',[.010 10])
+title('Simulated Noise From Fits - AR(6)')
+
+subplot(224)
+plot_trace_stack(ar10_sim_data,20,zeros(3,3),'-',[.010 10])
+title('Simulated Noise From Fits - AR(10)')

@@ -1,4 +1,4 @@
-function map = plot_map_estimates_sim(results_file, trace_offset, varargin)
+function time_posteriors = plot_times_posterior(results_file, trace_offset, varargin)
 
 load(results_file)
 
@@ -43,7 +43,7 @@ else
     event_samples = 4000;
 end
 
-map_curves = zeros(size(traces));
+time_posteriors = zeros(size(traces));
 
 for i = 1:size(traces,1)
     
@@ -52,21 +52,30 @@ for i = 1:size(traces,1)
     else
         [map_val, map_i] = max(results(i).trials.obj(1:max_sample));
     end
-    this_curve = zeros(1,T);
+    this_posterior = zeros(1,T);
     
-    for j = 1:length(results(i).trials.times{map_i})
+    for j = 1:length(results(i).trials.times)
         
-        ef = genEfilt_ar(results(i).trials.tau{map_i}{j},event_samples);
-        [~, this_curve, ~] = addSpike_ar(results(i).trials.times{map_i}(j),...
-                                            this_curve, 0, ef, ...
-                                            results(i).trials.amp{map_i}(j),...
-                                            results(i).trials.tau{map_i}{j},...
-                                            traces(i,:), ...
-                                            results(i).trials.times{map_i}(j), ...
-                                            2, 1, 1);
-                                        
+        these_inds = floor(results(i).trials.times{j});
+        
+        this_posterior(these_inds) = this_posterior(these_inds) + 1/length(results(i).trials.times);
     end
-    map_curves(i,:) = this_curve + results(i).trials.base{map_i};
+    
+    time_posteriors(i,:) = this_posterior;
+%     for j = 1:length(results(i).trials.times{map_i})
+%         
+%         
+%         ef = genEfilt_ar(results(i).trials.tau{map_i}{j},event_samples);
+%         [~, this_curve, ~] = addSpike_ar(results(i).trials.times{map_i}(j),...
+%                                             this_curve, 0, ef, ...
+%                                             results(i).trials.amp{map_i}(j),...
+%                                             results(i).trials.tau{map_i}{j},...
+%                                             traces(i,:), ...
+%                                             results(i).trials.times{map_i}(j), ...
+%                                             2, 1, 1);
+%                                         
+%     end
+%     map_curves(i,:) = this_curve + results(i).trials.base{map_i};
 end
 
 ax1 = axes('Position',[0 0 1 1],'Visible','off');
@@ -88,7 +97,7 @@ text(.025,0.6,descr)
 axes(ax2)
 plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-')
 hold on
-plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-')
+plot_scatter_stack(time_posteriors,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'.')
 if exist('true_signal','var')
     hold on
     plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 1 0]),'--')
@@ -102,7 +111,7 @@ if length(varargin) > 1 && varargin{2}
     savefig([dir '/' name '.fig'])
 end
 
-map = params.event_sign*map_curves;
+% map = params.event_sign*map_curves;
 
 
 

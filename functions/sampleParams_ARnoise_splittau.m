@@ -508,7 +508,7 @@ for i = 1:num_sweeps
     % estimate noise
     %%%%%%%%%%%%%%%%%%%%%
     % re-estimate the noise variance
-    if ~isempty(sti)
+%     if ~isempty(sti)
         df = (numel(pr)); %DOF (possibly numel(ci(ti,:))-1)
         d1 = -predAR(diffY,phi,p,1 )/df; 
         nu0 = nu_0; %nu_0 or 0
@@ -520,7 +520,7 @@ for i = 1:num_sweeps
 %         if ~isfinite(NoiseVar)
 %             keyboard
 %         end
-    end
+%     end
 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
