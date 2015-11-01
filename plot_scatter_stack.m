@@ -36,7 +36,16 @@ stim_bottom = -offset;
 
 offset = 0;
 
-
+if ~isempty(varargin)
+    vert_offset = varargin{1};
+    if length(varargin) > 1
+        multiplier = varargin{2};
+    else
+        multiplier = 400;
+    end
+else
+    vert_offset = 0;
+end
     
 for trial = 1:size(traces,1)
     
@@ -48,7 +57,7 @@ for trial = 1:size(traces,1)
     
     trace_to_plot = traces(trial,:);
     sample_inds = find(trace_to_plot);
-    scatter(sample_inds/20000,ones(1,length(sample_inds)) - offset +15,(trace_to_plot(sample_inds).^.5)*500,'filled')
+    scatter(sample_inds/20000,ones(1,length(sample_inds)) - offset +vert_offset,(trace_to_plot(sample_inds).^.5)*multiplier,'filled')
     hold on
    
 %     if ~isempty(events)

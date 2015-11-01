@@ -56,9 +56,11 @@ for i = 1:size(traces,1)
     
     for j = 1:length(results(i).trials.times)
         
-        these_inds = floor(results(i).trials.times{j});
+        these_inds = ceil(results(i).trials.times{j});
         
-        this_posterior(these_inds) = this_posterior(these_inds) + 1/length(results(i).trials.times);
+%         if ~isempty(these_inds)
+            this_posterior(these_inds) = this_posterior(these_inds) + 1/length(results(i).trials.times);
+%         end
     end
     
     time_posteriors(i,:) = this_posterior;
@@ -95,13 +97,17 @@ axes(ax1) % sets ax1 to current axes
 text(.025,0.6,descr)
 
 axes(ax2)
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-')
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-',[.005 25],0)
 hold on
-plot_scatter_stack(time_posteriors,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'.')
 if exist('true_signal','var')
+    times_vec = zeros(size(time_posteriors));
+    times_vec(ceil(true_event_times{1})) = max(max(time_posteriors))+.1;
+    plot_scatter_stack(times_vec,trace_offset,30,100)
     hold on
-    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 1 0]),'--')
+    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
 end
+hold on
+plot_scatter_stack(time_posteriors,trace_offset,50)
 hold off
 
 title(strrep(results_file,'_','-'))

@@ -37,7 +37,11 @@ stim_bottom = -offset;
 
 offset = 0;
 
-
+if length(varargin) > 1
+    vert_offset = varargin{2};
+else
+    vert_offset = 0;
+end
     
 for trial = 1:size(traces,1)
     
@@ -49,7 +53,7 @@ for trial = 1:size(traces,1)
     
     trace_to_plot = traces(trial,:);
     
-    plot((0:trial_length-1)/20000,trace_to_plot - offset - median(trace_to_plot),linespec,'LineWidth',2,'Color',colors(ceil(trial/2),:))
+    plot((0:trial_length-1)/20000,trace_to_plot - offset - median(trace_to_plot) + vert_offset,linespec,'LineWidth',2,'Color',colors(ceil(trial/2),:))
     hold on
    
 %     if ~isempty(events)

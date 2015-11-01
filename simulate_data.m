@@ -14,12 +14,12 @@ K = 1;
 % Firing rate
 % Poisson or periodic
 
-T = 2000; %bins - start not too long
+T = 4000; %bins - start not too long
 binSize = 1/20000; %
 tau_r_bounds = [1 10];
 tau_f_bounds = [10 100];
-firing_rate = 40; %spike/sec 
-c_noise = 2.5; %calcium signal std
+firing_rate = 150; %spike/sec 
+% c_noise = 2.5; %calcium signal std
 baseline = 0;
 A = 1; %magnitude scale of spike response
 
@@ -27,7 +27,7 @@ Y = zeros(K,T);
 C = zeros(K,T);
 Y_AR = zeros(K,T);
 Spk = cell(1,K);
-taus = cell(1,K);0
+taus = cell(1,K);
 amplitudes = cell(1,K);
 
 periodic = 0; %if zero, uses poisson spiketrain.
@@ -42,7 +42,7 @@ p_spike = n_spike/T;
 
 times = cumsum(binSize*1e-3*ones(1,T),2); % in sec
 
-a_min = 6;
+a_min = 5;
 a_max = 15;
 nc = 1; %trials
 
@@ -104,18 +104,18 @@ for ki = 1:K
     end
     
     % add direct stim - SET TO ZERO RIGHT NOW
-    stim_tau_rise = 5;
-    stim_tau_fall = 400;
+    stim_tau_rise = .0015*20000; % values for chr2 from lin et al 2009 (biophysics)
+    stim_tau_fall = .013*20000;
     stim_amp = 50;
-    stim_start = 5000;
-    stim_duration = 1000;
+    stim_start = 500;
+    stim_duration = .05*20000;
     stim_in = [zeros(1,stim_start) ones(1,stim_duration) zeros(1,T-stim_start-stim_duration)];
     t = 0:T-1;
     stim_decay = exp(-t/stim_tau_fall);
     stim_rise = -exp(-t/stim_tau_rise);
     stim_kernel = (stim_decay + stim_rise)/sum(stim_decay + stim_rise);
-    stim_response = stim_amp*conv(stim_in,stim_kernel);
-    stim_response = stim_response(1:T);
+    stim_response = conv(stim_in,stim_kernel);
+    stim_response = stim_amp*stim_response(1:T)/max(stim_response(1:T));
     d = ci + stim_response;
 
 

@@ -9,7 +9,7 @@ if ~isfield(params,'cluster')
 end
 
 if ~isfield(params,'par')
-    params.par = 0;
+    params.par = 1;
 end
 %% use an rng seed
 
@@ -18,7 +18,7 @@ if ~isfield(params,'rand')
 end
 
 if ~isfield(params,'seed')
-    params.seed = 1234;
+    params.seed = 12341;
 end
 
 rng(params.seed)
@@ -61,7 +61,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = .05;
+    params.a_min = 1;
 end
 
 % baseline bounds
@@ -96,7 +96,7 @@ if ~isfield(params,'tau2_min')
     params.tau2_min = 10/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 100/20000;
+    params.tau2_max = 200/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -128,14 +128,14 @@ end
 %% direct stim
 
 if ~isfield(params,'direct_stim')
-    params.direct_stim = 0;
+    params.direct_stim = 1;
 end
 
 if ~isfield(params,'stim_tau_rise')
-    params.stim_tau_rise = 2.5000e-04;
+    params.stim_tau_rise = .003;
 end
 if ~isfield(params,'stim_tau_fall')
-    params.stim_tau_fall = .02;
+    params.stim_tau_fall = .050;
 end
 
 if ~isfield(params,'stim_amp_std')
@@ -150,13 +150,38 @@ if ~isfield(params,'stim_amp_max')
     params.stim_amp_max = Inf;
 end
 
-if ~isfield(params,'stim_init')
-    params.stim_init = 30;
+if ~isfield(params,'stim_in')
+    params.stim_in = [zeros(1,20*5) ones(1,20*20) zeros(1,1000-25*5)];
 end
 
-if ~isfield(params,'stim_in')
-    params.stim_in = [zeros(1,5000) ones(1,1000) zeros(1,20000-6000)];
+if ~isfield(params,'stim_amp_init')
+    params.stim_amp_init = 100;
 end
+
+if ~isfield(params,'stim_tau_rise_min')
+    params.stim_tau_rise_min = .0005;
+end
+
+if ~isfield(params,'stim_tau_rise_max')
+    params.stim_tau_rise_max = .010;
+end
+
+if ~isfield(params,'stim_tau_fall_min')
+    params.stim_tau_fall_min = .005;
+end
+
+if ~isfield(params,'stim_tau_fall_max')
+    params.stim_tau_fall_max = .200;
+end
+
+if ~isfield(params,'stim_tau_rise_std')
+    params.stim_tau_rise_std = .0005;
+end
+
+if ~isfield(params,'stim_tau_fall_std')
+    params.stim_tau_fall_std = .005;
+end
+
 
 
 %% sampling params
@@ -164,7 +189,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 500;
+    params.num_sweeps = 2000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -190,7 +215,7 @@ if ~isfield(params,'baseline_prop_std')
 end
 
 if ~isfield(params,'add_drop_sweeps')
-    params.add_drop_sweeps = 5;
+    params.add_drop_sweeps = 20;
 end
 if ~isfield(params,'time_sweeps')
     params.spike_time_sweeps = 3;
@@ -236,7 +261,7 @@ if ~isfield(params,'traces_filename')
     if params.cluster
         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/simulated-epscs-1027.mat';
     else
-        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/for-paper/fig1-example-trace.mat';
+        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/for-paper/direct-stim-w-events-real.mat';
     end
 end
 
@@ -253,7 +278,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'fig1-example-trace-0003.mat';
+        params.savename = 'direct-stim-w-events-real-0005.mat';
     end
 end
 
