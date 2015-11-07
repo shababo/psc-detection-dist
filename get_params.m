@@ -9,7 +9,7 @@ if ~isfield(params,'cluster')
 end
 
 if ~isfield(params,'par')
-    params.par = 1;
+    params.par = 0;
 end
 %% use an rng seed
 
@@ -61,7 +61,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 1;
+    params.a_min = 4.5;
 end
 
 % baseline bounds
@@ -96,7 +96,7 @@ if ~isfield(params,'tau2_min')
     params.tau2_min = 10/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 200/20000;
+    params.tau2_max = 300/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -128,7 +128,7 @@ end
 %% direct stim
 
 if ~isfield(params,'direct_stim')
-    params.direct_stim = 1;
+    params.direct_stim = 0;
 end
 
 if ~isfield(params,'stim_tau_rise')
@@ -189,7 +189,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 2000;
+    params.num_sweeps = 1000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -261,7 +261,9 @@ if ~isfield(params,'traces_filename')
     if params.cluster
         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/simulated-epscs-1027.mat';
     else
-        params.traces_filename = '/home/shababo/projects/mapping/code/psc-detection/data/for-paper/direct-stim-w-events-real.mat';
+        params.traces_filename = ...
+            ['/home/shababo/projects/mapping/code/psc-detection/'...
+                        'data/for-paper/good-example-trace.mat'];
     end
 end
 
@@ -278,7 +280,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'direct-stim-w-events-real-0005.mat';
+        params.savename = 'good-example-trace-0009.mat';
     end
 end
 

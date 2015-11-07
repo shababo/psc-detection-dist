@@ -14,11 +14,11 @@ K = 1;
 % Firing rate
 % Poisson or periodic
 
-T = 4000; %bins - start not too long
+T = 2000; %bins - start not too long
 binSize = 1/20000; %
 tau_r_bounds = [1 10];
 tau_f_bounds = [10 100];
-firing_rate = 150; %spike/sec 
+firing_rate = 0; %spike/sec 
 % c_noise = 2.5; %calcium signal std
 baseline = 0;
 A = 1; %magnitude scale of spike response
@@ -106,7 +106,7 @@ for ki = 1:K
     % add direct stim - SET TO ZERO RIGHT NOW
     stim_tau_rise = .0015*20000; % values for chr2 from lin et al 2009 (biophysics)
     stim_tau_fall = .013*20000;
-    stim_amp = 50;
+    stim_amp = 0;
     stim_start = 500;
     stim_duration = .05*20000;
     stim_in = [zeros(1,stim_start) ones(1,stim_duration) zeros(1,T-stim_start-stim_duration)];
@@ -119,10 +119,10 @@ for ki = 1:K
     d = ci + stim_response;
 
 
-    sigmasq = 2.0;
+%     sigmasq = 2.0;
     c_noise = sqrt(sigmasq);
     
-    phi = [1, 1.0, -.42]; %this determines what the AR noise looks like.
+%     phi = [1, 1.0, -.42]; %this determines what the AR noise looks like.
     p = length(phi) - 1;
     U = c_noise*randn(nc,T);
     er = zeros(T,1);
@@ -181,32 +181,32 @@ true_amplitudes = amplitudes; true_taus = taus;
 
 sorted_times = sort(true_event_times{1});
 legend_names = {};
-
-figure;
-% subplot(211)
-for i = 1:length(true_amplitudes{1})
-    t = 0:1:.015*20000;
-    tau_decay = taus{1}{i}(2); decay = exp(-t/tau_decay);
-    tau_rise = taus{1}{i}(1); rise = -exp(-t/tau_rise);
-    % plot(decay); hold on; plot(rise)
-    plot(-(decay + rise)/max(decay+rise)*true_amplitudes{1}(i),'linewidth',2)
-    hold on; 
-    legend_names{i} = ['event ' num2str(find(sorted_times == true_event_times{1}(i)))];
-end
-hold on
-legend(legend_names)
-
-bar_limits = [.0025*20000 2.5];
-bar_corner_time = t(end)/6;
-bar_corner_y = 0;
-offset = 15;
-
-plot([bar_corner_time; bar_corner_time], -offset + [0; bar_limits(2)], '-k',  bar_corner_time + [0; bar_limits(1)], [-offset; -offset], '-k', 'LineWidth', 2)
-text(bar_corner_time - bar_limits(1)/2,bar_corner_y + bar_limits(2)/2 - offset, [num2str(bar_limits(2)) ' pA'], 'HorizontalAlignment','right')
-text(bar_corner_time + bar_limits(1)/2,bar_corner_y - bar_limits(2)/2 - offset, [num2str(bar_limits(1)/20000*1000) ' ms'], 'HorizontalAlignment','center')
-
-axis off
-
+%%
+% figure;
+% % subplot(211)
+% for i = 1:length(true_amplitudes{1})
+%     t = 0:1:.015*20000;
+%     tau_decay = taus{1}{i}(2); decay = exp(-t/tau_decay);
+%     tau_rise = taus{1}{i}(1); rise = -exp(-t/tau_rise);
+%     % plot(decay); hold on; plot(rise)
+%     plot(-(decay + rise)/max(decay+rise)*true_amplitudes{1}(i),'linewidth',2)
+%     hold on; 
+%     legend_names{i} = ['event ' num2str(find(sorted_times == true_event_times{1}(i)))];
+% end
+% hold on
+% legend(legend_names)
+% 
+% bar_limits = [.0025*20000 2.5];
+% bar_corner_time = t(end)/6;
+% bar_corner_y = 0;
+% offset = 15;
+% 
+% plot([bar_corner_time; bar_corner_time], -offset + [0; bar_limits(2)], '-k',  bar_corner_time + [0; bar_limits(1)], [-offset; -offset], '-k', 'LineWidth', 2)
+% text(bar_corner_time - bar_limits(1)/2,bar_corner_y + bar_limits(2)/2 - offset, [num2str(bar_limits(2)) ' pA'], 'HorizontalAlignment','right')
+% text(bar_corner_time + bar_limits(1)/2,bar_corner_y - bar_limits(2)/2 - offset, [num2str(bar_limits(1)/20000*1000) ' ms'], 'HorizontalAlignment','center')
+% 
+% axis off
+%%
 %     % subplot(212)
 %     % t = 0:1:.02*20000;
 %     tau_decay = taus{1}{2}(2); decay = exp(-t/tau_decay);

@@ -3,8 +3,8 @@ function [trials, mcmc, runtime]  = sampleParams_ar_2taus_directstim(trace, tau,
 
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
 
-observe = 0;
-observe_freq = 50;
+observe = 1;
+observe_freq = 25;
 
 %noise level here matters for the proposal distribution (how much it 
 %should trust data for proposals vs how much it should mix based on uniform prior)

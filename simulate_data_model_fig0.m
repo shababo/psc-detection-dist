@@ -18,7 +18,7 @@ T = 2000; %bins - start not too long
 binSize = 1/20000; %
 tau_r_bounds = [1 10];
 tau_f_bounds = [10 100];
-firing_rate = 40; %spike/sec 
+firing_rate = 20; %spike/sec 
 c_noise = 2.5; %calcium signal std
 baseline = 0;
 A = 1; %magnitude scale of spike response
@@ -42,8 +42,8 @@ p_spike = n_spike/T;
 
 times = cumsum(binSize*1e-3*ones(1,T),2); % in sec
 
-a_min = 6;
-a_max = 15;
+a_min = 10;
+a_max = 20;
 nc = 1; %trials
 
 for ki = 1:K
@@ -183,7 +183,7 @@ sorted_times = sort(true_event_times{1});
 legend_names = {};
 
 figure;
-% subplot(211)
+subplot(211)
 for i = 1:length(true_amplitudes{1})
     t = 0:1:.015*20000;
     tau_decay = taus{1}{i}(2); decay = exp(-t/tau_decay);
@@ -204,9 +204,39 @@ offset = 15;
 plot([bar_corner_time; bar_corner_time], -offset + [0; bar_limits(2)], '-k',  bar_corner_time + [0; bar_limits(1)], [-offset; -offset], '-k', 'LineWidth', 2)
 text(bar_corner_time - bar_limits(1)/2,bar_corner_y + bar_limits(2)/2 - offset, [num2str(bar_limits(2)) ' pA'], 'HorizontalAlignment','right')
 text(bar_corner_time + bar_limits(1)/2,bar_corner_y - bar_limits(2)/2 - offset, [num2str(bar_limits(1)/20000*1000) ' ms'], 'HorizontalAlignment','center')
-
+xlims = get(gca,'xlim')
+ylims = get(gca,'ylim')
 axis off
 
+subplot(212)
+legend_names = cell(1,3);
+% for i = 1:3
+    t = 0:1:.015*20000;
+    tau_decay = event1_fit_params.tau1*20; decay = exp(-t/tau_decay);
+    tau_rise = event1_fit_params.tau2*20; rise = -exp(-t/tau_rise);
+    % plot(decay); hold on; plot(rise)
+    plot(-(decay + rise)/max(decay+rise)*14,'linewidth',2)
+    hold on; 
+    legend_names{1} = ['event 1'];
+    
+    tau_decay = event2_fit_params.tau1*20; decay = exp(-t/tau_decay);
+    tau_rise = event2_fit_params.tau2*20; rise = -exp(-t/tau_rise);
+    % plot(decay); hold on; plot(rise)
+    plot(-(decay + rise)/max(decay+rise)*12,'linewidth',2)
+    hold on; 
+    legend_names{2} = ['event 2'];
+    
+    tau_decay = event3_fit_params.tau1*20; decay = exp(-t/tau_decay);
+    tau_rise = event3_fit_params.tau2*20; rise = -exp(-t/tau_rise);
+    % plot(decay); hold on; plot(rise)
+    plot(-(decay + rise)/max(decay+rise)*19,'linewidth',2)
+    hold on; 
+    legend_names{3} = ['event 3'];
+% end
+legend(legend_names)
+set(gca,'xlim',xlims)
+set(gca,'ylim',ylims)
+axis off
 %     % subplot(212)
 %     % t = 0:1:.02*20000;
 %     tau_decay = taus{1}{2}(2); decay = exp(-t/tau_decay);

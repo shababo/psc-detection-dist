@@ -243,3 +243,34 @@ title('Simulated Noise From Fits - AR(6)')
 subplot(224)
 plot_trace_stack(ar10_sim_data,20,zeros(3,3),'-',[.010 10])
 title('Simulated Noise From Fits - AR(10)')
+
+%% plot individual traces from real data example - fig0
+load('/home/shababo/projects/mapping/code/psc-detection/stimfit/real-fit-events.mat')
+figure;
+legend_names = cell(1,3);
+% for i = 1:3
+    t = 0:1:.015*20000;
+    tau_decay = event1_fit_params.tau1*20; decay = exp(-t/tau_decay);
+    tau_rise = event1_fit_params.tau2*20; rise = -exp(-t/tau_rise);
+    % plot(decay); hold on; plot(rise)
+    plot(-(decay + rise)/max(decay+rise)*14,'linewidth',2)
+    hold on; 
+    legend_names{1} = ['event 1'];
+    
+    tau_decay = event2_fit_params.tau1*20; decay = exp(-t/tau_decay);
+    tau_rise = event2_fit_params.tau2*20; rise = -exp(-t/tau_rise);
+    % plot(decay); hold on; plot(rise)
+    plot(-(decay + rise)/max(decay+rise)*19,'linewidth',2)
+    hold on; 
+    legend_names{2} = ['event 2'];
+    
+    tau_decay = event3_fit_params.tau1*20; decay = exp(-t/tau_decay);
+    tau_rise = event3_fit_params.tau2*20; rise = -exp(-t/tau_rise);
+    % plot(decay); hold on; plot(rise)
+    plot(-(decay + rise)/max(decay+rise)*16,'linewidth',2)
+    hold on; 
+    legend_names{3} = ['event 3'];
+% end
+hold on
+legend(legend_names)
+axis off
