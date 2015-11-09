@@ -63,21 +63,22 @@ plot_trace_stack(sim_data,20,zeros(3,3),'-',[.010 10])
 title('Simulated Noise From Fits - AR(2)')
 
 %%
-load('data/good-example-trace-0003.mat')
+rng(18480)
+load('data/good-example-trace-1000.mat')
 
 
 phi = results(1).trials.phi{results(1).map_ind};
 sigmasq = results(1).trials.noise{results(1).map_ind};
 simulate_data; sim_ar0_data = traces;
 
-% load('data/good-example-trace-0003.mat')
+load('data/good-example-trace-0009.mat')
 
 
 phi = results(1).trials.phi{results(1).map_ind};
 sigmasq = results(1).trials.noise{results(1).map_ind};
 simulate_data; sim_ar2_data = traces;
 load('data/for-paper/good-example-trace.mat')
-traces_to_plot = [traces(1:length(sim_ar0_data)); sim_ar0_data; sim_ar2_data];
+traces_to_plot = [Master(4).spontSweep{13}(1028:3027)'; sim_ar0_data; sim_ar2_data];
 
 figure;
 plot_trace_stack(traces_to_plot,20,zeros(3,3),'-',[.010 10])

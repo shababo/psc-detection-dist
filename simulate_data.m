@@ -2,7 +2,7 @@
 %% Simulate data from model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-rng(12341)
+% rng(12341)
 
 % Simulate K voltage-clamp observed neurons
 K = 1;

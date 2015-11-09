@@ -10,11 +10,12 @@ max_tau1 = Inf;
 max_tau2 = Inf;
 
 
-min_amp = 5;
-min_time = 1;
+min_amp = 0;
+min_time = 0;
 max_time = Inf;%.015*20000;
-hot_time_min = .05;
-hot_time_max = .055;
+hot_time_min = 0;
+hot_time_max = 0;
+hot_times = ([.0043 .0177 .0324 .0467 .0610 .0754 .0896 .1040 .1187 .1333 .1470 .1612 .1761 .1891 .2046])*20000;
 % hot_time_min = .0047;
 % hot_time_max = .007;
 hot_amp_min = 0;
@@ -39,7 +40,8 @@ for j = 1:length(results)
         
         for k = 1:length(results(j).trials.tau{results(j).map_ind})
             if ~isempty(results(j).trials.tau{results(j).map_ind}{k})
-                if all(results(j).trials.tau{results(j).map_ind}{k} > [min_tau1 min_tau2]) && all(results(j).trials.tau{results(j).map_ind}{k} < [max_tau1 max_tau2]) && results(j).trials.times{results(j).map_ind}(k) > min_time && results(j).trials.times{results(j).map_ind}(k) < max_time && results(j).trials.amp{results(j).map_ind}(k) > min_amp
+%                 if all(results(j).trials.tau{results(j).map_ind}{k} > [min_tau1 min_tau2]) && all(results(j).trials.tau{results(j).map_ind}{k} < [max_tau1 max_tau2]) && results(j).trials.times{results(j).map_ind}(k) > min_time && results(j).trials.times{results(j).map_ind}(k) < max_time && results(j).trials.amp{results(j).map_ind}(k) > min_amp
+                if all(results(j).trials.tau{results(j).map_ind}{k} > [min_tau1 min_tau2]) && all(results(j).trials.tau{results(j).map_ind}{k} < [max_tau1 max_tau2]) && any(abs(hot_times - results(j).trials.times{results(j).map_ind}(k)) < 25) && results(j).trials.amp{results(j).map_ind}(k) > min_amp
                     good_events = [good_events k];
                     taus = [taus; results(j).trials.tau{results(j).map_ind}{k}];
                     

@@ -5,7 +5,9 @@ load(results_file)
 try
     load(params.traces_filename)
 catch
-    load('data/simulated-epscs-1027.mat')
+    [pathname, filename] = fileparts(params.traces_filename);
+    pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
+    load([pathname filename])
 end
 
 % load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
@@ -112,7 +114,7 @@ axes(ax2)
 % plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-',[.005 25],0)
 % hold on
 
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[.1 10],0)
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],0)
 hold on
 
 if exist('true_signal','var')
@@ -125,7 +127,7 @@ if exist('true_signal','var')
 end
 plot_scatter_stack(time_amp_posteriors,trace_offset,bin_edges,0.25,2000)
 hold on
-plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[.1 10],-20)
+plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[.01 5],-20)
 hold on
 
 
@@ -134,7 +136,7 @@ hold off
 
 title(strrep(results_file,'_','-'))
 
-if length(varargin) > 1 && varargin{2}
+if length(varargin) > 2 && ~isempty(varargin{3})
     [dir,name,~] = fileparts(results_file);
     savefig([dir '/' name '.fig'])
 end

@@ -9,7 +9,7 @@ if ~isfield(params,'cluster')
 end
 
 if ~isfield(params,'par')
-    params.par = 0;
+    params.par = 1;
 end
 %% use an rng seed
 
@@ -61,7 +61,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 4.5;
+    params.a_min = 10;
 end
 
 % baseline bounds
@@ -79,7 +79,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 1/20000;
+    params.tau1_min = 5/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -89,14 +89,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 10/20000;
+    params.tau1_max = 40/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 10/20000;
+    params.tau2_min = 20/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 300/20000;
+    params.tau2_max = 150/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -189,7 +189,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 1000;
+    params.num_sweeps = 2000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -262,8 +262,7 @@ if ~isfield(params,'traces_filename')
         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/simulated-epscs-1027.mat';
     else
         params.traces_filename = ...
-            ['/home/shababo/projects/mapping/code/psc-detection/'...
-                        'data/for-paper/good-example-trace.mat'];
+            ['data/for-paper/paired-patches/20150630ExpD_evoked_traces.mat'];
     end
 end
 
@@ -280,7 +279,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'good-example-trace-0009.mat';
+        params.savename = '20150630ExpD_evoked_traces-0005.mat';
     end
 end
 

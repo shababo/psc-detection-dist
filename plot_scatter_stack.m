@@ -32,7 +32,7 @@ for trial = 1:size(traces,1)
     traces_to_plot = traces_to_plot/max(max(traces_to_plot));
     for i = 1:size(traces_to_plot,1);
         trace_to_plot = traces_to_plot(i,:);
-        sample_inds = find(trace_to_plot > .05);
+        sample_inds = find(trace_to_plot > .00);
         scatter(sample_inds/20000,ones(1,length(sample_inds))*-(bin_edges(i)-bin_half_width-bin_edges(1)) - offset +vert_offset,ceil(trace_to_plot(sample_inds)*125),[1 0 0],'filled')
         hold on
    
