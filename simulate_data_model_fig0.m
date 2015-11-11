@@ -2,7 +2,7 @@
 %% Simulate data from model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-rng(12341)
+rng(3)
 resultsfile = 'data/good-example-trace-0009.mat';
 tracefile = 'data/for-paper/good-example-trace.mat';
 load(resultsfile)
@@ -19,8 +19,8 @@ K = 1;
 
 T = 280*20; %bins - start not too long
 binSize = 1/20000; %
-tau_r_bounds = [1 10];
-tau_f_bounds = [10 300];
+tau_r_bounds = [5 20];
+tau_f_bounds = [20 250];
 firing_rate = 20; %spike/sec 
 c_noise = 2.5; %calcium signal std
 baseline = 0;
@@ -30,7 +30,7 @@ Y = zeros(K,T);
 C = zeros(K,T);
 Y_AR = zeros(K,T);
 Spk = cell(1,K);
-taus = cell(1,K);0
+taus = cell(1,K);
 amplitudes = cell(1,K);
 
 periodic = 0; %if zero, uses poisson spiketrain.
@@ -57,7 +57,7 @@ for ki = 1:K
         s_int = T/n_spike;
         startingSpikeTimes = [startingSpikeTimes s_int:s_int:(T-10)];
     else
-        num_spikes = 17;%poissrnd(n_spike);
+        num_spikes = 14;%poissrnd(n_spike);
         startingSpikeTimes = T*rand(1,num_spikes);
 %         startingSpikeTimes = times(rand(1,T)<p_spike)/(binSize*1e-3);
     end
@@ -149,30 +149,30 @@ for ki = 1:K
 end
 
 figure;
-ax1 = subplot(411);
+ax1 = subplot(412);
 plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
-title('True Current')
+title('Simulated Synaptic Currents')
 
-ax2 = subplot(412);
+ax2 = subplot(413);
 % plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
 plot_trace_stack((-er' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
 title('AR(2) Noise Process')
 
-ax3 = subplot(413);
-% plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
-plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[])
-title(['Simulated Voltage-Clamp'])
-
 ax3 = subplot(414);
 % plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
-plot_trace_stack(traces,25,zeros(K,3),'-',[.01 5])
-title(['Real Voltage-Clamp'])
+plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[.01 10])
+title(['Simulated Voltage-Clamp Recording'])
+
+ax4 = subplot(411);
+% plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack(traces,25,zeros(K,3),'-',[])
+title(['Real Voltage-Clamp Recording'])
 
 
-xlimits = get(gca,'xlim');
-ylimits = get(gca,'ylim');
-set(ax3,'xlim',xlimits)
-set(ax3,'ylim',ylimits)
+xlimits = get(ax3,'xlim');
+ylimits = get(ax3,'ylim');
+set(ax4,'xlim',xlimits)
+set(ax4,'ylim',ylimits)
 set(ax2,'xlim',xlimits)
 set(ax2,'ylim',ylimits)
 set(ax1,'xlim',xlimits)

@@ -91,7 +91,7 @@ for i = 1:size(traces,1)
 %         end
                                         
     end
-    map_curves(i,:) = this_curve + results(i).trials.base{map_i};
+    map_curves(i,:) = this_curve;% + results(i).trials.base{map_i};
 end
 
 ax1 = axes('Position',[0 0 1 1],'Visible','off');
@@ -114,20 +114,23 @@ axes(ax2)
 % plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-',[.005 25],0)
 % hold on
 
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],0)
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],100)
 hold on
-
+plot_scatter_stack(time_amp_posteriors,trace_offset,bin_edges,0,2000)
+hold on
 if exist('true_signal','var')
-%     times_vec = zeros(1,size(time_amp_posteriors,3));
+    times_vec = zeros(1,size(time_amp_posteriors,3));
 %     times_vec(ceil(true_event_times{1})) = max(max(max(time_amp_posteriors)))+.1;
-%     plot_scatter_stack(times_vec,trace_offset,bin_edges,30,100)
+
 %     hold on
-    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 0 0]),'-',[],0,1)
+    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],0,1)
+    hold on
+    scatter(true_event_times{1}/20000,-true_amplitudes{1},'*k')
     hold on
 end
-plot_scatter_stack(time_amp_posteriors,trace_offset,bin_edges,0.25,2000)
-hold on
-plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[.01 5],-20)
+
+
+plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 0 0]),'--',[.01 5],0,1)
 hold on
 
 
