@@ -173,7 +173,7 @@ savefile_basename = 'data/cluster-param-files/params-pspike-%0.0e-amin-%0.0e-num
 
 for i = 1:length(p_spike)
     for j = 1:length(a_min)
-        for k = 1:length(num_sweeps)
+        for k = 1:length(num_sweeps)roc 
             params.cluster = 1;
             params.p_spike = p_spike(i);
             params.a_min = a_min(j);
@@ -189,7 +189,7 @@ end
 %% plot ROC
 
 figure
-for i = 2:size(roc,1)
+for i = 1:size(roc,1)
     plot(roc(i,:,end,1),roc(i,:,end,2),'-o'); hold on
 end
 hold off
@@ -198,11 +198,11 @@ title('each line is diff a_{min}, within varies p_{spike}')
 %%
 figure
 for i = 1:size(roc,2)
-    plot(roc(2:end,i,end,1),roc(2:end,i,end,2),'-o'); hold on
+    plot(roc(:,i,1),roc(:,i,2),'-o'); hold on
 end
 hold off
 legend
-title('each line is diff p_spike, within varies a_min')
+title('each line is diff min_dist, within varies min_amplitude')
 
 
 %%
