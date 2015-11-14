@@ -16,9 +16,15 @@ else
     multiplier = 400;
 end
 
+if length(varargin) > 2 && ~isempty(varargin{3})
+    colors = varargin{3};
+else
+    colors = [0 0 1];
+end
+
 bin_half_width = .5*(bin_edges(2) - bin_edges(1));
 
-colors = 1:10;
+% colors = 1:10;
     
 for trial = 1:size(traces,1)
     
@@ -33,7 +39,7 @@ for trial = 1:size(traces,1)
     for i = 1:size(traces_to_plot,1);
         trace_to_plot = traces_to_plot(i,:);
         sample_inds = find(trace_to_plot > .00);
-        scatter(sample_inds/20000,ones(1,length(sample_inds))*-(bin_edges(i)-bin_half_width-bin_edges(1)) - offset +vert_offset,ceil(trace_to_plot(sample_inds)*125),[1 0 0],'filled')
+        scatter(sample_inds/20000,ones(1,length(sample_inds))*-(bin_edges(i)-bin_half_width-bin_edges(1)) - offset +vert_offset,ceil(trace_to_plot(sample_inds)*125),colors,'filled')
         hold on
    
 %     if ~isempty(events)

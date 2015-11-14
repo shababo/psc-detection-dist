@@ -119,6 +119,7 @@ hold on
 plot_scatter_stack(time_amp_posteriors,trace_offset,bin_edges,0,2000)
 hold on
 if exist('true_signal','var')
+    disp('...')
     times_vec = zeros(1,size(time_amp_posteriors,3));
 %     times_vec(ceil(true_event_times{1})) = max(max(max(time_amp_posteriors)))+.1;
 

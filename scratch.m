@@ -197,12 +197,19 @@ legend
 title('each line is diff a_{min}, within varies p_{spike}')
 %%
 figure
-for i = 1:size(roc,2)
-    plot(roc(2:end,i,end,1),roc(2:end,i,end,2),'-o'); hold on
+for i = 1:size(roc_deconv,2)
+    plot(roc_deconv(:,i,1),roc_deconv(:,i,2),'-o'); hold on
 end
 hold off
-legend
-title('each line is diff p_spike, within varies a_min')
+title('deconv')
+figure
+for i = 1:size(roc_crit,2)
+    plot(roc_crit(:,i,1),roc_crit(:,i,2),'-o'); hold on
+end
+hold off
+title('crit')
+
+
 
 
 %%

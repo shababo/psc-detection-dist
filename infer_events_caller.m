@@ -11,15 +11,16 @@ params = struct();
 if ~isempty(varargin) && ~isempty(varargin{1})
     varargin{1}
     load(varargin{1},'params');
-    [pathname, filename] = fileparts(params.traces_filename);
-    pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
-    params.traces_filename = [pathname filename];
-    params.savename = 'good-example-trace-1000.mat';
-%     params.stim_in = [zeros(1,20*10) ones(1,20*10) zeros(1,2000-20*20)];%linspace(0,1,20*10)
-    % ar noise model
-    params.p = 0; % how many time steps to regress on
-    params.phi_0 = zeros(params.p,1);
-    params.Phi_0 = 10*eye(params.p); %inverse covariance 3
+%     [pathname, filename] = fileparts(params.traces_filename);
+%     pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
+%     params.traces_filename = [pathname filename];
+    params.savename = 'good-example-trace-3000.mat';
+% %     params.stim_in = [zeros(1,20*10) ones(1,20*10) zeros(1,2000-20*20)];%linspace(0,1,20*10)
+%     % ar noise model
+%     params.p = 0; % how many time steps to regress on
+%     params.phi_0 = zeros(params.p,1);
+%     params.Phi_0 = 10*eye(params.p); %inverse covariance 3
+    params.a_min = 2.5;
 end
 
 % fill with default params

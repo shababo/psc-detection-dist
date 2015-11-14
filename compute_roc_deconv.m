@@ -20,4 +20,4 @@ for thresh_i = 1:length(threshold)
             
         end
     end
-    endd
+end

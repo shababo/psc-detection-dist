@@ -61,7 +61,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 10;
+    params.a_min = 1;
 end
 
 % baseline bounds
@@ -89,7 +89,7 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 40/20000;
+    params.tau1_max = 20/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
@@ -259,10 +259,10 @@ end
 %% filenames
 if ~isfield(params,'traces_filename')
     if params.cluster
-        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/simulated-epscs-1027.mat';
+        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/for-paper/real-vs-ar0-vs-ar2-sim-cosyne-abs.mat';
     else
         params.traces_filename = ...
-            ['data/for-paper/paired-patches/20150630ExpD_evoked_traces.mat'];
+            ['data/for-paper/real-vs-ar0-vs-ar2-sim-cosyne-abs.mat'];
     end
 end
 
@@ -279,7 +279,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = '20150630ExpD_evoked_traces-0005.mat';
+        params.savename = 'real-vs-ar0-vs-ar2-sim-cosyne-abs-0001.mat';
     end
 end
 
