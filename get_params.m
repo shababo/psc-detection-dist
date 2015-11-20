@@ -9,7 +9,7 @@ if ~isfield(params,'cluster')
 end
 
 if ~isfield(params,'par')
-    params.par = 1;
+    params.par = 0;
 end
 %% use an rng seed
 
@@ -21,7 +21,7 @@ if ~isfield(params,'seed')
     params.seed = 12341;
 end
 
-rng(params.seed)
+% rng(params.seed)
 
 %%
 
@@ -52,7 +52,7 @@ end
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
-%     params.traces_ind = 9;
+%     params.traces_ind = 1278;
 end
 %% inference params
 
@@ -61,7 +61,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 1;
+    params.a_min = .1;
 end
 
 % baseline bounds
@@ -79,7 +79,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 5/20000;
+    params.tau1_min = 1/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -89,14 +89,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 20/20000;
+    params.tau1_max = 25/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 20/20000;
+    params.tau2_min = 25/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 150/20000;
+    params.tau2_max = 200/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -208,7 +208,7 @@ if ~isfield(params,'tau2_prop_std')
 end
 
 if ~isfield(params,'amp_prop_std')
-    params.amp_prop_std = .2;
+    params.amp_prop_std = .3;
 end
 if ~isfield(params,'baseline_prop_std')
     params.baseline_prop_std = 2;
@@ -234,7 +234,7 @@ if ~isfield(params,'tau2_sweeps')
 end
 
 if ~isfield(params,'exclusion_bound')
-    params.exclusion_bound = 1;
+    params.exclusion_bound = 10;
 end
 if ~isfield(params,'Dt')
     params.Dt = 1;
@@ -259,10 +259,10 @@ end
 %% filenames
 if ~isfield(params,'traces_filename')
     if params.cluster
-        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/for-paper/real-vs-ar0-vs-ar2-sim-cosyne-abs.mat';
+        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/tracesForreal.mat';
     else
         params.traces_filename = ...
-            ['data/for-paper/real-vs-ar0-vs-ar2-sim-cosyne-abs.mat'];
+            ['data/for-paper/real-noise-w-growing-events.mat'];
     end
 end
 
@@ -279,7 +279,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'real-vs-ar0-vs-ar2-sim-cosyne-abs-0001.mat';
+        params.savename = 'real-noise-w-growing-events-0000.mat';
     end
 end
 

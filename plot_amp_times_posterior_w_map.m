@@ -114,7 +114,7 @@ axes(ax2)
 % plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-',[.005 25],0)
 % hold on
 
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],100)
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[],20)
 hold on
 plot_scatter_stack(time_amp_posteriors,trace_offset,bin_edges,0,2000)
 hold on
@@ -124,16 +124,22 @@ if exist('true_signal','var')
 %     times_vec(ceil(true_event_times{1})) = max(max(max(time_amp_posteriors)))+.1;
 
 %     hold on
-    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],0,1)
+    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'--',[.02 5],0,2)
     hold on
-    scatter(true_event_times{1}/20000,-true_amplitudes{1},'*k')
+    scatter(true_event_times{1}/20000,-true_amplitudes{1},'xr','LineWidth',3)
     hold on
 end
 
 
-plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 0 0]),'--',[.01 5],0,1)
+
+% plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 0 0]),'--',[.01 5],0,1)
 hold on
 
+leg_dummy_1 = plot(0,0,'k','LineWidth',2,'Visible','off');
+leg_dummy_2 = scatter(0,0,'ob','filled','Visible','off');
+leg_dummy_3 = plot(0,0,'--k','LineWidth',2,'Visible','off');
+leg_dummy_4 = scatter(0,0,'xr','linewidth',3,'Visible','off');
+legend([leg_dummy_1, leg_dummy_2, leg_dummy_3, leg_dummy_4],{'observation','Bayesian time-amplitude posterior','true current','true time-amplitude coordinate'})
 
 
 hold off

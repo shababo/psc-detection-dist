@@ -1,6 +1,9 @@
 function [trials, mcmc, runtime]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
+observe = 0;
+observe_freq = 25;
+
 %noise level here matters for the proposal distribution (how much it 
 %should trust data for proposals vs how much it should mix based on uniform prior)
 %this is accounted for by calciumNoiseVar
@@ -105,12 +108,26 @@ diffY_ = diffY;
 for i = 1:length(Tguess)
     efs{i} = ef;
     tmpi = Tguess(i); 
+%     start_ind = max(1,floor(tmpi) - 5);
+%     end_ind = min(start_ind + 10,length(diffY));
+%     [local_max,tmpi_tmp] = max(trace(start_ind:end_ind));
+%     tmpi = tmpi_tmp + start_ind - 1;
     sti_ = [sti tmpi];
+%     a_init = max(local_max/A + a_std*randn,a_min);
+%     sti_ = [sti tmpi];
     %must add spike to each trial (at mean location or sampled -- more appropriate if sampled)
     pr_ = pr;
     ati_ = ati;
     a_init = max(trace(tmpi)/A,a_min);
+%     a_init = max(diffY(max(1,floor(tmpi)))/A + a_std*randn,a_min);
     [sti_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,efs{i},a_init,tau,trace,tmpi, N+1, Dt, A); %adds all trials' spikes at same time
+     if observe
+                plot(pr_)
+                hold on
+                plot(trace - 100)
+                hold off
+                waitforbuttonpress
+            end
     taus{i} = tau;
     ati_ = [ati_ a_init];
     ati = ati_;
@@ -130,12 +147,29 @@ dropMoves = [0 0];
 timeMoves = [0 0];
 ampMoves = [0 0];
 tauMoves = [0 0];
+
+
+if observe
+        figure
+end
+
 for i = 1:num_sweeps
     
 %     if mod(i,10) == 0
 %         disp(length(ati))
 %     end
-    
+    if observe && ~(mod(i,observe_freq)-1)
+    i
+    subplot(211)
+            plot(pr)
+            hold on
+            plot(trace - 100)
+            hold off
+            subplot(212)
+            plot(diffY)
+            waitforbuttonpress
+    end
+
     % do burst time moves
     for ii = 1:spike_time_sweeps
         %guess on time and amplitude
@@ -289,12 +323,18 @@ for i = 1:num_sweeps
             %dont add if we have too many bursts or the proposed new location
             %is too close to another one
             if ~(any(abs(tmpi-sti)<exclusion_bound) || N >= maxNbursts)
-                sti_ = [sti tmpi];
+                
                 %must add burst to each trial (at mean location or sampled -- more appropriate if sampled, but make sure no trial's burst violates exclusion)
                 diffY_ = diffY;
                 pr_ = pr;
                 ati_ = ati;
-                a_init = max(trace(max(1,floor(tmpi)))/A - baseline + a_std*randn,a_min);%propose an initial amplitude for it
+%                 a_init = max(trace(max(1,floor(tmpi)))/A - baseline + a_std*randn,a_min);%propose an initial amplitude for it
+                start_ind = max(1,floor(tmpi) - 5);
+                end_ind = min(start_ind + 10,length(diffY));
+                [local_max,tmpi_tmp] = max(diffY(start_ind:end_ind));
+                tmpi = tmpi_tmp + start_ind - 1;
+                sti_ = [sti tmpi];
+                a_init = max(local_max/A + a_std*randn,a_min);
                 [si_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,ef_init,a_init,tau,trace,tmpi, N+1, Dt, A); %adds all trials' bursts at same time
                 sti_ = si_;
                 ati_ = [ati_ a_init];
@@ -317,6 +357,14 @@ for i = 1:num_sweeps
                     efs{N+1} = ef_init;
                     diffY = diffY_;
                     addMoves = addMoves + [1 1];
+                     if observe && ~mod(i,observe_freq)
+                plot(pr_)
+                hold on
+                plot(trace - 100)
+                hold off
+                waitforbuttonpress
+                     end
+           
                 else
                     %reject - do nothing
                     addMoves = addMoves + [0 1];

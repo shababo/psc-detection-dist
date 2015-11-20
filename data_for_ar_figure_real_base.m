@@ -5,7 +5,8 @@
 % rng(12341)
 
 % Simulate K voltage-clamp observed neurons
-K = 1;
+er = noise_in;
+% K = 1;
 
 % Simulation: Given sampling, what indicator timecourse. Also depends on spike rate
 % Sampling rate
@@ -13,8 +14,8 @@ K = 1;
 % Time constants
 % Firing rate
 % Poisson or periodic
-
-T = 2000; %bins - start not too long
+[K,T] = size(er);
+% T = 4000; %bins - start not too long
 binSize = 1/20000; %
 tau_r_bounds = [5 20];
 tau_f_bounds = [20 150];
@@ -23,9 +24,9 @@ firing_rate = 0; %spike/sec
 baseline = 0;
 A = 1; %magnitude scale of spike response
 
-Y = zeros(K,T);
+% Y = zeros(K,T);
 C = zeros(K,T);
-Y_AR = zeros(K,T);
+% Y_AR = zeros(K,T);
 Spk = cell(1,K);
 taus = cell(1,K);
 amplitudes = cell(1,K);
@@ -46,6 +47,8 @@ a_min = 2.5;
 a_max = 8;
 nc = 1; %trials
 
+user_defined = 1;
+
 for ki = 1:K
     
 %     if ~exist('true_signal','var')
@@ -55,6 +58,9 @@ for ki = 1:K
         if periodic
             s_int = T/n_spike;
             startingSpikeTimes = [startingSpikeTimes s_int:s_int:(T-10)];
+        elseif user_defined
+            startingSpikeTimes = 200:400:T;
+            amps = (1:length(startingSpikeTimes))*.5;
         else
             num_spikes = poissrnd(n_spike);
             startingSpikeTimes = T*rand(1,num_spikes);
@@ -85,10 +91,12 @@ for ki = 1:K
             ati_ = ati;
             logC_ = 0;
             for ti = 1:nc
-                a_init = a_min + (a_max-a_min)*rand;
+                a_init = amps(i);
                 tmpi_ = tmpi+(st_std*randn);
-                tau(1) = diff(tau_r_bounds)*rand() + tau_r_bounds(1);
-                tau(2) = diff(tau_f_bounds)*rand() + tau_f_bounds(1);
+%                 tau(1) = diff(tau_r_bounds)*rand() + tau_r_bounds(1);
+%                 tau(2) = diff(tau_f_bounds)*rand() + tau_f_bounds(1);
+                tau(1) = 15;
+                tau(2) = 100;
                 ef=genEfilt(tau,T);
                 [si_, ci_, logC_] = addSpike(sti{ti},ci(ti,:),logC_,ef,a_init,tau,ci(ti,:),tmpi_, N+1, Dt, A); %adds all trials' spikes at same time
                 sti_{ti} = si_;
@@ -124,23 +132,23 @@ for ki = 1:K
 %     end
 
 %     sigmasq = 2.0;
-    c_noise = sqrt(sigmasq);
+%     c_noise = sqrt(sigmasq);
     
 %     phi = [1, 1.0, -.42]; %this determines what the AR noise looks like.
-    p = length(phi) - 1;
-    U = c_noise*randn(nc,T);
-    er = zeros(T,1);
+%     p = length(phi) - 1;
+%     U = c_noise*randn(nc,T);
+%     er = zeros(T,1);
 
-    for t = (1+p):(T+p)
-        er(t) = phi*[U(t-p); er(t-1:-1:(t-p))];
-    end
-
-    er = er((1+p):(T+p))';
-    y = d + U;
+%     for t = (1+p):(T+p)
+%         er(t) = phi*[U(t-p); er(t-1:-1:(t-p))];
+%     end
+% 
+%     er = er((1+p):(T+p))';
+%     y = d + U;
     y_ar = d + er;
 
     
-    Y(ki,:) = y;
+%     Y(ki,:) = y;
     C(ki,:) = ci;
     Y_AR(ki,:) = y_ar;
     Spk{ki} = startingSpikeTimes;
@@ -148,26 +156,26 @@ for ki = 1:K
     taus{ki} = trace_taus;
 end
 
-% figure;
-% ax1 = subplot(311);
-% plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
-% title('True Current')
-% 
-% ax2 = subplot(312);
-% % plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
-% plot_trace_stack((-er' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
-% title('AR(2) Noise Process')
-% 
-% ax3 = subplot(313);
-% % plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
-% plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[.01 10])
-% title(['Observation'])
-% xlimits = get(gca,'xlim');
-% ylimits = get(gca,'ylim');
-% set(ax2,'xlim',xlimits)
-% set(ax2,'ylim',ylimits)
-% set(ax1,'xlim',xlimits)
-% set(ax1,'ylim',ylimits)
+figure;
+ax1 = subplot(311);
+plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+title('True Current')
+
+ax2 = subplot(312);
+% plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack((-er' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+title('Real Trace as Base')
+
+ax3 = subplot(313);
+% plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[.01 10])
+title(['Observation'])
+xlimits = get(gca,'xlim');
+ylimits = get(gca,'ylim');
+set(ax2,'xlim',xlimits)
+set(ax2,'ylim',ylimits)
+set(ax1,'xlim',xlimits)
+set(ax1,'ylim',ylimits)
 
 
 

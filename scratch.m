@@ -199,6 +199,7 @@ title('each line is diff a_{min}, within varies p_{spike}')
 figure
 for i = 1:size(roc_deconv,2)
     plot(roc_deconv(:,i,1),roc_deconv(:,i,2),'-o'); hold on
+%% plot ROC
 end
 hold off
 title('deconv')
