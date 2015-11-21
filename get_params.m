@@ -9,7 +9,7 @@ if ~isfield(params,'cluster')
 end
 
 if ~isfield(params,'par')
-    params.par = 0;
+    params.par = 1;
 end
 %% use an rng seed
 
@@ -42,11 +42,11 @@ end
 
 % first sample, if you want to start at 1, omit
 if ~isfield(params,'start_ind')
-%     params.start_ind = .3*20000;
+    params.start_ind = .3*20000;
 end
 % if you want to go to the end of the traces, omit
 if ~isfield(params,'duration')
-%     params.duration = 20000*.1;
+    params.duration = 20000*.15;
 end
 
 % if you want all traces, omit
@@ -61,7 +61,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = .1;
+    params.a_min = 10;
 end
 
 % baseline bounds
@@ -79,7 +79,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 1/20000;
+    params.tau1_min = .01/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -89,14 +89,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 25/20000;
+    params.tau1_max = 50/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 25/20000;
+    params.tau2_min = 5/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 200/20000;
+    params.tau2_max = 150/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -105,14 +105,14 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-4;%1e-4;
+    params.p_spike = 1e-2;%1e-4;
 end
 
 
 
 % ar noise model
 if ~isfield(params,'p')
-    params.p = 2; % how many time steps to regress on
+    params.p = 4; % how many time steps to regress on
 end
 if ~isfield(params,'phi_0')
     params.phi_0 = zeros(params.p,1);
@@ -128,7 +128,7 @@ end
 %% direct stim
 
 if ~isfield(params,'direct_stim')
-    params.direct_stim = 0;
+    params.direct_stim = 1;
 end
 
 if ~isfield(params,'stim_tau_rise')
@@ -182,6 +182,10 @@ if ~isfield(params,'stim_tau_fall_std')
     params.stim_tau_fall_std = .005;
 end
 
+if ~isfield(params,'stim_shape')
+    load('data/chr2-stim-response.mat');
+    params.stim_shape = chr2_response;
+end
 
 
 %% sampling params
@@ -189,7 +193,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 2000;
+    params.num_sweeps = 2500;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -262,7 +266,7 @@ if ~isfield(params,'traces_filename')
         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/tracesForreal.mat';
     else
         params.traces_filename = ...
-            ['data/for-paper/real-noise-w-growing-events.mat'];
+            ['data/evoked_pscs.mat'];
     end
 end
 
@@ -279,7 +283,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'real-noise-w-growing-events-0000.mat';
+        params.savename = 'evoked_pscs-new-results-0004.mat';
     end
 end
 

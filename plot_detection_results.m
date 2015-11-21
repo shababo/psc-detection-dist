@@ -41,7 +41,7 @@ for j = 1:length(results)
         for k = 1:length(results(j).trials.tau{results(j).map_ind})
             if ~isempty(results(j).trials.tau{results(j).map_ind}{k})
 %                 if all(results(j).trials.tau{results(j).map_ind}{k} > [min_tau1 min_tau2]) && all(results(j).trials.tau{results(j).map_ind}{k} < [max_tau1 max_tau2]) && results(j).trials.times{results(j).map_ind}(k) > min_time && results(j).trials.times{results(j).map_ind}(k) < max_time && results(j).trials.amp{results(j).map_ind}(k) > min_amp
-                if all(results(j).trials.tau{results(j).map_ind}{k} > [min_tau1 min_tau2]) && all(results(j).trials.tau{results(j).map_ind}{k} < [max_tau1 max_tau2]) && any(abs(hot_times - results(j).trials.times{results(j).map_ind}(k)) < 25) && results(j).trials.amp{results(j).map_ind}(k) > min_amp
+%                 if all(results(j).trials.tau{results(j).map_ind}{k} > [min_tau1 min_tau2]) && all(results(j).trials.tau{results(j).map_ind}{k} < [max_tau1 max_tau2]) && any(abs(hot_times - results(j).trials.times{results(j).map_ind}(k)) < 25) && results(j).trials.amp{results(j).map_ind}(k) > min_amp
                     good_events = [good_events k];
                     taus = [taus; results(j).trials.tau{results(j).map_ind}{k}];
                     
@@ -64,7 +64,7 @@ for j = 1:length(results)
                     time_constants = [time_constants; rise_time decay_time];% this_max_time];
                     
                     
-                end
+%                 end
             end
         end
         

@@ -3,7 +3,7 @@ function [trials, mcmc, runtime]  = sampleParams_ar_2taus_directstim(trace, tau,
 
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
 
-observe = 1;
+observe = 0;
 observe_freq = 25;
 
 %noise level here matters for the proposal distribution (how much it 
@@ -43,25 +43,26 @@ stim_amp_min = params.stim_amp_min;
 stim_amp_max = params.stim_amp_max;
 
 
-stim_amp = params.stim_amp_init
+stim_amp = params.stim_amp_init;
 stim_in = params.stim_in;
-nBins_stim = length(stim_in);
-if nBins_stim < nBins
-    stim_in = [stim_in zeros(1,nBins - length(stim_in))];
-else
-    stim_in = stim_in(1:nBins);
-end
-t = 0:nBins-1;
-stim_decay = exp(-t/stim_tau_fall);
-stim_rise = -exp(-t/stim_tau_rise);
-stim_kernel = (stim_decay + stim_rise)/sum(stim_decay + stim_rise);
-stim_template = conv(stim_in,stim_kernel);
-stim_template = stim_template(1:nBins)/max(stim_template(1:nBins));
-assignin('base','stim_decay',stim_decay)
-assignin('base','stim_rise',stim_rise)
-assignin('base','stim_kernel',stim_kernel)
-assignin('base','stim_template',stim_template)
-assignin('base','stim_in',stim_in)
+stim_template = params.event_sign * params.stim_shape;
+% nBins_stim = length(stim_in);
+% if nBins_stim < nBins
+%     stim_in = [stim_in zeros(1,nBins - length(stim_in))];
+% else
+%     stim_in = stim_in(1:nBins);
+% end
+% t = 0:nBins-1;
+% stim_decay = exp(-t/stim_tau_fall);
+% stim_rise = -exp(-t/stim_tau_rise);
+% stim_kernel = (stim_decay + stim_rise)/sum(stim_decay + stim_rise);
+% stim_template = conv(stim_in,stim_kernel);
+% stim_template = stim_template(1:nBins)/max(stim_template(1:nBins));
+% assignin('base','stim_decay',stim_decay)
+% assignin('base','stim_rise',stim_rise)
+% assignin('base','stim_kernel',stim_kernel)
+% assignin('base','stim_template',stim_template)
+% assignin('base','stim_in',stim_in)
 
 
 %all of these are multiplied by big A
@@ -260,141 +261,141 @@ end
 
         end
     end
-    if mod(i,25) == 1
-
-        for ii = 1:3
-
-            %sample with random walk proposal
-            tmp_stim_tau_rise = stim_tau_rise;
-            tmp_stim_tau_rise_ = tmp_stim_tau_rise +(stim_tau_rise_std*randn); %with bouncing off min and max
-
-
-
-            %bounds
-            while tmp_stim_tau_rise_>stim_tau_rise_max || tmp_stim_tau_rise_< stim_tau_rise_min
-                if tmp_stim_tau_rise_<stim_tau_rise_min
-                    tmp_stim_tau_rise_ = stim_tau_rise_min+(stim_tau_rise_min-tmp_stim_tau_rise_);
-                elseif tmp_stim_tau_rise_>stim_tau_rise_max
-                    tmp_stim_tau_rise_ = stim_tau_rise_max-(tmp_stim_tau_rise_-stim_tau_rise_max);
-                end
-            end
-
-            stim_rise_ = -exp(-t/tmp_stim_tau_rise_);
-            stim_kernel_ = (stim_decay + stim_rise_)/sum(stim_decay + stim_rise_);
-            stim_template_ = conv(stim_in,stim_kernel_);
-            stim_template_ = stim_template_(1:nBins)/max(stim_template_(1:nBins));
-
-            [pr_, diffY_] = remove_direct_stim(pr,stim_amp,diffY,stim_template);
-            [pr_, diffY_] = add_direct_stim(pr_,stim_amp,diffY_,stim_template_); 
-
-            %accept or reject - include a prior?
-            prior_ratio = 1;
-            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) )))*prior_ratio;
-            if ratio>1 %accept
-                stim_tau_rise = tmp_stim_tau_rise_;
-                stim_kernel = stim_kernel_;
-                stim_rise = stim_rise_;
-                stim_template = stim_template_;
-                pr = pr_;
-                if observe && ~mod(i,observe_freq)
-                    plot(pr)
-                    hold on
-                    plot(trace - 100)
-                    hold off
-                    waitforbuttonpress
-                end
-                diffY = diffY_;
-                stim_tau_rise_std = stim_tau_rise_std + 2*.1*rand*stim_tau_rise_std/(i);
-            elseif rand<ratio %accept
-                stim_tau_rise = tmp_stim_tau_rise_;
-                pr = pr_;
-                stim_kernel = stim_kernel_;
-                stim_rise = stim_rise_;
-                stim_template = stim_template_;
-                if observe && ~mod(i,observe_freq)
-                    plot(pr)
-                    hold on
-                    plot(trace - 100)
-                    hold off
-                    waitforbuttonpress
-                end
-                diffY = diffY_;
-                stim_tau_rise_std = stim_tau_rise_std + 2*.1*rand*stim_tau_rise_std/(i);
-            else
-                %reject - do nothing
-                stim_tau_rise_std = stim_tau_rise_std - .1*stim_tau_rise_std/(i);
-
-
-            end
-        end
-
-        for ii = 1:3
-
-            %sample with random walk proposal
-            tmp_stim_tau_fall = stim_tau_fall;
-            tmp_stim_tau_fall_ = tmp_stim_tau_fall +(stim_tau_fall_std*randn); %with bouncing off min and max
-
-
-
-            %bounds
-            while tmp_stim_tau_fall_>stim_tau_fall_max || tmp_stim_tau_fall_< stim_tau_fall_min
-                if tmp_stim_tau_fall_<stim_tau_fall_min
-                    tmp_stim_tau_fall_ = stim_tau_fall_min+(stim_tau_fall_min-tmp_stim_tau_fall_);
-                elseif tmp_stim_tau_fall_>stim_tau_fall_max
-                    tmp_stim_tau_fall_ = stim_tau_fall_max-(tmp_stim_tau_fall_-stim_tau_fall_max);
-                end
-            end
-
-            stim_decay_ = exp(-t/tmp_stim_tau_fall_);
-            stim_kernel_ = (stim_decay_ + stim_rise)/sum(stim_decay_ + stim_rise);
-            stim_template_ = conv(stim_in,stim_kernel_);
-            stim_template_ = stim_template_(1:nBins)/max(stim_template_(1:nBins));
-
-            [pr_, diffY_] = remove_direct_stim(pr,stim_amp,diffY,stim_template);
-            [pr_, diffY_] = add_direct_stim(pr_,stim_amp,diffY_,stim_template_); 
-
-            %accept or reject - include a prior?
-            prior_ratio = 1;
-            ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) )))*prior_ratio;
-            if ratio>1 %accept
-                stim_tau_fall = tmp_stim_tau_fall_;
-                stim_kernel = stim_kernel_;
-                stim_decay = stim_decay_;
-                stim_template = stim_template_;
-                pr = pr_;
-                if observe && ~mod(i,observe_freq)
-                    plot(pr)
-                    hold on
-                    plot(trace - 100)
-                    hold off
-                    waitforbuttonpress
-                end
-                diffY = diffY_;
-                stim_tau_fall_std = stim_tau_fall_std + 2*.1*rand*stim_tau_fall_std/(i);
-            elseif rand<ratio %accept
-                stim_tau_fall = tmp_stim_tau_fall_;
-                pr = pr_;
-                stim_kernel = stim_kernel_;
-                stim_decay = stim_decay_;
-                stim_template = stim_template_;
-                if observe && ~mod(i,observe_freq)
-                    plot(pr)
-                    hold on
-                    plot(trace - 100)
-                    hold off
-                    waitforbuttonpress
-                end
-                diffY = diffY_;
-                stim_tau_fall_std = stim_tau_fall_std + 2*.1*rand*stim_tau_fall_std/(i);
-            else
-                %reject - do nothing
-                stim_tau_fall_std = stim_tau_fall_std - .1*stim_tau_fall_std/(i);
-
-
-            end
-        end
-
-    end
+%     if mod(i,25) == 1
+% 
+%         for ii = 1:3
+% 
+%             %sample with random walk proposal
+%             tmp_stim_tau_rise = stim_tau_rise;
+%             tmp_stim_tau_rise_ = tmp_stim_tau_rise +(stim_tau_rise_std*randn); %with bouncing off min and max
+% 
+% 
+% 
+%             %bounds
+%             while tmp_stim_tau_rise_>stim_tau_rise_max || tmp_stim_tau_rise_< stim_tau_rise_min
+%                 if tmp_stim_tau_rise_<stim_tau_rise_min
+%                     tmp_stim_tau_rise_ = stim_tau_rise_min+(stim_tau_rise_min-tmp_stim_tau_rise_);
+%                 elseif tmp_stim_tau_rise_>stim_tau_rise_max
+%                     tmp_stim_tau_rise_ = stim_tau_rise_max-(tmp_stim_tau_rise_-stim_tau_rise_max);
+%                 end
+%             end
+% 
+%             stim_rise_ = -exp(-t/tmp_stim_tau_rise_);
+%             stim_kernel_ = (stim_decay + stim_rise_)/sum(stim_decay + stim_rise_);
+%             stim_template_ = conv(stim_in,stim_kernel_);
+%             stim_template_ = stim_template_(1:nBins)/max(stim_template_(1:nBins));
+% 
+%             [pr_, diffY_] = remove_direct_stim(pr,stim_amp,diffY,stim_template);
+%             [pr_, diffY_] = add_direct_stim(pr_,stim_amp,diffY_,stim_template_); 
+% 
+%             %accept or reject - include a prior?
+%             prior_ratio = 1;
+%             ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) )))*prior_ratio;
+%             if ratio>1 %accept
+%                 stim_tau_rise = tmp_stim_tau_rise_;
+%                 stim_kernel = stim_kernel_;
+%                 stim_rise = stim_rise_;
+%                 stim_template = stim_template_;
+%                 pr = pr_;
+%                 if observe && ~mod(i,observe_freq)
+%                     plot(pr)
+%                     hold on
+%                     plot(trace - 100)
+%                     hold off
+%                     waitforbuttonpress
+%                 end
+%                 diffY = diffY_;
+%                 stim_tau_rise_std = stim_tau_rise_std + 2*.1*rand*stim_tau_rise_std/(i);
+%             elseif rand<ratio %accept
+%                 stim_tau_rise = tmp_stim_tau_rise_;
+%                 pr = pr_;
+%                 stim_kernel = stim_kernel_;
+%                 stim_rise = stim_rise_;
+%                 stim_template = stim_template_;
+%                 if observe && ~mod(i,observe_freq)
+%                     plot(pr)
+%                     hold on
+%                     plot(trace - 100)
+%                     hold off
+%                     waitforbuttonpress
+%                 end
+%                 diffY = diffY_;
+%                 stim_tau_rise_std = stim_tau_rise_std + 2*.1*rand*stim_tau_rise_std/(i);
+%             else
+%                 %reject - do nothing
+%                 stim_tau_rise_std = stim_tau_rise_std - .1*stim_tau_rise_std/(i);
+% 
+% 
+%             end
+%         end
+% 
+%         for ii = 1:3
+% 
+%             %sample with random walk proposal
+%             tmp_stim_tau_fall = stim_tau_fall;
+%             tmp_stim_tau_fall_ = tmp_stim_tau_fall +(stim_tau_fall_std*randn); %with bouncing off min and max
+% 
+% 
+% 
+%             %bounds
+%             while tmp_stim_tau_fall_>stim_tau_fall_max || tmp_stim_tau_fall_< stim_tau_fall_min
+%                 if tmp_stim_tau_fall_<stim_tau_fall_min
+%                     tmp_stim_tau_fall_ = stim_tau_fall_min+(stim_tau_fall_min-tmp_stim_tau_fall_);
+%                 elseif tmp_stim_tau_fall_>stim_tau_fall_max
+%                     tmp_stim_tau_fall_ = stim_tau_fall_max-(tmp_stim_tau_fall_-stim_tau_fall_max);
+%                 end
+%             end
+% 
+%             stim_decay_ = exp(-t/tmp_stim_tau_fall_);
+%             stim_kernel_ = (stim_decay_ + stim_rise)/sum(stim_decay_ + stim_rise);
+%             stim_template_ = conv(stim_in,stim_kernel_);
+%             stim_template_ = stim_template_(1:nBins)/max(stim_template_(1:nBins));
+% 
+%             [pr_, diffY_] = remove_direct_stim(pr,stim_amp,diffY,stim_template);
+%             [pr_, diffY_] = add_direct_stim(pr_,stim_amp,diffY_,stim_template_); 
+% 
+%             %accept or reject - include a prior?
+%             prior_ratio = 1;
+%             ratio = exp(sum((1/(2*NoiseVar))*( predAR(diffY_,phi,p,1 ) - predAR(diffY,phi,p,1 ) )))*prior_ratio;
+%             if ratio>1 %accept
+%                 stim_tau_fall = tmp_stim_tau_fall_;
+%                 stim_kernel = stim_kernel_;
+%                 stim_decay = stim_decay_;
+%                 stim_template = stim_template_;
+%                 pr = pr_;
+%                 if observe && ~mod(i,observe_freq)
+%                     plot(pr)
+%                     hold on
+%                     plot(trace - 100)
+%                     hold off
+%                     waitforbuttonpress
+%                 end
+%                 diffY = diffY_;
+%                 stim_tau_fall_std = stim_tau_fall_std + 2*.1*rand*stim_tau_fall_std/(i);
+%             elseif rand<ratio %accept
+%                 stim_tau_fall = tmp_stim_tau_fall_;
+%                 pr = pr_;
+%                 stim_kernel = stim_kernel_;
+%                 stim_decay = stim_decay_;
+%                 stim_template = stim_template_;
+%                 if observe && ~mod(i,observe_freq)
+%                     plot(pr)
+%                     hold on
+%                     plot(trace - 100)
+%                     hold off
+%                     waitforbuttonpress
+%                 end
+%                 diffY = diffY_;
+%                 stim_tau_fall_std = stim_tau_fall_std + 2*.1*rand*stim_tau_fall_std/(i);
+%             else
+%                 %reject - do nothing
+%                 stim_tau_fall_std = stim_tau_fall_std - .1*stim_tau_fall_std/(i);
+% 
+% 
+%             end
+%         end
+% 
+%     end
     
 
     
