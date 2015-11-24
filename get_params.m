@@ -183,8 +183,9 @@ if ~isfield(params,'stim_tau_fall_std')
 end
 
 if ~isfield(params,'stim_shape')
-    load('data/chr2-stim-response.mat');
-    params.stim_shape = chr2_response;
+%     load('data/chr2-stim-response.mat');
+%     params.stim_shape = chr2_response;
+    params.stim_shape = [];
 end
 
 
