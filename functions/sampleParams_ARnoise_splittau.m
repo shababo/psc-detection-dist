@@ -1,8 +1,8 @@
 function [trials, mcmc, runtime]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
-observe = 0;
-observe_freq = 25;
+observe = 1;
+observe_freq = 2;
 
 %noise level here matters for the proposal distribution (how much it 
 %should trust data for proposals vs how much it should mix based on uniform prior)
@@ -66,7 +66,7 @@ fprintf('Progress:')
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
 
 event_samples = params.event_samples;
-ef = genEfilt_ar([(tau1_max-tau1_min)/2 (tau2_max-tau2_min)/2],event_samples);%exponential filter
+ef = genEfilt_ar(tau,event_samples);%exponential filter
 ef_init = ef;
 
 samples_a  = cell(1,num_sweeps);
@@ -160,13 +160,15 @@ for i = 1:num_sweeps
 %     end
     if observe && ~(mod(i,observe_freq)-1)
     i
-    subplot(211)
+    subplot(311)
             plot(pr)
             hold on
             plot(trace - 100)
             hold off
-            subplot(212)
+            subplot(312)
             plot(diffY)
+            subplot(313)
+            plot(objective)
             waitforbuttonpress
     end
 
@@ -357,13 +359,13 @@ for i = 1:num_sweeps
                     efs{N+1} = ef_init;
                     diffY = diffY_;
                     addMoves = addMoves + [1 1];
-                     if observe && ~mod(i,observe_freq)
-                plot(pr_)
-                hold on
-                plot(trace - 100)
-                hold off
-                waitforbuttonpress
-                     end
+%                      if observe && ~mod(i,observe_freq)
+%                 plot(pr_)
+%                 hold on
+%                 plot(trace - 100)
+%                 hold off
+%                 waitforbuttonpress
+%                      end
            
                 else
                     %reject - do nothing
@@ -405,6 +407,22 @@ for i = 1:num_sweeps
                     efs(tmpi) = [];
                     diffY = diffY_;
                     dropMoves = dropMoves + [1 1]; 
+                    
+                    if observe && ~(mod(i,observe_freq)-1)
+    
+    subplot(311)
+            plot(pr)
+            hold on
+            plot(trace - 100)
+            hold off
+            subplot(312)
+            plot(diffY)
+            subplot(313)
+            plot(objective)
+            title(num2str(N))
+            waitforbuttonpress
+                    end
+    
                 else
                     %reject - do nothing
                     dropMoves = dropMoves + [0 1];
