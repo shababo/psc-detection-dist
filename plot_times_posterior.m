@@ -2,11 +2,11 @@ function time_posteriors = plot_times_posterior(results_file, trace_offset, vara
 
 load(results_file)
 
-try
+% try
     load(params.traces_filename)
-catch
-    load('data/simulated-epscs-1027.mat')
-end
+% catch
+%     load('data/simulated-epscs-1027.mat')
+% end
 
 % load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
 % load('/home/shababo/Desktop/simulated-data-longer-traces-epsc.mat')
@@ -44,7 +44,7 @@ else
 end
 
 time_posteriors = zeros(size(traces));
-
+burn_in = 1;
 for i = 1:size(traces,1)
     
     if ~exist('max_sample','var')
@@ -54,12 +54,12 @@ for i = 1:size(traces,1)
     end
     this_posterior = zeros(1,T);
     
-    for j = 1:length(results(i).trials.times)
+    for j = burn_in:length(results(i).trials.times)
         
         these_inds = ceil(results(i).trials.times{j});
         
 %         if ~isempty(these_inds)
-            this_posterior(these_inds) = this_posterior(these_inds) + 1/length(results(i).trials.times);
+            this_posterior(these_inds) = this_posterior(these_inds) + 1/length(results(i).trials.times(burn_in:end));
 %         end
     end
     
@@ -97,17 +97,19 @@ axes(ax1) % sets ax1 to current axes
 text(.025,0.6,descr)
 
 axes(ax2)
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-',[.005 25],0)
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[.005 25],0)
 hold on
 if exist('true_signal','var')
     times_vec = zeros(size(time_posteriors));
-    times_vec(ceil(true_event_times{1})) = max(max(time_posteriors))+.1;
-    plot_scatter_stack(times_vec,trace_offset,30,100)
+    for i = 1:size(time_posteriors,1)        
+        times_vec(i,ceil(true_event_times{i})) = max(max(time_posteriors))+.1;
+    end
+    plot_scatter_stack(times_vec,trace_offset,[0 0],20,100,[0 1 0])
     hold on
-    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
+%     plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
+%     hold on
 end
-hold on
-plot_scatter_stack(time_posteriors,trace_offset,50)
+plot_scatter_stack(time_posteriors,trace_offset,[0 0],10,100,[1 0 0])
 hold off
 
 title(strrep(results_file,'_','-'))
