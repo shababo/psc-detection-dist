@@ -10,19 +10,20 @@ max_tau1 = Inf;
 max_tau2 = Inf;
 
 
-min_amp = 0;
+min_amp = -Inf;
 min_time = 0;
 max_time = Inf;%.015*20000;
-hot_time_min = 0;
-hot_time_max = 0;
-hot_times = ([.0043 .0177 .0324 .0467 .0610 .0754 .0896 .1040 .1187 .1333 .1470 .1612 .1761 .1891 .2046])*20000;
+hot_time_min = .0095;
+hot_time_max = .012;
+% hot_times = ([.0043 .0177 .0324 .0467 .0610 .0754 .0896 .1040 .1187 .1333 .1470 .1612 .1761 .1891 .2046])*20000;
 % hot_time_min = .0047;
 % hot_time_max = .007;
-hot_amp_min = 0;
+hot_amp_min = -Inf;
 % hot_amp_min = 20;
 hot_amp_max = Inf;
 hot_min_tau2 = 0;%50;
 
+% results = results(1:end-1);
 
 for j = 1:length(results)
     
@@ -97,22 +98,22 @@ end
 
 figure
 gplotmatrix(target_feature_mat,target_feature_mat,groups)
-
-figure
-plotmatrix(target_feature_mat)
+% 
+% figure
+% plotmatrix(target_feature_mat)
 
 %%
-% 
-% all_times = [];
-% trace_times = cell(length(results),1);
-% for i = 1:length(results)
-%     trace_times{i} = [];
-%     this_trial_results = results(i).trials.times;
-%     for j = 1:length(this_trial_results)
-%         trace_times{i} = [trace_times{i} this_trial_results{j}];
-%         all_times = [all_times this_trial_results{j}];
-%     end  
-% end
+
+all_times = [];
+trace_times = cell(length(results),1);
+for i = 1:length(results)
+    trace_times{i} = [];
+    this_trial_results = results(i).trials.times;
+    for j = 1:length(this_trial_results)
+        trace_times{i} = [trace_times{i} this_trial_results{j}];
+        all_times = [all_times this_trial_results{j}];
+    end  
+end
 % 
 % figure;
 % for i = 1:length(results)

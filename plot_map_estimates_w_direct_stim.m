@@ -85,11 +85,12 @@ colors = lines(85);
 
 
 axes(ax2)
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-')
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[.005 25])
 hold on
 plot_trace_stack(full_sum,trace_offset,bsxfun(@plus,zeros(length(direct_stims),3),[.75 0 0]),'-',[],[],2)
 hold on
-plot_trace_stack(direct_stims,trace_offset,bsxfun(@plus,zeros(length(direct_stims),3),colors(ceil(rand*85),:)),'-',[],35,3)
+the_color = 43;
+plot_trace_stack(direct_stims,trace_offset,bsxfun(@plus,zeros(length(direct_stims),3),colors(the_color,:)),'-',[],35,3)
 hold on
 plot_trace_stack(map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[.1 .1 .75]),'-',[],80,2)
 hold off

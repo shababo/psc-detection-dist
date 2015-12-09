@@ -120,7 +120,7 @@ if exist('true_signal','var')
 %     plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
 %     hold on
 end
-plot_scatter_stack(time_posteriors,trace_offset,[0 0],50,100,[0 0 1])
+plot_scatter_stack(time_posteriors,trace_offset,[0 0],5,100,[0 0 1])
 hold off
 
 title(strrep(results_file,'_','-'))
