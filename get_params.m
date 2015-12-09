@@ -1,15 +1,17 @@
 function params = get_params(varargin)
 
 if ~isempty(varargin)
+    disp('1')
     params = varargin{1};
 end
 
 if ~isfield(params,'cluster')
+    disp('2')
     params.cluster = 0;
 end
 
 if ~isfield(params,'par')
-    params.par = 0;
+    params.par = 1;
 end
 %% use an rng seed
 
@@ -61,7 +63,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 10;
+    params.a_min = -100;
 end
 
 % baseline bounds
@@ -79,7 +81,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = .01/20000;
+    params.tau1_min = 1/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -89,14 +91,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 5/20000;
+    params.tau1_max = 10/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 5/20000;
+    params.tau2_min = 50/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 35/20000;
+    params.tau2_max = 250/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -106,13 +108,14 @@ end
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
     params.p_spike = 1e-6;%1e-4;
+
 end
 
 
 
 % ar noise model
 if ~isfield(params,'p')
-    params.p = 0; % how many time steps to regress on
+    params.p = 2; % how many time steps to regress on
 end
 if ~isfield(params,'phi_0')
     params.phi_0 = zeros(params.p,1);
@@ -125,10 +128,14 @@ if ~isfield(params,'noise_var_init')
     params.noise_var_init = 1.0;
 end
 
+if ~isfield(params,'noise_est_subset')
+    params.noise_est_subset = 1:350;
+end
+
 %% direct stim
 
 if ~isfield(params,'direct_stim')
-    params.direct_stim = 0;
+    params.direct_stim = 1;
 end
 
 if ~isfield(params,'stim_tau_rise')
@@ -155,7 +162,7 @@ if ~isfield(params,'stim_in')
 end
 
 if ~isfield(params,'stim_amp_init')
-    params.stim_amp_init = 100;
+    params.stim_amp_init = NaN;
 end
 
 if ~isfield(params,'stim_tau_rise_min')
@@ -185,7 +192,11 @@ end
 if ~isfield(params,'stim_shape')
 %     load('data/chr2-stim-response.mat');
 %     params.stim_shape = chr2_response;
-    params.stim_shape = [];
+    
+    load('data/2P-Chrimson-10ms-template.mat');
+    params.stim_shape = template_clean;
+    
+%     params.stim_shape = [];
 end
 
 
@@ -194,7 +205,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 1000;
+    params.num_sweeps = 2000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -269,7 +280,7 @@ if ~isfield(params,'traces_filename')
 
     else
         params.traces_filename = ...
-            ['data/FSEPSCs_forBen.mat'];
+            ['data/2P-direct-stim-w-ipsc-event.mat'];
     end
 end
 
@@ -286,7 +297,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'FSEPSCs_forBen-0000.mat';
+        params.savename = '2P-direct-stim-w-ipsc-event-0000.mat';
     end
 end
 

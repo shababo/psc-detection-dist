@@ -31,6 +31,8 @@ else
 end
 
 map_curves = zeros(size(traces));
+direct_stims = zeros(size(traces));
+full_sum = zeros(size(traces));
 
 for i = 1:length(results)
     
@@ -49,7 +51,10 @@ for i = 1:length(results)
                                             2, 1, 1);
                                         
     end
-    map_curves(i,:) = this_curve + results(i).trials.base{min_i};
+    map_curves(i,:) = params.event_sign*(this_curve + results(i).trials.base{min_i});
+    direct_stims(i,:) = -params.stim_shape*results(i).trials.stim_amp{min_i} + results(i).trials.base{min_i};
+    full_sum(i,:) = map_curves(i,:) + direct_stims(i,:) - results(i).trials.base{min_i};
+    results(i).trials.stim_amp{min_i}
 end
 
 ax1 = axes('Position',[0 0 1 1],'Visible','off');
@@ -68,10 +73,17 @@ descr = {'Parameters:'
 axes(ax1) % sets ax1 to current axes
 text(.025,0.6,descr)
 
+colors = lines(85);
+
+
 axes(ax2)
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-')
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-')
 hold on
-plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-')
+plot_trace_stack(full_sum,trace_offset,bsxfun(@plus,zeros(length(direct_stims),3),[.75 0 0]),'-',[],[],2)
+hold on
+plot_trace_stack(direct_stims,trace_offset,bsxfun(@plus,zeros(length(direct_stims),3),colors(ceil(rand*85),:)),'-',[],35,3)
+hold on
+plot_trace_stack(map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[.1 .1 .75]),'-',[],80,2)
 hold off
 
 title(strrep(results_file,'_','-'))
