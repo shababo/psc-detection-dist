@@ -14,7 +14,7 @@ K = 1;
 % Firing rate
 % Poisson or periodic
 
-T = 2000; %bins - start not too long
+T = 4000; %bins - start not too long
 binSize = 1/20000; %
 tau_r_bounds = [5 20];
 tau_f_bounds = [20 150];
@@ -42,9 +42,11 @@ p_spike = n_spike/T;
 
 times = cumsum(binSize*1e-3*ones(1,T),2); % in sec
 
-a_min = .5;
-a_max = 6;
+a_min = 2.5;
+a_max = 8;
 nc = 1; %trials
+
+user_defined = 1;
 
 for ki = 1:K
     
@@ -55,6 +57,9 @@ for ki = 1:K
         if periodic
             s_int = T/n_spike;
             startingSpikeTimes = [startingSpikeTimes s_int:s_int:(T-10)];
+        elseif user_defined
+            startingSpikeTimes = 200:400:T;
+            amps = (1:length(startingSpikeTimes))*.5;
         else
             num_spikes = poissrnd(n_spike);
             startingSpikeTimes = T*rand(1,num_spikes);
@@ -85,10 +90,12 @@ for ki = 1:K
             ati_ = ati;
             logC_ = 0;
             for ti = 1:nc
-                a_init = a_min + (a_max-a_min)*rand;
+                a_init = amps(i);
                 tmpi_ = tmpi+(st_std*randn);
-                tau(1) = diff(tau_r_bounds)*rand() + tau_r_bounds(1);
-                tau(2) = diff(tau_f_bounds)*rand() + tau_f_bounds(1);
+%                 tau(1) = diff(tau_r_bounds)*rand() + tau_r_bounds(1);
+%                 tau(2) = diff(tau_f_bounds)*rand() + tau_f_bounds(1);
+                tau(1) = 15;
+                tau(2) = 100;
                 ef=genEfilt(tau,T);
                 [si_, ci_, logC_] = addSpike(sti{ti},ci(ti,:),logC_,ef,a_init,tau,ci(ti,:),tmpi_, N+1, Dt, A); %adds all trials' spikes at same time
                 sti_{ti} = si_;
@@ -148,26 +155,26 @@ for ki = 1:K
     taus{ki} = trace_taus;
 end
 
-% figure;
-% ax1 = subplot(311);
-% plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
-% title('True Current')
-% 
-% ax2 = subplot(312);
-% % plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
-% plot_trace_stack((-er' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
-% title('AR(2) Noise Process')
-% 
-% ax3 = subplot(313);
-% % plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
-% plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[.01 10])
-% title(['Observation'])
-% xlimits = get(gca,'xlim');
-% ylimits = get(gca,'ylim');
-% set(ax2,'xlim',xlimits)
-% set(ax2,'ylim',ylimits)
-% set(ax1,'xlim',xlimits)
-% set(ax1,'ylim',ylimits)
+figure;
+ax1 = subplot(311);
+plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+title('True Current')
+
+ax2 = subplot(312);
+% plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack((-er' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+title('AR(2) Noise Process')
+
+ax3 = subplot(313);
+% plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[.01 10])
+title(['Observation'])
+xlimits = get(gca,'xlim');
+ylimits = get(gca,'ylim');
+set(ax2,'xlim',xlimits)
+set(ax2,'ylim',ylimits)
+set(ax1,'xlim',xlimits)
+set(ax1,'ylim',ylimits)
 
 
 

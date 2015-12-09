@@ -9,7 +9,7 @@ if ~isfield(params,'cluster')
 end
 
 if ~isfield(params,'par')
-    params.par = 1;
+    params.par = 0;
 end
 %% use an rng seed
 
@@ -21,7 +21,7 @@ if ~isfield(params,'seed')
     params.seed = 12341;
 end
 
-rng(params.seed)
+% rng(params.seed)
 
 %%
 
@@ -46,13 +46,13 @@ if ~isfield(params,'start_ind')
 end
 % if you want to go to the end of the traces, omit
 if ~isfield(params,'duration')
-%     params.duration = 20000*.1;
+%     params.duration = 20000*.15;
 end
 
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
-%     params.traces_ind = 9;
+%     params.traces_ind = 1278;
 end
 %% inference params
 
@@ -61,7 +61,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = .1;
+    params.a_min = 10;
 end
 
 % baseline bounds
@@ -79,7 +79,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 5/20000;
+    params.tau1_min = .01/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -89,14 +89,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 20/20000;
+    params.tau1_max = 5/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 20/20000;
+    params.tau2_min = 5/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 150/20000;
+    params.tau2_max = 35/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -105,14 +105,14 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-4;%1e-4;
+    params.p_spike = 1e-6;%1e-4;
 end
 
 
 
 % ar noise model
 if ~isfield(params,'p')
-    params.p = 2; % how many time steps to regress on
+    params.p = 0; % how many time steps to regress on
 end
 if ~isfield(params,'phi_0')
     params.phi_0 = zeros(params.p,1);
@@ -122,7 +122,7 @@ if ~isfield(params,'Phi_0')
 end
 
 if ~isfield(params,'noise_var_init')
-    params.noise_var_init = 2.5;
+    params.noise_var_init = 1.0;
 end
 
 %% direct stim
@@ -182,6 +182,11 @@ if ~isfield(params,'stim_tau_fall_std')
     params.stim_tau_fall_std = .005;
 end
 
+if ~isfield(params,'stim_shape')
+%     load('data/chr2-stim-response.mat');
+%     params.stim_shape = chr2_response;
+    params.stim_shape = [];
+end
 
 
 %% sampling params
@@ -189,7 +194,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 2000;
+    params.num_sweeps = 1000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -197,7 +202,7 @@ end
 
 % sampling spike times
 if ~isfield(params,'time_proposal_var')
-    params.time_proposal_var = 10;
+    params.time_proposal_var = 15;
 end
 
 if ~isfield(params,'tau1_prop_std')
@@ -208,17 +213,17 @@ if ~isfield(params,'tau2_prop_std')
 end
 
 if ~isfield(params,'amp_prop_std')
-    params.amp_prop_std = .2;
+    params.amp_prop_std = .3;
 end
 if ~isfield(params,'baseline_prop_std')
     params.baseline_prop_std = 2;
 end
 
 if ~isfield(params,'add_drop_sweeps')
-    params.add_drop_sweeps = 20;
+    params.add_drop_sweeps = 10;
 end
 if ~isfield(params,'time_sweeps')
-    params.spike_time_sweeps = 3;
+    params.spike_time_sweeps = 10;
 end
 if ~isfield(params,'amp_sweeps')
     params.amp_sweeps = 5;
@@ -234,7 +239,7 @@ if ~isfield(params,'tau2_sweeps')
 end
 
 if ~isfield(params,'exclusion_bound')
-    params.exclusion_bound = 1;
+    params.exclusion_bound = 10;
 end
 if ~isfield(params,'Dt')
     params.Dt = 1;
@@ -245,7 +250,7 @@ end
 % params.b
 %% template-matching initialization method
 if ~isfield(params,'init_method')
-    params.init_method.tau = .002; % min seconds
+    params.init_method.tau = .0002; % min seconds
     params.init_method.amp_thresh = 5;
     params.init_method.conv_thresh = 1;
 end
@@ -259,10 +264,12 @@ end
 %% filenames
 if ~isfield(params,'traces_filename')
     if params.cluster
+
         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/for-paper/harder-for-cosyne.mat';
+
     else
         params.traces_filename = ...
-            ['data/for-paper/real-vs-ar0-vs-ar2-sim-cosyne-abs.mat'];
+            ['data/FSEPSCs_forBen.mat'];
     end
 end
 
@@ -279,7 +286,7 @@ if ~isfield(params,'savename')
         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
         params.savename = strrep(params.savename,'+','');
     else
-        params.savename = 'harder-for-cosyne-0000.mat';
+        params.savename = 'FSEPSCs_forBen-0000.mat';
     end
 end
 

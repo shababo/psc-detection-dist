@@ -77,7 +77,9 @@ load('data/good-example-trace-0009.mat')
 phi = results(1).trials.phi{results(1).map_ind};
 sigmasq = results(1).trials.noise{results(1).map_ind};
 simulate_data; sim_ar2_data = traces;
-load('data/for-paper/good-example-trace.mat')
+% load('data/for-paper/good-example-trace.mat')
+ load('data/for-paper/epscs/L5andL23PC_data_spontaneous_EPSCs.mat')
+
 traces_to_plot = [Master(4).spontSweep{13}(1028:3027)'; sim_ar0_data; sim_ar2_data];
 
 figure;
@@ -141,5 +143,5 @@ end
 
 template = template/num_events;
 
-save('data/for-paper/real-vs-ar0-vs-ar2-sim-cosyne-abs.mat','traces','true_signal','true_event_times','true_amplitudes','true_taus','template')
+% save('data/for-paper/real-vs-ar0-vs-ar2-sim-cosyne-abs.mat','traces','true_signal','true_event_times','true_amplitudes','true_taus','template')
 

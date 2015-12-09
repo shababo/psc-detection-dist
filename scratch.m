@@ -198,8 +198,8 @@ title('each line is diff a_{min}, within varies p_{spike}')
 %%
 figure
 
-for i = 1:size(roc,2)
-    plot(roc(:,i,1),roc(:,i,2),'-o'); hold on
+for i = 1:size(roc_deconv,2)
+    plot(roc_deconv(:,i,1),roc_deconv(:,i,2),'-o'); hold on
 end
 hold off
 title('deconv')
@@ -248,7 +248,7 @@ title('Simulated Noise From Fits - AR(2)')
 subplot(223)
 plot_trace_stack(ar6_sim_data,20,zeros(3,3),'-',[.010 10])
 title('Simulated Noise From Fits - AR(6)')
-
+edi
 subplot(224)
 plot_trace_stack(ar10_sim_data,20,zeros(3,3),'-',[.010 10])
 title('Simulated Noise From Fits - AR(10)')

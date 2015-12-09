@@ -1,4 +1,4 @@
-function time_amp_posteriors = plot_amp_times_posterior_w_map(results_file, trace_offset, bin_edges, varargin)
+function time_amp_posteriors = plot_amp_times_posterior_w_map_DIRECT_STIM_FIG(results_file, trace_offset, bin_edges, varargin)
 
 load(results_file)
 
@@ -20,7 +20,7 @@ end
 if ~isfield(params,'duration')
     params.duration = size(traces,2);
 end
-
+params.duration = 2700;
 traces = traces(:,params.start_ind:(params.start_ind + params.duration - 1));
 
 if isfield(params,'traces_ind')
@@ -52,7 +52,14 @@ else
 end
 
 time_amp_posteriors = zeros(size(traces,1),length(bin_edges),T);
+direct_stim_exp_val = zeros(1,T);
 
+stim_start = 500;
+stim_duration = .05*20000;
+stim_in = [zeros(1,stim_start) ones(1,stim_duration) zeros(1,T-stim_start-stim_duration)];
+t = 0:T-1;
+
+burn_in = 500;
 for i = 1:size(traces,1)
     
     if ~exist('max_sample','var')
@@ -67,12 +74,30 @@ for i = 1:size(traces,1)
         for k = 1:length(results(i).trials.times{j})
             this_time_ind = ceil(results(i).trials.times{j}(k));
             this_amp_ind = find(results(i).trials.amp{j}(k) < bin_edges,1,'first');
-        
-            this_time_amp_posterior(this_amp_ind,this_time_ind) =...
-                this_time_amp_posterior(this_amp_ind,this_time_ind) + 1/length(results(i).trials.times);
+            
+            if this_time_ind <= T
+                this_time_amp_posterior(this_amp_ind,this_time_ind) =...
+                    this_time_amp_posterior(this_amp_ind,this_time_ind) + 1/length(results(i).trials.times);
+            end
+            
         end
         
+        if j > burn_in
+            stim_tau_rise = results(i).trials.stim_tau_rise{j}; % values for chr2 from lin et al 2009 (biophysics)
+            stim_tau_fall = results(i).trials.stim_tau_fall{j};
+            stim_amp = results(i).trials.stim_amp{j};
+
+            stim_decay = exp(-t/stim_tau_fall);
+            stim_rise = -exp(-t/stim_tau_rise);
+            stim_kernel = (stim_decay + stim_rise)/sum(stim_decay + stim_rise);
+            stim_response = conv(stim_in,stim_kernel);
+            direct_stim_exp_val = direct_stim_exp_val + stim_amp*stim_response(1:T)/max(stim_response(1:T));
+        end
+        
+        
     end
+    
+    direct_stim_exp_val = direct_stim_exp_val/(length(results(i).trials.times)-burn_in);
     
     time_amp_posteriors(i,:,:) = this_time_amp_posterior;
     this_curve = zeros(1,T);
@@ -114,9 +139,10 @@ axes(ax2)
 % plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-',[.005 25],0)
 % hold on
 
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[],20)
+offset = 140;
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[],offset)
 hold on
-plot_scatter_stack(time_amp_posteriors,trace_offset,bin_edges,0,2000)
+plot_scatter_stack(time_amp_posteriors,trace_offset,bin_edges,-35,2000)
 hold on
 if exist('true_signal','var')
     disp('...')
@@ -124,12 +150,27 @@ if exist('true_signal','var')
 %     times_vec(ceil(true_event_times{1})) = max(max(max(time_amp_posteriors)))+.1;
 
 %     hold on
-    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'--',[.02 5],0,2)
+    plot_trace_stack(true_signal(:,1:T),trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[.01 25],0,2)
     hold on
-    scatter(true_event_times{1}/20000,-true_amplitudes{1},'xr','LineWidth',3)
+    
+    scatter(true_event_times{1}(find(true_event_times{1} < params.duration))/20000,-true_amplitudes{1}(find(true_event_times{1} < params.duration))-35,'xr','LineWidth',3)
     hold on
 end
 
+stim_tau_rise = .0015*20000; % values for chr2 from lin et al 2009 (biophysics)
+stim_tau_fall = .013*20000;
+stim_amp = 50;
+stim_start = 500;
+stim_duration = .05*20000;
+stim_in = [zeros(1,stim_start) ones(1,stim_duration) zeros(1,T-stim_start-stim_duration)];
+t = 0:T-1;
+stim_decay = exp(-t/stim_tau_fall);
+stim_rise = -exp(-t/stim_tau_rise);
+stim_kernel = (stim_decay + stim_rise)/sum(stim_decay + stim_rise);
+stim_response = conv(stim_in,stim_kernel);
+stim_response = stim_amp*stim_response(1:T)/max(stim_response(1:T));
+plot((0:length(stim_response)-1)/20000,-stim_response+offset/2,'r-','linewidth',2)
+plot((0:length(stim_response)-1)/20000,-stim_response+offset/2,'b--','linewidth',2)
 
 
 % plot_trace_stack(params.event_sign*map_curves,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 0 0]),'--',[.01 5],0,1)

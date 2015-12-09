@@ -14,13 +14,18 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     [pathname, filename] = fileparts(params.traces_filename);
 %     pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
 %     params.traces_filename = [pathname filename];
-    params.savename = 'good-example-trace-3000.mat';
+    params.savename = 'FSEPSCs_forBen-0003.mat';
 % %     params.stim_in = [zeros(1,20*10) ones(1,20*10) zeros(1,2000-20*20)];%linspace(0,1,20*10)
 %     % ar noise model
-%     params.p = 0; % how many time steps to regress on
-%     params.phi_0 = zeros(params.p,1);
-%     params.Phi_0 = 10*eye(params.p); %inverse covariance 3
-    params.a_min = 2.5;
+    params.p = 3; % how many time steps to regress on
+    params.phi_0 = zeros(params.p,1);
+    params.Phi_0 = 10*eye(params.p); %inverse covariance 3
+%     params.a_min = 2.5;
+%     load('data/for-paper/chr2-stim-response.mat');
+%     params.stim_shape = chr2_response;
+%     params.par = 0;
+%     params.p_spike = 1e-3;
+%     params.a_min = 1;
 end
 
 % fill with default params
