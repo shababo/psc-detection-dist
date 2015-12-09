@@ -1,7 +1,15 @@
-function plot_map_estimates(results_file, trace_offset, varargin)
+function plot_map_estimates_w_direct_stim(results_file, trace_offset, varargin)
 
 load(results_file)
-load(params.traces_filename)
+
+try
+    disp('huh')
+    load(params.traces_filename)
+catch e
+    disp('in')
+    params.traces_filename = 'data/for-paper/direct-stim-w-events-real.mat';
+    load(params.traces_filename)
+end
 
 if ~isfield(params,'start_ind')
     params.start_ind = 1;
@@ -52,7 +60,7 @@ for i = 1:length(results)
                                         
     end
     map_curves(i,:) = params.event_sign*(this_curve + results(i).trials.base{min_i});
-    direct_stims(i,:) = -params.stim_shape*results(i).trials.stim_amp{min_i} + results(i).trials.base{min_i};
+    direct_stims(i,:) = params.stim_shape*results(i).trials.stim_amp{min_i} + results(i).trials.base{min_i};
     full_sum(i,:) = map_curves(i,:) + direct_stims(i,:) - results(i).trials.base{min_i};
     results(i).trials.stim_amp{min_i}
 end

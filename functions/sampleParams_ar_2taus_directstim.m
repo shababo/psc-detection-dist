@@ -45,7 +45,7 @@ stim_amp_max = params.stim_amp_max;
 
 stim_amp = params.stim_amp_init;
 stim_in = params.stim_in;
-stim_template = params.stim_shape;
+stim_template = -params.stim_shape;
 % nBins_stim = length(stim_in);
 % if nBins_stim < nBins
 %     stim_in = [stim_in zeros(1,nBins - length(stim_in))];

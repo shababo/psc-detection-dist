@@ -10,7 +10,12 @@ if ~isfield(params,'start_ind')
     params.start_ind = 1;
 end
 
-load(params.traces_filename,'traces')
+try
+    load(params.traces_filename,'traces')
+catch e
+    params.traces_filename = 'data/for-paper/direct-stim-w-events-real.mat';
+    load('data/for-paper/direct-stim-w-events-real.mat')
+end
 
 if ~isfield(params,'duration')
     params.duration = size(traces,2);

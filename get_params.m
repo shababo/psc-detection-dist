@@ -129,7 +129,7 @@ if ~isfield(params,'noise_var_init')
 end
 
 if ~isfield(params,'noise_est_subset')
-    params.noise_est_subset = 1:350;
+    params.noise_est_subset = 1:1000;
 end
 
 %% direct stim
@@ -190,11 +190,11 @@ if ~isfield(params,'stim_tau_fall_std')
 end
 
 if ~isfield(params,'stim_shape')
-%     load('data/chr2-stim-response.mat');
+%     load('data/for-paper/chr2-stim-response.mat');
 %     params.stim_shape = chr2_response;
     
     load('data/2P-Chrimson-10ms-template.mat');
-    params.stim_shape = template_clean;
+    params.stim_shape = -template_clean;
     
 %     params.stim_shape = [];
 end

@@ -15,19 +15,21 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
 %     params.traces_filename = [pathname filename];
 
-    params.savename = '2P-direct-stim-w-ipsc-event-0002.mat';
+    params.savename = 'real-direct-stim-w-emperical-template-0004.mat';
 % %     params.stim_in = [zeros(1,20*10) ones(1,20*10) zeros(1,2000-20*20)];%linspace(0,1,20*10)
 %     % ar noise model
-    params.p = 3; % how many time steps to regress on
-    params.phi_0 = zeros(params.p,1);
-    params.Phi_0 = 10*eye(params.p); %inverse covariance 3
-%     params.a_min = 2.5;
+%     params.p = 3; % how many time steps to regress on
+%     params.phi_0 = zeros(params.p,1);
+%     params.Phi_0 = 10*eye(params.p); %inverse covariance 3
+    params.a_min = 5;
 %     load('data/for-paper/chr2-stim-response.mat');
 %     params.stim_shape = chr2_response;
 %     params.par = 0;
 
-    params.p_spike = 1e-9;
+    params.p_spike = 1e-5;
+    params.noise_est_subset = 1:100;
 %     params.a_min = 1;
+    
 end
 
 % fill with default params
