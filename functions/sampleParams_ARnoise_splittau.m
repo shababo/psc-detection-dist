@@ -1,7 +1,7 @@
 function [trials, mcmc, runtime]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
-observe = 1;
+observe = 0;
 observe_freq = 2;
 
 %noise level here matters for the proposal distribution (how much it 
@@ -39,7 +39,7 @@ Dt=params.Dt; %bin unit - don't change this
 A=params.A; % scale factor for all magnitudes for this calcium data setup
 % b=0; %initial baseline value
 b=min(trace); %initial baseline value
-nu_0 = 5; %prior on shared burst time - ntrials
+nu_0 = 0; %prior on shared burst time - ntrials
 sig2_0 = .1; %prior on shared burst time - variance
 
 
@@ -118,13 +118,13 @@ for i = 1:length(Tguess)
     %must add spike to each trial (at mean location or sampled -- more appropriate if sampled)
     pr_ = pr;
     ati_ = ati;
-    a_init = max(trace(tmpi)/A,a_min);
+    a_init = max(max(trace(tmpi-5:tmpi+5))/A,a_min);
 %     a_init = max(diffY(max(1,floor(tmpi)))/A + a_std*randn,a_min);
     [sti_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,efs{i},a_init,tau,trace,tmpi, N+1, Dt, A); %adds all trials' spikes at same time
      if observe
                 plot(pr_)
                 hold on
-                plot(trace - 100)
+                plot(trace)
                 hold off
                 waitforbuttonpress
             end
@@ -137,7 +137,7 @@ for i = 1:length(Tguess)
 end
 diffY = diffY_;
 
-sti_= sti;
+sti_= sti
 diffY_= diffY;
 N=length(sti);
 
@@ -148,6 +148,65 @@ timeMoves = [0 0];
 ampMoves = [0 0];
 tauMoves = [0 0];
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % re-estimate the noise model
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    % re-estimate the process parameters
+    %%%%%%%%%%%%%%%%
+    % estimate phi (ignore initial condition boundary effects)
+    %%%%%%%%%%%%%%%%
+    if p>0 %&& i>(num_sweeps/100)
+        e = diffY(params.noise_est_subset)'; % this is Tx1 (after transpose)
+        E = [];
+        for ip = 1:p
+            E = [E e((p+1-ip):(end-ip))];
+        end
+        e = e((p+1):end);
+
+        Phi_n = Phi_0 + NoiseVar^(-1)*(E'*E); %typo in paper
+
+        phi_cond_mean = Phi_n\(Phi_0*phi_0 + NoiseVar^(-1)*E'*e);
+
+%         keyboard
+        sample_phi = 1;
+        while sample_phi
+            phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
+
+            phi_poly = -phi;
+            phi_poly(1) = 1;
+            if all(abs(roots(phi_poly))<1) %check stability
+                sample_phi = 0;
+            end
+        end
+        
+    end
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%
+    % estimate noise
+    %%%%%%%%%%%%%%%%%%%%%
+    % re-estimate the noise variance
+%     if ~isempty(sti)
+        df = (numel(pr(params.noise_est_subset))); %DOF (possibly numel(ci(ti,:))-1)
+        d1 = -predAR(diffY(params.noise_est_subset),phi,p,1 )/df; 
+        nu0 = nu_0; %nu_0 or 0
+        d0 = sig2_0; %sig2_0 or 0
+        
+        A_samp = 0.5 * (df - p + nu0); %nu0 is prior
+        B_samp = 1/(0.5 * df * (d1 + d0)); %d0 is prior
+        NoiseVar = 1/gamrnd(A_samp,B_samp); %this could be inf but it shouldn't be
+        
+%         if NoiseVar > 3
+%             NoiseVar = 3;
+%         end
+%         if ~isfinite(NoiseVar)
+%             keyboard
+%         end
+%     end
+
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if observe
         figure
@@ -160,6 +219,7 @@ for i = 1:num_sweeps
 %     end
     if observe && ~(mod(i,observe_freq)-1)
     i
+    disp(sti)
     subplot(311)
             plot(pr)
             hold on
@@ -331,7 +391,7 @@ for i = 1:num_sweeps
                 pr_ = pr;
                 ati_ = ati;
 %                 a_init = max(trace(max(1,floor(tmpi)))/A - baseline + a_std*randn,a_min);%propose an initial amplitude for it
-                start_ind = max(1,floor(tmpi) - 5);
+                start_ind = max(1,floor(tmpi));
                 end_ind = min(start_ind + 10,length(diffY));
                 [local_max,tmpi_tmp] = max(diffY(start_ind:end_ind));
                 tmpi = tmpi_tmp + start_ind - 1;
@@ -407,13 +467,14 @@ for i = 1:num_sweeps
                     efs(tmpi) = [];
                     diffY = diffY_;
                     dropMoves = dropMoves + [1 1]; 
-                    
-                    if observe && ~(mod(i,observe_freq)-1)
+%                     disp('drop')
+                    if observe
+                        
     
     subplot(311)
             plot(pr)
             hold on
-            plot(trace - 100)
+            plot(trace)
             hold off
             subplot(312)
             plot(diffY)
@@ -545,7 +606,7 @@ for i = 1:num_sweeps
     % estimate phi (ignore initial condition boundary effects)
     %%%%%%%%%%%%%%%%
     if p>0 %&& i>(num_sweeps/100)
-        e = diffY'; % this is Tx1 (after transpose)
+        e = diffY(params.noise_est_subset)'; % this is Tx1 (after transpose)
         E = [];
         for ip = 1:p
             E = [E e((p+1-ip):(end-ip))];
@@ -570,19 +631,24 @@ for i = 1:num_sweeps
         
     end
     
+    
     %%%%%%%%%%%%%%%%%%%%%
     % estimate noise
     %%%%%%%%%%%%%%%%%%%%%
     % re-estimate the noise variance
 %     if ~isempty(sti)
-        df = (numel(pr)); %DOF (possibly numel(ci(ti,:))-1)
-        d1 = -predAR(diffY,phi,p,1 )/df; 
+        df = (numel(pr(params.noise_est_subset))); %DOF (possibly numel(ci(ti,:))-1)
+        d1 = -predAR(diffY(params.noise_est_subset),phi,p,1 )/df; 
         nu0 = nu_0; %nu_0 or 0
         d0 = sig2_0; %sig2_0 or 0
         
-        A_samp = 0.5 * (df + nu0); %nu0 is prior
+        A_samp = 0.5 * (df - p + nu0); %nu0 is prior
         B_samp = 1/(0.5 * df * (d1 + d0)); %d0 is prior
         NoiseVar = 1/gamrnd(A_samp,B_samp); %this could be inf but it shouldn't be
+        
+%         if NoiseVar > 3
+%             NoiseVar = 3;
+%         end
 %         if ~isfinite(NoiseVar)
 %             keyboard
 %         end

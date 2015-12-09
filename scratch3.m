@@ -145,3 +145,5 @@ template = template/num_events;
 
 % save('data/for-paper/real-vs-ar0-vs-ar2-sim-cosyne-abs.mat','traces','true_signal','true_event_times','true_amplitudes','true_taus','template')
 
+
+

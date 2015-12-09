@@ -4,7 +4,7 @@ function [trials, mcmc, runtime]  = sampleParams_ar_2taus_directstim(trace, tau,
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
 
 observe = 0;
-observe_freq = 25;
+observe_freq = 2;
 
 %noise level here matters for the proposal distribution (how much it 
 %should trust data for proposals vs how much it should mix based on uniform prior)
@@ -45,7 +45,7 @@ stim_amp_max = params.stim_amp_max;
 
 stim_amp = params.stim_amp_init;
 stim_in = params.stim_in;
-stim_template = params.event_sign * params.stim_shape;
+stim_template = params.stim_shape;
 % nBins_stim = length(stim_in);
 % if nBins_stim < nBins
 %     stim_in = [stim_in zeros(1,nBins - length(stim_in))];
@@ -147,6 +147,9 @@ diffY = (trace-pr); %trace - prediction
 
 m = p_spike*nBins;
 
+if isnan(stim_amp)
+    stim_amp = max(trace);
+end
 [pr, diffY] = add_direct_stim(pr,stim_amp,diffY,stim_template);
 
 diffY_ = diffY;
@@ -157,7 +160,7 @@ for i = 1:length(Tguess)
     %must add spike to each trial (at mean location or sampled -- more appropriate if sampled)
     pr_ = pr;
     ati_ = ati;
-    a_init = max(diffY(max(1,floor(tmpi)))/A + a_std*randn,a_min);
+    a_init = max(trace(max(1,floor(tmpi)))/A + a_std*randn,a_min);
     [sti_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,efs{i},a_init,tau,trace,tmpi, N+1, Dt, A); %adds all trials' spikes at same time
     taus{i} = tau;
     ati_ = [ati_ a_init];
@@ -182,6 +185,66 @@ timeMoves = [0 0];
 ampMoves = [0 0];
 tauMoves = [0 0];
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % re-estimate the noise model
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    % re-estimate the process parameters
+    %%%%%%%%%%%%%%%%
+    % estimate phi (ignore initial condition boundary effects)
+    %%%%%%%%%%%%%%%%
+    if p>0 %&& i>(num_sweeps/100)
+        e = diffY(params.noise_est_subset)'; % this is Tx1 (after transpose)
+        E = [];
+        for ip = 1:p
+            E = [E e((p+1-ip):(end-ip))];
+        end
+        e = e((p+1):end);
+
+        Phi_n = Phi_0 + NoiseVar^(-1)*(E'*E); %typo in paper
+
+        phi_cond_mean = Phi_n\(Phi_0*phi_0 + NoiseVar^(-1)*E'*e);
+
+%         keyboard
+        sample_phi = 1;
+        while sample_phi
+            phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
+
+            phi_poly = -phi;
+            phi_poly(1) = 1;
+            if all(abs(roots(phi_poly))<1) %check stability
+                sample_phi = 0;
+            end
+        end
+        
+    end
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%
+    % estimate noise
+    %%%%%%%%%%%%%%%%%%%%%
+    % re-estimate the noise variance
+%     if ~isempty(sti)
+        df = (numel(pr(params.noise_est_subset))); %DOF (possibly numel(ci(ti,:))-1)
+        d1 = -predAR(diffY(params.noise_est_subset),phi,p,1 )/df; 
+        nu0 = nu_0; %nu_0 or 0
+        d0 = sig2_0; %sig2_0 or 0
+        
+        A_samp = 0.5 * (df - p + nu0); %nu0 is prior
+        B_samp = 1/(0.5 * df * (d1 + d0)); %d0 is prior
+        NoiseVar = 1/gamrnd(A_samp,B_samp); %this could be inf but it shouldn't be
+        
+%         if NoiseVar > 3
+%             NoiseVar = 3;
+%         end
+%         if ~isfinite(NoiseVar)
+%             keyboard
+%         end
+%     end
+
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
 if observe
         figure
 end
@@ -742,7 +805,7 @@ end
     % estimate phi (ignore initial condition boundary effects)
     %%%%%%%%%%%%%%%%
     if p>0 %&& i>(num_sweeps/100)
-        e = diffY'; % this is Tx1 (after transpose)
+        e = diffY(params.noise_est_subset)'; % this is Tx1 (after transpose)
         E = [];
         for ip = 1:p
             E = [E e((p+1-ip):(end-ip))];
@@ -772,8 +835,8 @@ end
     %%%%%%%%%%%%%%%%%%%%%
     % re-estimate the noise variance
 %     if ~isempty(sti)
-        df = (numel(pr)); %DOF (possibly numel(ci(ti,:))-1)
-        d1 = -predAR(diffY,phi,p,1 )/df; 
+        df = (numel(pr(params.noise_est_subset))); %DOF (possibly numel(ci(ti,:))-1)
+        d1 = -predAR(diffY(params.noise_est_subset),phi,p,1 )/df; 
         nu0 = nu_0; %nu_0 or 0
         d0 = sig2_0; %sig2_0 or 0
         
