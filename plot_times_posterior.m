@@ -51,7 +51,7 @@ else
 end
 
 time_posteriors = zeros(size(traces));
-burn_in = 2500;
+burn_in = 250;
 
 
 for ii = 1:length(params.traces_ind)

@@ -1,6 +1,10 @@
 function [trials, mcmc, runtime]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
+if ~isfield(params,'noise_est_subset')
+    params.noise_est_subset = 1:length(trace);
+end
+
 observe = 0;
 observe_freq = 2;
 

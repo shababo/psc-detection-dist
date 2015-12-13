@@ -7,7 +7,7 @@ end
 
 if ~isfield(params,'cluster')
     disp('2')
-    params.cluster = 0;
+    params.cluster = 1;
 end
 
 if ~isfield(params,'par')
@@ -37,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = -1;
+    params.event_sign = 1;
 end
 
 %% subtraces
@@ -54,7 +54,7 @@ end
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
-%     params.traces_ind = 1278;
+    params.traces_ind = 1:6;
 end
 %% inference params
 
@@ -63,7 +63,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = -100;
+    params.a_min = 5;
 end
 
 % baseline bounds
@@ -91,14 +91,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 10/20000;
+    params.tau1_max = 50/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
     params.tau2_min = 50/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 250/20000;
+    params.tau2_max = 500/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -107,7 +107,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-6;%1e-4;
+    params.p_spike = 1e-4;%1e-4;
 
 end
 
@@ -129,13 +129,13 @@ if ~isfield(params,'noise_var_init')
 end
 
 if ~isfield(params,'noise_est_subset')
-    params.noise_est_subset = 1:1000;
+%     params.noise_est_subset = 1:1000;
 end
 
 %% direct stim
 
 if ~isfield(params,'direct_stim')
-    params.direct_stim = 1;
+    params.direct_stim = 0;
 end
 
 if ~isfield(params,'stim_tau_rise')
@@ -261,7 +261,7 @@ end
 % params.b
 %% template-matching initialization method
 if ~isfield(params,'init_method')
-    params.init_method.tau = .0002; % min seconds
+    params.init_method.tau = .002; % min seconds
     params.init_method.amp_thresh = 5;
     params.init_method.conv_thresh = 1;
 end
@@ -276,11 +276,11 @@ end
 if ~isfield(params,'traces_filename')
     if params.cluster
 
-        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/for-paper/harder-for-cosyne.mat';
+        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/for-paper/all-evoked-ipscs.mat';
 
     else
         params.traces_filename = ...
-            ['data/2P-direct-stim-w-ipsc-event.mat'];
+            ['data/for-paper/all-evoked-ipscs.mat'];
     end
 end
 
@@ -293,11 +293,12 @@ if ~isfield(params,'savepath')
 end
 if ~isfield(params,'savename')
     if params.cluster
-        savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
-        params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
-        params.savename = strrep(params.savename,'+','');
+%         savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
+%         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
+%         params.savename = strrep(params.savename,'+','');
+        params.savename = 'all-evoked-ipscs-0000.mat';
     else
-        params.savename = '2P-direct-stim-w-ipsc-event-0000.mat';
+        params.savename = 'small-evoked-ipscs-0000.mat';
     end
 end
 
