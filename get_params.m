@@ -54,7 +54,7 @@ end
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
-    params.traces_ind = 1:6;
+%     params.traces_ind = 1:6;
 end
 %% inference params
 

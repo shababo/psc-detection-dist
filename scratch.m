@@ -320,32 +320,35 @@ end
          %%
 clear all
 % 
-% filenames = {'12_1_slice1_cell1.mat',...
-% '12_1_slice1_cell2.mat',...
-% '12_1_slice3_cell1.mat',...
-% '12_1_slice3_cell2.mat',...
-% '12_1_slice4_cell2.mat',...
-% '12_1_slice5_cell1.mat',...
-% '12_1_slice5_cell2.mat',...
-% '12_2_slice1_cell1.mat',...
-% '12_3_slice1_cell2.mat'};
-% 
-% 
-% run_count_id = [9
-% 2
-% 10
-% 3
-% 13
-% 15
-% 2
-% 6
-% 6];
-% 
+filenames = {'12_1_slice1_cell1.mat',...
+'12_1_slice1_cell2.mat',...
+'12_1_slice3_cell1.mat',...
+'12_1_slice3_cell2.mat',...
+'12_1_slice4_cell2.mat',...
+'12_1_slice5_cell1.mat',...
+'12_1_slice5_cell2.mat',...
+'12_2_slice1_cell1.mat',...
+'12_3_slice1_cell2.mat'};
+
+
+run_count_id = [9
+2
+10
+3
+13
+15
+2
+6
+6];
+
+
+filenames = {'12_15_slice2_cell1.mat','12_15_slice3_cell1.mat'}
 trial_ids = [-60 -45 -30 -15 0 15 30 45 60 0 0 0 0 0 0 0 0 0
              0 0 0 0 0 0 0 0 0  -60 -45 -30 -15 0 15 30 45 60
              0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]';
-  run_count_id = 8;       
-filenames = {'12_3_slice1_cell2.mat'};
+  run_count_id = [4 3]; 
+%   run_count_id = 8;
+% filenames = {'12_3_slice1_cell2.mat'};
 % filenames = {...
 % '12_3_slice2_cell1.mat',...
 % '12_3_slice3_cell1.mat'};
@@ -415,6 +418,7 @@ for i = 1:length(filenames)
     
     trial_types = zeros(size(traces,1),1);
     
+
     for j = 1:size(trial_ids,1)
         
         params2.relative_position = trial_ids(j,:);
@@ -435,6 +439,7 @@ for i = 1:length(filenames)
 
 end
 
+
 for j = 1:length(trial_ids)
     
     peak_currents_trial_mean(j) = mean(peak_currents_cells_by_trial_mean(:,j));
@@ -454,6 +459,7 @@ for i = 1:length(filenames)
         scatter(positions(j)*ones(length(peak_currents_cells_by_trial{i,j}),1),peak_currents_cells_by_trial{i,j},[],repmat(colors(i,:),length(peak_currents_cells_by_trial{i,j}),1),'filled');
         hold on;
     end
+
 end
 title('x')
 figure; %h = plot(positions,peak_currents_cells_by_trial_mean(:,switch_ind+1:end)');
