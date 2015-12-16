@@ -1,11 +1,11 @@
-function map = plot_map_estimates_sim(results_file, trace_offset, varargin)
+function [map, templates] = plot_map_estimates_sim(results_file, trace_offset, varargin)
 
 load(results_file)
 
 try
     load(params.traces_filename)
 catch
-    load('data/simulated-epscs-1027.mat')
+    load('data/for-paper/all-evoked-ipscs.mat')
 end
 
 % load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
@@ -23,11 +23,18 @@ traces = traces(:,params.start_ind:(params.start_ind + params.duration - 1));
 
 if isfield(params,'traces_ind')
     traces = traces(params.traces_ind,:);
+    traces_ind = params.traces_ind;
+else
+    traces_ind = 1:size(traces,1);
 end
 
 if ~isempty(varargin) && ~isempty(varargin{1})
     traces_ind = varargin{1};
     traces = traces(traces_ind,:);
+    
+end
+
+if exist('true_signal','var')
     true_signal = true_signal(traces_ind,:);
 end
 
@@ -44,8 +51,11 @@ else
 end
 
 map_curves = zeros(size(traces));
+templates = [];
 
-for i = 1:size(traces,1)
+for ii = 1:length(traces_ind)
+    
+    i = traces_ind(ii);
     
     if ~exist('max_sample','var')
         map_i = results(i).map_ind;
@@ -54,9 +64,18 @@ for i = 1:size(traces,1)
     end
     this_curve = zeros(1,T);
     
+    map_i
+    assignin('base','map_times',results(i).trials.times{map_i})
+    
     for j = 1:length(results(i).trials.times{map_i})
         
         ef = genEfilt_ar(results(i).trials.tau{map_i}{j},event_samples);
+        if results(i).trials.times{map_i}(j) > 150 && results(i).trials.times{map_i}(j) < 200
+            t = 0:1:event_samples;
+            tau_decay = results(i).trials.tau{map_i}{j}(2); decay = exp(-t/tau_decay);
+            tau_rise = results(i).trials.tau{map_i}{j}(1); rise = -exp(-t/tau_rise);
+            templates = [templates; (decay + rise)/max(decay+rise)*1]; %true_amplitudes{1}(i)
+        end
         [~, this_curve, ~] = addSpike_ar(results(i).trials.times{map_i}(j),...
                                             this_curve, 0, ef, ...
                                             results(i).trials.amp{map_i}(j),...

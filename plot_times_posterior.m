@@ -1,12 +1,12 @@
 function time_posteriors = plot_times_posterior(results_file, trace_offset, varargin)
 
 load(results_file)
-
-% try
+params.traces_filename
+try
     load(params.traces_filename)
-% catch
-%     load('data/simulated-epscs-1027.mat')
-% end
+catch
+    load('data/for-paper/all-evoked-ipscs.mat')
+end
 
 % load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
 % load('/home/shababo/Desktop/simulated-data-longer-traces-epsc.mat')
@@ -51,7 +51,7 @@ else
 end
 
 time_posteriors = zeros(size(traces));
-burn_in = 2500;
+burn_in = 500;
 
 
 for ii = 1:length(params.traces_ind)

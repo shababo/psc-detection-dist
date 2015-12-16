@@ -104,6 +104,10 @@ diffY = (trace-pr); %trace - prediction
 
 m = p_spike*nBins;
 
+if ~isfield(params,'noise_est_subset')
+    params.noise_est_subset = 1:length(trace);
+end
+
 diffY_ = diffY;
 for i = 1:length(Tguess)
     efs{i} = ef;
@@ -138,7 +142,7 @@ for i = 1:length(Tguess)
 end
 diffY = diffY_;
 
-sti_= sti
+sti_= sti;
 diffY_= diffY;
 N=length(sti);
 
@@ -218,6 +222,8 @@ for i = 1:num_sweeps
 %     if mod(i,10) == 0
 %         disp(length(ati))
 %     end
+%     i
+%     length(ati)
     if observe && ~(mod(i,observe_freq)-1)
     i
     disp(sti)
