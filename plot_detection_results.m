@@ -99,8 +99,8 @@ end
 figure
 gplotmatrix(target_feature_mat,target_feature_mat,groups)
 % 
-% figure
-% plotmatrix(target_feature_mat)
+figure
+plotmatrix(target_feature_mat)
 
 %%
 

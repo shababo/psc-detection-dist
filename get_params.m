@@ -5,7 +5,9 @@ if ~isempty(varargin)
 end
 
 if ~isfield(params,'cluster')
+
     params.cluster = 0;
+
 end
 
 if ~isfield(params,'par')
@@ -35,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = -1;
+    params.event_sign = 1;
 end
 
 %% subtraces
@@ -52,8 +54,11 @@ end
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
+
 %     params.traces_ind = 1278;
 %     params.traces_ind = 1;
+
+%     params.traces_ind = 1:6;
 end
 %% inference params
 
@@ -63,6 +68,7 @@ if ~isfield(params,'a_max')
 end
 if ~isfield(params,'a_min')
     params.a_min = 2;
+
 end
 
 % baseline bounds
@@ -129,6 +135,7 @@ end
 
 if ~isfield(params,'noise_est_subset')
 %     params.noise_est_subset = 1:5000;
+%     params.noise_est_subset = 1:1000;
 end
 
 %% direct stim
@@ -275,11 +282,12 @@ end
 if ~isfield(params,'traces_filename')
     if params.cluster
 
-        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/for-paper/harder-for-cosyne.mat';
+        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/for-paper/all-evoked-ipscs.mat';
 
     else
         params.traces_filename = ...
             ['data/for-paper/doublet-data-01.mat'];
+
     end
 end
 
@@ -292,9 +300,10 @@ if ~isfield(params,'savepath')
 end
 if ~isfield(params,'savename')
     if params.cluster
-        savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
-        params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
-        params.savename = strrep(params.savename,'+','');
+%         savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
+%         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
+%         params.savename = strrep(params.savename,'+','');
+        params.savename = 'all-evoked-ipscs-0000.mat';
     else
         params.savename = 'doublet-data-01-0000.mat';
     end
