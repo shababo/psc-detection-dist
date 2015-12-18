@@ -5,6 +5,7 @@ load(results_file)
 try
     load(params.traces_filename)
 catch
+    disp('loading backup traces')
     load('data/for-paper/all-evoked-ipscs.mat')
 end
 
