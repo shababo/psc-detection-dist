@@ -2,11 +2,11 @@ function time_posteriors = plot_times_posterior(results_file, trace_offset, vara
 
 load(results_file)
 
-try
+% try
     load(params.traces_filename)
-catch
-    load('data/simulated-epscs-1027.mat')
-end
+% catch
+%     load('data/simulated-epscs-1027.mat')
+% end
 
 % load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
 % load('/home/shababo/Desktop/simulated-data-longer-traces-epsc.mat')
@@ -24,6 +24,13 @@ traces = traces(:,params.start_ind:(params.start_ind + params.duration - 1));
 if isfield(params,'traces_ind')
     traces = traces(params.traces_ind,:);
 end
+
+if length(varargin) > 2 && ~isempty(varargin{3})
+    params.traces_ind = varargin{3};
+else
+    params.traces_ind = 1:size(traces,1);
+end
+traces = traces(params.traces_ind,:);
 
 if ~isempty(varargin) && ~isempty(varargin{1})
     traces_ind = varargin{1};
@@ -44,8 +51,12 @@ else
 end
 
 time_posteriors = zeros(size(traces));
+burn_in = 250;
 
-for i = 1:size(traces,1)
+
+for ii = 1:length(params.traces_ind)
+    
+    i = params.traces_ind(ii);
     
     if ~exist('max_sample','var')
         map_i = results(i).map_ind;
@@ -54,14 +65,16 @@ for i = 1:size(traces,1)
     end
     this_posterior = zeros(1,T);
     
-    for j = 1:length(results(i).trials.times)
+    for j = burn_in:length(results(i).trials.times)
         
-        these_inds = floor(results(i).trials.times{j});
+        these_inds = ceil(results(i).trials.times{j});
         
-        this_posterior(these_inds) = this_posterior(these_inds) + 1/length(results(i).trials.times);
+%         if ~isempty(these_inds)
+            this_posterior(these_inds) = this_posterior(these_inds) + 1/length(results(i).trials.times(burn_in:end));
+%         end
     end
     
-    time_posteriors(i,:) = this_posterior;
+    time_posteriors(ii,:) = this_posterior;
 %     for j = 1:length(results(i).trials.times{map_i})
 %         
 %         
@@ -95,21 +108,27 @@ axes(ax1) % sets ax1 to current axes
 text(.025,0.6,descr)
 
 axes(ax2)
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[1 .4 .4]),'-')
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[.005 25],0)
 hold on
-plot_scatter_stack(time_posteriors,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'.')
 if exist('true_signal','var')
+    times_vec = zeros(size(time_posteriors));
+    for i = 1:size(time_posteriors,1)        
+        times_vec(i,ceil(true_event_times{i})) = max(max(time_posteriors))+.1;
+    end
+    plot_scatter_stack(times_vec,trace_offset,[0 0],20,100,[0 0 0])
     hold on
-    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 1 0]),'--')
+%     plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
+%     hold on
 end
+plot_scatter_stack(time_posteriors,trace_offset,[0 0],5,100,[0 0 1])
 hold off
 
 title(strrep(results_file,'_','-'))
 
-if length(varargin) > 1 && varargin{2}
-    [dir,name,~] = fileparts(results_file);
-    savefig([dir '/' name '.fig'])
-end
+% if length(varargin) > 1 && varargin{2}
+%     [dir,name,~] = fileparts(results_file);
+%     savefig([dir '/' name '.fig'])
+% end
 
 % map = params.event_sign*map_curves;
 

@@ -10,7 +10,12 @@ if ~isfield(params,'start_ind')
     params.start_ind = 1;
 end
 
-load(params.traces_filename,'traces')
+try
+    load(params.traces_filename,'traces')
+catch e
+    params.traces_filename = 'data/for-paper/direct-stim-w-events-real.mat';
+    load('data/for-paper/direct-stim-w-events-real.mat')
+end
 
 if ~isfield(params,'duration')
     params.duration = size(traces,2);
@@ -67,8 +72,11 @@ if params.par
         tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
 
         if params.direct_stim
+%             event_times_init = ceil(length(trace)*rand(1,length(trace)*params.p_spike));
             [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
         else
+%             event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
+%                 params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
             [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
         end
 
@@ -93,6 +101,7 @@ else
         tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
 
         if params.direct_stim
+%             event_times_init = ceil(length(trace)*rand(1,length(trace)*params.p_spike));
             [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
         else
             [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);

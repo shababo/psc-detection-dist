@@ -19,10 +19,11 @@
 #echo $param_file
 #echo $param_ind
 #echo $noise_type
-paramfile_base=${param_file##*/}
-paramfile_base=${paramfile_base%.*}
-echo $paramfile_base
-matlab -nosplash -nodisplay -nodesktop -r "infer_events_caller('$param_file')" > matlab-output/matoutfile-${PBS_JOBID}-${paramfile_base}
+#paramfile_base=${param_file##*/}
+#paramfile_base=${paramfile_base%.*}
+#echo $paramfile_base
+matlab -nosplash -nodisplay -nodesktop -r "infer_events_caller" > matlab-output/matoutfile-${PBS_JOBID}
+#-${paramfile_base}
 
 #Command below is to execute Matlab code for Job Array (Example 4) so that each part writes own output
 #matlab -nosplash -nodisplay -nodesktop -r "simPoissGLM($LAMBDA)" > matoutfile.$PBS_ARRAYID

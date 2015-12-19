@@ -37,7 +37,17 @@ stim_bottom = -offset;
 
 offset = 0;
 
+if length(varargin) > 1 && ~isempty(varargin{2})
+    vert_offset = varargin{2};
+else
+    vert_offset = 0;
+end
 
+if length(varargin) > 2 && ~isempty(varargin{3})
+    linewidth = varargin{3};
+else
+    linewidth = 2;
+end
     
 for trial = 1:size(traces,1)
     
@@ -49,7 +59,7 @@ for trial = 1:size(traces,1)
     
     trace_to_plot = traces(trial,:);
     
-    plot((0:trial_length-1)/20000,trace_to_plot - offset - median(trace_to_plot),linespec,'LineWidth',2,'Color',colors(ceil(trial/2),:))
+    plot((0:trial_length-1)/20000,trace_to_plot - offset - median(trace_to_plot) + vert_offset,linespec,'LineWidth',linewidth,'Color',colors(trial,:))
     hold on
    
 %     if ~isempty(events)
@@ -68,9 +78,9 @@ if ~isempty(varargin)
     if ~isempty(bar_limits)
 
         bar_corner_time = trial_length/10/20000;
-        bar_corner_y = -offset;
+        bar_corner_y = -offset + vert_offset;
 
-        plot([bar_corner_time; bar_corner_time], -offset + [0; bar_limits(2)], '-k',  bar_corner_time + [0; bar_limits(1)], [-offset; -offset], '-k', 'LineWidth', 2)
+        plot([bar_corner_time; bar_corner_time], bar_corner_y + [0; bar_limits(2)], '-k',  bar_corner_time + [0; bar_limits(1)], [bar_corner_y; bar_corner_y], '-k', 'LineWidth', 2)
         text(bar_corner_time - bar_limits(1)/2,bar_corner_y + bar_limits(2)/2, [num2str(bar_limits(2)) ' pA'], 'HorizontalAlignment','right')
         text(bar_corner_time + bar_limits(1)/2,bar_corner_y - bar_limits(2)/2, [num2str(bar_limits(1)*1000) ' ms'], 'HorizontalAlignment','center')
     end

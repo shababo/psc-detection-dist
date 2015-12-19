@@ -45,7 +45,7 @@ p_spike = n_spike/T;
 
 times = cumsum(binSize*1e-3*ones(1,T),2); % in sec
 
-a_min = 4.5;
+a_min = 2.5;
 a_max = 10;
 nc = 1; %trials
 
@@ -124,9 +124,9 @@ for ki = 1:K
 
 
     sigmasq = results(1).trials.noise{results(1).map_ind};;%2.0;
-    c_noise = sqrt(sigmasq)
+    c_noise = sqrt(sigmasq);
     
-    phi = results(1).trials.phi{results(1).map_ind}%[1, 1.0, -.42]; %this determines what the AR noise looks like.
+    phi = results(1).trials.phi{results(1).map_ind};%[1, 1.0, -.42]; %this determines what the AR noise looks like.
     p = length(phi) - 1;
     U = c_noise*randn(nc,T);
     er = zeros(T,1);
