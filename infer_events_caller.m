@@ -48,6 +48,10 @@ if exist(params.full_save_string, 'file') == 2
     return
 end
 
+if params.cluster
+    cd /vega/stats/users/bms2156/psc-detection
+end
+
 % test savefile before we do inference
 results = 'temp'; 
 save(params.full_save_string,'results','params','-v7.3')

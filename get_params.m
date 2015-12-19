@@ -6,7 +6,7 @@ end
 
 if ~isfield(params,'cluster')
 
-    params.cluster = 0;
+    params.cluster = 1;
 
 end
 
@@ -37,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = 1;
+    params.event_sign = -1;
 end
 
 %% subtraces
@@ -67,7 +67,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 2;
+    params.a_min = -Inf;
 
 end
 
@@ -96,14 +96,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 20/20000;
+    params.tau1_max = 25/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 20/20000;
+    params.tau2_min = 10/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 150/20000;
+    params.tau2_max = 250/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -211,7 +211,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 2000;
+    params.num_sweeps = 5000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -280,33 +280,34 @@ end
 
 %% filenames
 if ~isfield(params,'traces_filename')
-    if params.cluster
+%     if params.cluster
 
-        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/for-paper/all-evoked-ipscs.mat';
+%         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/evoked-neg10.mat';
 
-    else
+%     else
         params.traces_filename = ...
-            ['data/for-paper/doublet-data-01.mat'];
+            ['data/evoked-neg65.mat'];
 
-    end
+%     end
 end
 
 if ~isfield(params,'savepath')
-    if params.cluster
-        params.savepath = '/vega/stats/users/bms2156/psc-detection/data';
-    else
-        params.savepath = 'data/';
-    end
+%     if params.cluster
+%         params.savepath = '/vega/stats/users/bms2156/psc-detection/data';
+%     else
+%         params.savepath = 'data/';
+%     end
+    params.savepath = '';
 end
 if ~isfield(params,'savename')
-    if params.cluster
+%     if params.cluster
 %         savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
 %         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
 %         params.savename = strrep(params.savename,'+','');
-        params.savename = 'all-evoked-ipscs-0000.mat';
-    else
-        params.savename = 'doublet-data-01-0000.mat';
-    end
+%         params.savename = 'all-evoked-ipscs-0000.mat';
+%     else
+        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
+%     end
 end
 
 params.full_save_string = [params.savepath '/' params.savename];
