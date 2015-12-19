@@ -123,10 +123,10 @@ for ki = 1:K
 %         disp('USING PREVIOUSLY MADE SIGNAL')
 %     end
 
-%     sigmasq = 2.0;
+    sigmasq = 3.5;
     c_noise = sqrt(sigmasq);
     
-%     phi = [1, 1.0, -.42]; %this determines what the AR noise looks like.
+    phi = [1, .80, -.12]; %this determines what the AR noise looks like.
     p = length(phi) - 1;
     U = c_noise*randn(nc,T);
     er = zeros(T,1);
@@ -148,26 +148,26 @@ for ki = 1:K
     taus{ki} = trace_taus;
 end
 
-% figure;
-% ax1 = subplot(311);
-% plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
-% title('True Current')
-% 
-% ax2 = subplot(312);
-% % plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
-% plot_trace_stack((-er' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
-% title('AR(2) Noise Process')
-% 
-% ax3 = subplot(313);
-% % plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
-% plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[.01 10])
-% title(['Observation'])
-% xlimits = get(gca,'xlim');
-% ylimits = get(gca,'ylim');
-% set(ax2,'xlim',xlimits)
-% set(ax2,'ylim',ylimits)
-% set(ax1,'xlim',xlimits)
-% set(ax1,'ylim',ylimits)
+figure;
+ax1 = subplot(311);
+plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+title('True Current')
+
+ax2 = subplot(312);
+% plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack((-er' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+title('AR(2) Noise Process')
+
+ax3 = subplot(313);
+% plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
+plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[.01 10])
+title(['Observation'])
+xlimits = get(gca,'xlim');
+ylimits = get(gca,'ylim');
+set(ax2,'xlim',xlimits)
+set(ax2,'ylim',ylimits)
+set(ax1,'xlim',xlimits)
+set(ax1,'ylim',ylimits)
 
 
 
