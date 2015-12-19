@@ -44,20 +44,18 @@ end
 
 % first sample, if you want to start at 1, omit
 if ~isfield(params,'start_ind')
-%     params.start_ind = .3*20000;
+     params.start_ind = 1000;
 end
 % if you want to go to the end of the traces, omit
 if ~isfield(params,'duration')
-%     params.duration = 20000*.15;
+     params.duration = 4000;
 end
 
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
-
 %     params.traces_ind = 1278;
 %     params.traces_ind = 1;
-
 %     params.traces_ind = 1:6;
 end
 %% inference params
@@ -68,7 +66,6 @@ if ~isfield(params,'a_max')
 end
 if ~isfield(params,'a_min')
     params.a_min = -Inf;
-
 end
 
 % baseline bounds
@@ -113,7 +110,6 @@ end
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
     params.p_spike = 1e-4;%1e-4;
-
 end
 
 
@@ -308,6 +304,7 @@ if ~isfield(params,'savename')
 %     else
         params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
 %     end
+
 end
 
 params.full_save_string = [params.savepath '/' params.savename];

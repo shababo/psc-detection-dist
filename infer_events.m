@@ -44,7 +44,6 @@ end
 results = struct();
 disp(['About to run inference on: ' num2str(size(traces,1)) ' traces...']);
 
-
 if params.par
     
     if params.cluster
