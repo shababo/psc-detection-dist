@@ -54,13 +54,10 @@ end
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
-<<<<<<< HEAD
-=======
 
 %     params.traces_ind = 1278;
 %     params.traces_ind = 1;
 
->>>>>>> 11bdffd19e4c8406279d9cd67ff3ef3198dab5d5
 %     params.traces_ind = 1:6;
 end
 %% inference params
@@ -70,12 +67,8 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-<<<<<<< HEAD
     params.a_min = 1;
-=======
-    params.a_min = 2;
 
->>>>>>> 11bdffd19e4c8406279d9cd67ff3ef3198dab5d5
 end
 
 % baseline bounds
@@ -308,13 +301,5 @@ if ~isfield(params,'savename')
 end
 
 params.full_save_string = [params.savename];
-
-
-function params = get_params(varargin)
-
-if ~isempty(varargin)
-    params = varargin{1};
-end
-params.full_save_string = [params.savepath '/' params.savename];
 
 
