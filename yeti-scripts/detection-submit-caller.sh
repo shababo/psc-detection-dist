@@ -5,12 +5,12 @@
 #noise_type=1
 
 
-#dirname="/vega/stats/users/bms2156/psc-detection/data/cluster-param-files"
-#for param_file in "$dirname"/*-pspike-*.mat; #486
-#do
-param_file=0
+dirname="/vega/stats/users/bms2156/psc-detection/data/param-files/evoked-test-1218"
+for param_file in "$dirname"/*; #486
+do
+#param_file=0
 	response=`qsub -v param_file=$param_file /vega/stats/users/bms2156/psc-detection/yeti-scripts/detection-submit.sh`
-#	echo $param_file
+	echo $param_file
 	echo $response
-#	sleep 5 
+	sleep 5 
 #done
