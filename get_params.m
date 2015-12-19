@@ -307,6 +307,6 @@ if ~isfield(params,'savename')
 
 end
 
-params.full_save_string = [params.savepath '/' params.savename];
+params.full_save_string = [params.savename];
 
 
