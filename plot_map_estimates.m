@@ -1,7 +1,12 @@
 function plot_map_estimates(results_file, trace_offset, varargin)
 
 load(results_file)
-load(params.traces_filename)
+try
+    load(params.traces_filename)
+catch e
+    load('data/for-paper/all-evoked-ipscs.mat')
+end
+      
 
 if ~isfield(params,'start_ind')
     params.start_ind = 1;

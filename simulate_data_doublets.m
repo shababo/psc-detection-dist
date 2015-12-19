@@ -3,9 +3,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % rng(12341)
+resultsfile = 'data/good-example-trace-0009.mat';
+load(resultsfile)
+sigmasq = results(1).trials.noise{results(1).map_ind};%2.0;
+c_noise = sqrt(sigmasq);
+phi = results(1).trials.phi{results(1).map_ind};
+    
+
 
 % Simulate K voltage-clamp observed neurons
-K = 1;
+K = 100;
 
 % Simulation: Given sampling, what indicator timecourse. Also depends on spike rate
 % Sampling rate
@@ -14,7 +21,7 @@ K = 1;
 % Firing rate
 % Poisson or periodic
 
-T = 2000; %bins - start not too long
+T = 10000; %bins - start not too long
 binSize = 1/20000; %
 tau_r_bounds = [5 20];
 tau_f_bounds = [20 150];
@@ -42,8 +49,8 @@ p_spike = n_spike/T;
 
 times = cumsum(binSize*1e-3*ones(1,T),2); % in sec
 
-a_min = .5;
-a_max = 6;
+a_min = 8;
+a_max = 8;
 nc = 1; %trials
 
 for ki = 1:K
@@ -56,8 +63,10 @@ for ki = 1:K
             s_int = T/n_spike;
             startingSpikeTimes = [startingSpikeTimes s_int:s_int:(T-10)];
         else
-            num_spikes = poissrnd(n_spike);
-            startingSpikeTimes = T*rand(1,num_spikes);
+%             num_spikes = poissrnd(n_spike);
+            num_spikes = 20;
+%             startingSpikeTimes = T*rand(1,num_spikes);
+            startingSpikeTimes = [1000:2000:9000 ((1000:2000:9000) + (10:5:30))];% (10:14))];
     %         startingSpikeTimes = times(rand(1,T)<p_spike)/(binSize*1e-3);
         end
         ci = baseline*ones(nc,T); %initial calcium is set to baseline 
@@ -87,8 +96,8 @@ for ki = 1:K
             for ti = 1:nc
                 a_init = a_min + (a_max-a_min)*rand;
                 tmpi_ = tmpi+(st_std*randn);
-                tau(1) = diff(tau_r_bounds)*rand() + tau_r_bounds(1);
-                tau(2) = diff(tau_f_bounds)*rand() + tau_f_bounds(1);
+                tau(1) = 10; %diff(tau_r_bounds)*rand() + tau_r_bounds(1);
+                tau(2) = 100; %diff(tau_f_bounds)*rand() + tau_f_bounds(1);
                 ef=genEfilt(tau,T);
                 [si_, ci_, logC_] = addSpike(sti{ti},ci(ti,:),logC_,ef,a_init,tau,ci(ti,:),tmpi_, N+1, Dt, A); %adds all trials' spikes at same time
                 sti_{ti} = si_;
@@ -123,10 +132,10 @@ for ki = 1:K
 %         disp('USING PREVIOUSLY MADE SIGNAL')
 %     end
 
-    sigmasq = 3.5;
+%     sigmasq = 2.0;
     c_noise = sqrt(sigmasq);
     
-    phi = [1, .80, -.12]; %this determines what the AR noise looks like.
+%     phi = [1, 1.0, -.42]; %this determines what the AR noise looks like.
     p = length(phi) - 1;
     U = c_noise*randn(nc,T);
     er = zeros(T,1);
@@ -148,26 +157,26 @@ for ki = 1:K
     taus{ki} = trace_taus;
 end
 
-figure;
-ax1 = subplot(311);
-plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
-title('True Current')
-
-ax2 = subplot(312);
-% plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
-plot_trace_stack((-er' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
-title('AR(2) Noise Process')
-
-ax3 = subplot(313);
-% plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
-plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[.01 10])
-title(['Observation'])
-xlimits = get(gca,'xlim');
-ylimits = get(gca,'ylim');
-set(ax2,'xlim',xlimits)
-set(ax2,'ylim',ylimits)
-set(ax1,'xlim',xlimits)
-set(ax1,'ylim',ylimits)
+% figure;
+% ax1 = subplot(311);
+% plot_trace_stack((-C' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+% title('True Current')
+% 
+% ax2 = subplot(312);
+% % plot((0:T-1)/20000,-Y' - 20*repmat(0:(K-1),T,1))
+% plot_trace_stack((-er' - 20*repmat(0:(K-1),T,1))',0,zeros(K,3),'-',[])
+% title('AR(2) Noise Process')
+% 
+% ax3 = subplot(313);
+% % plot((0:T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),T,1))
+% plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),T,1))',25,zeros(K,3),'-',[.01 10])
+% title(['Observation'])
+% xlimits = get(gca,'xlim');
+% ylimits = get(gca,'ylim');
+% set(ax2,'xlim',xlimits)
+% set(ax2,'ylim',ylimits)
+% set(ax1,'xlim',xlimits)
+% set(ax1,'ylim',ylimits)
 
 
 
@@ -186,6 +195,7 @@ traces = -Y_AR;
 true_signal = -C;
 true_event_times = Spk;
 true_amplitudes = amplitudes; true_taus = taus;
+
 
 sorted_times = sort(true_event_times{1});
 legend_names = {};

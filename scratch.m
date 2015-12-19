@@ -317,35 +317,43 @@ for i = 1:length(filenames)
     compute_relative_obj_position(filenames{i},[]);
 end
 
-         %%
+%% Chrimson Good Currents
 clear all
 % 
-% filenames = {'12_1_slice1_cell1.mat',...
-% '12_1_slice1_cell2.mat',...
-% '12_1_slice3_cell1.mat',...
-% '12_1_slice3_cell2.mat',...
-% '12_1_slice4_cell2.mat',...
-% '12_1_slice5_cell1.mat',...
-% '12_1_slice5_cell2.mat',...
-% '12_2_slice1_cell1.mat',...
-% '12_3_slice1_cell2.mat'};
-% 
-% 
-% run_count_id = [9
-% 2
-% 10
-% 3
-% 13
-% 15
-% 2
-% 6
-% 6];
-% 
-trial_ids = [-60 -45 -30 -15 0 15 30 45 60 0 0 0 0 0 0 0 0 0
-             0 0 0 0 0 0 0 0 0  -60 -45 -30 -15 0 15 30 45 60
-             0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]';
-  run_count_id = 8;       
-filenames = {'12_3_slice1_cell2.mat'};
+filenames = {...%'12_1_slice1_cell1.mat',...
+'12_1_slice1_cell2.mat',...
+'12_1_slice3_cell1.mat',...
+...%'12_1_slice3_cell2.mat',...
+'12_1_slice4_cell2.mat',...
+'12_1_slice5_cell1.mat',...
+'12_1_slice5_cell2.mat',...
+'12_2_slice1_cell1.mat',...
+'12_3_slice1_cell2.mat',...
+'12_3_slice2_cell1.mat',...
+'12_3_slice3_cell1.mat'};
+
+
+run_count_id = [...%9
+2
+10
+...%3
+13
+15
+2
+6
+6
+13
+7];
+
+
+%% soma-chr2 good currents
+clear all
+filenames = {'12_15_slice1_cell2.mat','12_15_slice1_cell3.mat','12_15_slice2_cell1.mat','12_15_slice3_cell1.mat'}
+
+  run_count_id = {4, 3, {4, 5}, {3, 4}}; 
+  
+%   run_count_id = 8;
+% filenames = {'12_3_slice1_cell2.mat'};
 % filenames = {...
 % '12_3_slice2_cell1.mat',...
 % '12_3_slice3_cell1.mat'};
@@ -354,49 +362,78 @@ filenames = {'12_3_slice1_cell2.mat'};
 % 13
 % 7];
 % 
-% trial_ids = [
-%   -64.0000         0         0
-%   -56.0000         0         0
-%   -48.0000         0         0
-%   -40.0000         0         0
-%   -32.0000         0         0
-%   -24.0000         0         0
-%   -16.0000         0         0
-%    -8.0000         0         0
-%    0 0 0
-%     7.5000         0         0
-%    15.0000         0         0
-%    22.5000         0         0
-%    30.0000         0         0
-%    37.5000         0         0
-%    45.0000         0         0
-%    52.5000         0         0
-%    60.0000         0         0
-%    0 -64 0
-%             0  -56.0000         0
-%          0  -48.0000         0
-%          0  -40.0000         0
-%          0  -32.0000         0
-%          0  -24.0000         0
-%          0  -16.0000         0
-%          0   -8.0000         0
-%                   0         0         0
-%          0    8.0000         0
-%          0   16.0000         0
-%          0   24.0000         0
-%          0   32.0000         0
-%          0   40.0000         0
-%                   0   48.0000         0
-%          0   56.0000         0
-%          0   64.0000         0
-%          ];
 
+%% trial ids
 
-peak_currents_cells_by_trial = cell(length(filenames),size(trial_ids,1));
-peak_currents_cells_by_trial_mean = zeros(length(filenames),size(trial_ids,1));
-peak_currents_cells_by_trial_std = zeros(length(filenames),size(trial_ids,1));
-peak_currents_trial_mean = zeros(size(trial_ids,1),1);
-peak_currents_trial_std = zeros(size(trial_ids,1),1);
+trial_ids1 = [-60 -45 -30 -15 0 15 30 45 60 0 0 0 0 0 0 0 0 0
+             0 0 0 0 0 0 0 0 0  -60 -45 -30 -15 0 15 30 45 60
+             0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]';
+
+trial_ids2 = [
+  -64.0000         0         0
+  -48.0000         0         0
+  -32.0000         0         0
+  -16.0000         0         0
+   0 0 0
+   15.0000         0         0
+   30.0000         0         0
+   45.0000         0         0
+   60.0000         0         0
+   0 -64 0
+         0  -48.0000         0
+         0  -32.0000         0
+         0  -16.0000         0
+                  0         0         0
+         0   16.0000         0
+         0   32.0000         0
+                  0   48.0000         0
+         0   64.0000         0
+         ];
+     
+trial_ids3 = [
+  -64.0000         0         0
+  -56.0000         0         0
+  -48.0000         0         0
+  -40.0000         0         0
+  -32.0000         0         0
+  -24.0000         0         0
+  -16.0000         0         0
+   -8.0000         0         0
+   0 0 0
+    7.5000         0         0
+   15.0000         0         0
+   22.5000         0         0
+   30.0000         0         0
+   37.5000         0         0
+   45.0000         0         0
+   52.5000         0         0
+   60.0000         0         0
+   0 -64 0
+            0  -56.0000         0
+         0  -48.0000         0
+         0  -40.0000         0
+         0  -32.0000         0
+         0  -24.0000         0
+         0  -16.0000         0
+         0   -8.0000         0
+                  0         0         0
+         0    8.0000         0
+         0   16.0000         0
+         0   24.0000         0
+         0   32.0000         0
+         0   40.0000         0
+                  0   48.0000         0
+         0   56.0000         0
+         0   64.0000         0
+         ];
+
+%%
+
+peak_currents_cells_by_trial = cell(length(filenames),size(trial_ids1,1));
+peak_currents_cells_by_trial_mean = zeros(length(filenames),size(trial_ids1,1));
+peak_currents_cells_by_trial_std = zeros(length(filenames),size(trial_ids1,1));
+peak_currents_trial_mean = zeros(size(trial_ids1,1),1);
+peak_currents_trial_std = zeros(size(trial_ids1,1),1);
 
 baseline_window = 20000*[.299 .300]; measure_window = 20000*[.301 .330];
 
@@ -404,10 +441,10 @@ for i = 1:length(filenames)
     
     load(['data/' filenames{i}])
     
-    [traces, traces_metadata] = get_sweeps_dir('data',filenames{i},0,1,0,Inf,'run_count',run_count_id(i));
+    [traces, traces_metadata] = get_sweeps_dir('data',filenames{i},0,1,0,Inf,'run_count',run_count_id{i});
     traces = traces{1};
     
-    params1.run_count = run_count_id(i);
+    params1.run_count = run_count_id{i};
     match_inds = match_trials(params1, traces_metadata{1});
     traces = traces(match_inds,:);
     temp = traces_metadata{1};
@@ -415,10 +452,12 @@ for i = 1:length(filenames)
     
     trial_types = zeros(size(traces,1),1);
     
-    for j = 1:size(trial_ids,1)
+
+    for j = 1:size(trial_ids1,1)
         
-        params2.relative_position = trial_ids(j,:);
-        match_inds = match_trials(params2, traces_metadata);
+        params2.relative_position = trial_ids1(j,:);
+        params3.relative_position = trial_ids2(j,:);
+        match_inds = unique([match_trials(params2, traces_metadata) match_trials(params3, traces_metadata)]);
         size(match_inds)
         if isempty(match_inds)
             ['data/' filenames{i}]
@@ -435,7 +474,8 @@ for i = 1:length(filenames)
 
 end
 
-for j = 1:length(trial_ids)
+
+for j = 1:length(trial_ids1)
     
     peak_currents_trial_mean(j) = mean(peak_currents_cells_by_trial_mean(:,j));
     peak_currents_trial_std(j) = mean(peak_currents_cells_by_trial_std(:,j));
@@ -444,7 +484,7 @@ end
 
 %%
 positions = -60:15:60;
-colors = lines(length(positions));
+colors = lines(length(filenames));
 switch_ind = length(peak_currents_trial_std)/2;
 figure; %h = plot(positions,peak_currents_cells_by_trial_mean(:,1:switch_ind)');
 hold on;
@@ -454,33 +494,36 @@ for i = 1:length(filenames)
         scatter(positions(j)*ones(length(peak_currents_cells_by_trial{i,j}),1),peak_currents_cells_by_trial{i,j},[],repmat(colors(i,:),length(peak_currents_cells_by_trial{i,j}),1),'filled');
         hold on;
     end
+
 end
+legend(filenames)
 title('x')
 figure; %h = plot(positions,peak_currents_cells_by_trial_mean(:,switch_ind+1:end)');
 hold on;
 for i = 1:length(filenames)
-    for j = switch_ind+1:size(trial_ids,1)
+    for j = switch_ind+1:size(trial_ids1,1)
         plot(positions,peak_currents_cells_by_trial_mean(i,switch_ind+1:end),'color',colors(i,:))
         hold on
         scatter(positions(j-switch_ind)*ones(length(peak_currents_cells_by_trial{i,j}),1),peak_currents_cells_by_trial{i,j},[],repmat(colors(i,:),length(peak_currents_cells_by_trial{i,j}),1),'filled');
         hold on;
     end
 end
+legend(filenames)
 title('y')
 
 
 %% normalization
 
-peak_currents_cells_by_trial_norm = cell(length(filenames),size(trial_ids,1));
-peak_currents_cells_by_trial_mean_norm = zeros(length(filenames),size(trial_ids,1));
-peak_currents_cells_by_trial_std_norm = zeros(length(filenames),size(trial_ids,1));
-peak_currents_trial_mean_norm = zeros(size(trial_ids,1),1);
-peak_currents_trial_std_norm = zeros(size(trial_ids,1),1);
+peak_currents_cells_by_trial_norm = cell(length(filenames),size(trial_ids1,1));
+peak_currents_cells_by_trial_mean_norm = zeros(length(filenames),size(trial_ids1,1));
+peak_currents_cells_by_trial_std_norm = zeros(length(filenames),size(trial_ids1,1));
+peak_currents_trial_mean_norm = zeros(size(trial_ids1,1),1);
+peak_currents_trial_std_norm = zeros(size(trial_ids1,1),1);
 
 
 for i = 1:length(filenames)
     
-    for j = 1:size(trial_ids,1)
+    for j = 1:size(trial_ids1,1)
 
         peak_currents_cells_by_trial_norm{i,j} = ...
             peak_currents_cells_by_trial{i,j}/max(peak_currents_cells_by_trial_mean(i,:));
@@ -490,7 +533,7 @@ for i = 1:length(filenames)
     end
 end
         
-for j = 1:length(trial_ids)
+for j = 1:length(trial_ids1)
     
     peak_currents_trial_mean_norm(j) = mean(peak_currents_cells_by_trial_mean_norm(:,j));
     peak_currents_trial_std_norm(j) = mean(peak_currents_cells_by_trial_std_norm(:,j));
@@ -499,7 +542,6 @@ end
 
 %%
 
-figure;
 
 switch_ind = length(peak_currents_trial_std)/2;
 

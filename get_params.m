@@ -1,13 +1,13 @@
 function params = get_params(varargin)
 
 if ~isempty(varargin)
-    disp('1')
     params = varargin{1};
 end
 
 if ~isfield(params,'cluster')
-    disp('2')
-    params.cluster = 1;
+
+    params.cluster = 0;
+
 end
 
 if ~isfield(params,'par')
@@ -54,6 +54,13 @@ end
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
+<<<<<<< HEAD
+=======
+
+%     params.traces_ind = 1278;
+%     params.traces_ind = 1;
+
+>>>>>>> 11bdffd19e4c8406279d9cd67ff3ef3198dab5d5
 %     params.traces_ind = 1:6;
 end
 %% inference params
@@ -63,7 +70,12 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
+<<<<<<< HEAD
     params.a_min = 1;
+=======
+    params.a_min = 2;
+
+>>>>>>> 11bdffd19e4c8406279d9cd67ff3ef3198dab5d5
 end
 
 % baseline bounds
@@ -81,7 +93,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 1/20000;
+    params.tau1_min = 5/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -91,14 +103,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 50/20000;
+    params.tau1_max = 20/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 50/20000;
+    params.tau2_min = 20/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 500/20000;
+    params.tau2_max = 150/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -128,6 +140,7 @@ if ~isfield(params,'noise_var_init')
 end
 
 if ~isfield(params,'noise_est_subset')
+%     params.noise_est_subset = 1:5000;
 %     params.noise_est_subset = 1:1000;
 end
 
@@ -279,7 +292,8 @@ if ~isfield(params,'traces_filename')
 
     else
         params.traces_filename = ...
-            ['data/for-paper/all-evoked-ipscs.mat'];
+            ['data/for-paper/doublet-data-01.mat'];
+
     end
 end
 
@@ -297,7 +311,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
         params.savename = 'all-evoked-ipscs-0004.mat';
     else
-        params.savename = 'small-evoked-ipscs-0000.mat';
+        params.savename = 'doublet-data-01-0000.mat';
     end
 end
 
