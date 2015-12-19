@@ -166,16 +166,6 @@ if ~isfield(params,'stim_amp_min')
 end
 
 if ~isfield(params,'stim_amp_max')
-    params.stim_amp_max = Inf;
-end
-
-if ~isfield(params,'stim_in')
-    params.stim_in = [zeros(1,20*5) ones(1,20*20) zeros(1,1000-25*5)];
-end
-
-if ~isfield(params,'stim_amp_init')
-    params.stim_amp_init = NaN;
-end
 
 if ~isfield(params,'stim_tau_rise_min')
     params.stim_tau_rise_min = .0005;
@@ -217,7 +207,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 10000;
+    params.num_sweeps = 5000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -286,35 +276,45 @@ end
 
 %% filenames
 if ~isfield(params,'traces_filename')
-    if params.cluster
+%     if params.cluster
 
-        params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/for-paper/all-evoked-ipscs.mat';
+%         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/evoked-neg10.mat';
 
-    else
+%     else
         params.traces_filename = ...
-            ['data/for-paper/doublet-data-01.mat'];
+            ['data/evoked-neg65.mat'];
 
-    end
+%     end
 end
 
 if ~isfield(params,'savepath')
-    if params.cluster
-        params.savepath = '/vega/stats/users/bms2156/psc-detection/data';
-    else
-        params.savepath = 'data/';
-    end
+%     if params.cluster
+%         params.savepath = '/vega/stats/users/bms2156/psc-detection/data';
+%     else
+%         params.savepath = 'data/';
+%     end
+    params.savepath = '';
 end
 if ~isfield(params,'savename')
-    if params.cluster
+%     if params.cluster
 %         savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
 %         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
 %         params.savename = strrep(params.savename,'+','');
-        params.savename = 'all-evoked-ipscs-0004.mat';
-    else
-        params.savename = 'doublet-data-01-0000.mat';
-    end
+%         params.savename = 'all-evoked-ipscs-0000.mat';
+%     else
+        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
+%     end
+
 end
 
+params.full_save_string = [params.savename];
+
+
+function params = get_params(varargin)
+
+if ~isempty(varargin)
+    params = varargin{1};
+end
 params.full_save_string = [params.savepath '/' params.savename];
 
 

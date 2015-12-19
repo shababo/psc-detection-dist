@@ -14,8 +14,7 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     [pathname, filename] = fileparts(params.traces_filename);
 %     pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
 %     params.traces_filename = [pathname filename];
-
-    params.savename = 'evoked_pscs-new-results-0012.mat';
+ %   params.savename = 'evoked_pscs-new-results-0012.mat';
 % %     params.stim_in = [zeros(1,20*10) ones(1,20*10) zeros(1,2000-20*20)];%linspace(0,1,20*10)
 %     % ar noise model
 %     params.p = 3; % how many time steps to regress on
@@ -46,6 +45,10 @@ if exist(params.full_save_string, 'file') == 2
     disp('****ABORTING: THE REQUESTED RESULTS FILE NAME ALREADY EXISTS****')
     disp(params.full_save_string)
     return
+end
+
+if params.cluster
+    cd /vega/stats/users/bms2156/psc-detection
 end
 
 % test savefile before we do inference
