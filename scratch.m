@@ -340,8 +340,8 @@ filenames = {...%'12_1_slice1_cell1.mat',...
 '12_1_slice5_cell2.mat',...
 '12_2_slice1_cell1.mat',...
 '12_3_slice1_cell2.mat',...
-'12_3_slice2_cell1.mat',...
-'12_3_slice3_cell1.mat',...
+...%'12_3_slice2_cell1.mat',...
+...% '12_3_slice3_cell1.mat',...
 '12_17_slice1chrims_cell1.mat',...
 '12_17_slice1chrims_cell2.mat',...
 '12_17_slice2chrims_cell1.mat',...
@@ -358,8 +358,8 @@ run_count_id = {...%9
 2,...
 6,...
 6,...
-13,...
-7,...
+...%13,...
+...%7,...
 {3,4},{5},{4,5},{5,6},{4,5}};
 
 %% Chrimson w/ TF
@@ -371,6 +371,20 @@ filenames = {'12_19_slice1_cell1.mat',...
 
 run_count_id = {3, 3, 3 ...
     3};
+
+trial_ids1 = [-60 -45 -30 -15 0 15 30 45 60 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+             0 0 0 0 0 0 0 0 0  -60 -45 -30 -15 0 15 30 45 60 0 0 0 0 0 0 0 0 0
+             0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -60 -45 -30 -15 0 15 30 45 60]';
+         
+%% Chrimson w/o TF XYZ
+
+filenames = {'12_22_slice2_cell1.mat',...
+    '12_22_slice4_cell1.mat',...
+    '12_22_slice4_cell2.mat',...
+    '12_22_slice4_cell4.mat'};
+
+run_count_id = {3, {3,4}, 7 ...
+    2};
 
 trial_ids1 = [-60 -45 -30 -15 0 15 30 45 60 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
              0 0 0 0 0 0 0 0 0  -60 -45 -30 -15 0 15 30 45 60 0 0 0 0 0 0 0 0 0
@@ -548,10 +562,12 @@ for i = 1:length(filenames)
 end
 % legend(filenames)
 title('y')
+%%
+positions = -60:15:60;
 
 %% X Y Z
 
-positions = -60:15:60;
+
 colors = lines(length(filenames));
 switch_ind = length(peak_currents_trial_std)/3;
 figure; %h = plot(positions,peak_currents_cells_by_trial_mean(:,1:switch_ind)');
@@ -603,9 +619,11 @@ peak_currents_trial_std_norm = zeros(size(trial_ids1,1),1);
 for i = 1:length(filenames)
     
     for j = 1:size(trial_ids1,1)
-
+        
+        start = floor((j-1)/9)*9 + 1
+        stop = start + 8
         peak_currents_cells_by_trial_norm{i,j} = ...
-            peak_currents_cells_by_trial{i,j}/max(peak_currents_cells_by_trial_mean(i,:));
+            peak_currents_cells_by_trial{i,j}/max(peak_currents_cells_by_trial_mean(i,start:stop));
         peak_currents_cells_by_trial_mean_norm(i,j) = mean(peak_currents_cells_by_trial_norm{i,j});
         peak_currents_cells_by_trial_std_norm(i,j) = std(peak_currents_cells_by_trial_norm{i,j});
         
@@ -652,6 +670,21 @@ figure; errorbar(positions,peak_currents_trial_mean_norm(1:9)',peak_currents_tri
 title('x norm')
 figure; errorbar(positions,peak_currents_trial_mean_norm(10:end)',peak_currents_trial_std_norm(10:end)');
 title('y norm')
+
+%%
+
+figure; errorbar(positions,peak_currents_trial_mean(1:9)',peak_currents_trial_std(1:9)');
+title('x')
+figure; errorbar(positions,peak_currents_trial_mean(10:end)',peak_currents_trial_std(10:end)');
+title('y')
+
+%%
+figure; errorbar(positions,peak_currents_trial_mean_norm(1:9)',peak_currents_trial_std_norm(1:9)');
+title('x norm')
+figure; errorbar(positions,peak_currents_trial_mean_norm(10:18)',peak_currents_trial_std_norm(10:18)');
+title('y norm')
+figure; errorbar(positions,peak_currents_trial_mean_norm(19:end)',peak_currents_trial_std_norm(19:end)');
+title('z norm')
 
 %%
 
