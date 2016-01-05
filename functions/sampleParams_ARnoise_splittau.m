@@ -1,4 +1,4 @@
-ffunction [trials, mcmc, runtime]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
+function [trials, mcmc, runtime]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
 if ~isfield(params,'noise_est_subset')

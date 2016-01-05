@@ -159,6 +159,8 @@ if ~isfield(params,'stim_amp_min')
 end
 
 if ~isfield(params,'stim_amp_max')
+    params.stim_amp_max = Inf;
+end
 
 if ~isfield(params,'stim_tau_rise_min')
     params.stim_tau_rise_min = .0005;
