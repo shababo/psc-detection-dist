@@ -126,7 +126,7 @@ for i = 1:length(Tguess)
     %must add spike to each trial (at mean location or sampled -- more appropriate if sampled)
     pr_ = pr;
     ati_ = ati;
-    a_init = max(max(trace(tmpi-5:tmpi+5))/A,a_min);
+    a_init = max(max(trace(max(tmpi-5,1):min(tmpi+5,length(trace))))/A,a_min);
 %     a_init = max(diffY(max(1,floor(tmpi)))/A + a_std*randn,a_min);
     [sti_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,efs{i},a_init,tau,trace,tmpi, N+1, Dt, A); %adds all trials' spikes at same time
 
