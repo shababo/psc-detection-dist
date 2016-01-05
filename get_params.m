@@ -6,7 +6,7 @@ end
 
 if ~isfield(params,'cluster')
 
-    params.cluster = 0;
+    params.cluster = 1;
 
 end
 
@@ -37,18 +37,18 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = 1;
+    params.event_sign = -1;
 end
 
 %% subtraces
 
 % first sample, if you want to start at 1, omit
 if ~isfield(params,'start_ind')
-     params.start_ind = 1000;
+%      params.start_ind = 1000;
 end
 % if you want to go to the end of the traces, omit
 if ~isfield(params,'duration')
-     params.duration = 4000;
+%      params.duration = 4000;
 end
 
 % if you want all traces, omit
@@ -202,7 +202,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 5000;
+    params.num_sweeps = 2000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -277,7 +277,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/evoked-neg65.mat'];
+            ['data/doublets-constant-events.mat'];
 
 %     end
 end
