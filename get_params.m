@@ -37,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = -1;
+    params.event_sign = 1;
 end
 
 %% subtraces
@@ -67,7 +67,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 1;
+    params.a_min = -Inf;
 
 end
 
@@ -86,7 +86,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 5/20000;
+    params.tau1_min = 1/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -96,14 +96,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 20/20000;
+    params.tau1_max = 60/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
     params.tau2_min = 20/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 150/20000;
+    params.tau2_max = 500/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -277,7 +277,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/doublets-constant-events.mat'];
+            ['data/evoked-20160102_ExpI-10.mat'];
 
 %     end
 end
