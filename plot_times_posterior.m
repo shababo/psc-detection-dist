@@ -109,7 +109,7 @@ axes(ax1) % sets ax1 to current axes
 text(.025,0.6,descr)
 
 axes(ax2)
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[.005 25],0)
+plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[.025 25],0)
 hold on
 if exist('true_signal','var')
     times_vec = zeros(size(time_posteriors));
@@ -118,8 +118,8 @@ if exist('true_signal','var')
     end
     plot_scatter_stack(times_vec,trace_offset,[0 0],20,100,[0 0 0])
     hold on
-%     plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
-%     hold on
+    plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
+    hold on
 end
 plot_scatter_stack(time_posteriors,trace_offset,[0 0],5,100,[0 0 1])
 hold off
