@@ -1,4 +1,4 @@
-function time_posteriors = plot_times_posterior(results_file, trace_offset, varargin)
+function time_posteriors = get_times_posterior(results_file, trace_offset, do_plot, varargin)
 
 load(results_file)
 params.traces_filename
@@ -92,47 +92,48 @@ for ii = 1:length(params.traces_ind)
 %     map_curves(i,:) = this_curve + results(i).trials.base{map_i};
 end
 
-ax1 = axes('Position',[0 0 1 1],'Visible','off');
-ax2 = axes('Position',[.3 .1 .6 .8]);
+if do_plot
+    ax1 = axes('Position',[0 0 1 1],'Visible','off');
+    ax2 = axes('Position',[.3 .1 .6 .8]);
 
-descr = {'Parameters:'
-    ['a_{min} = ' num2str(params.a_min)];
-    ['tau^1_{min} = ' num2str(params.tau1_min)];
-    ['tau^1_{max} = ' num2str(params.tau1_max)];
-    ['tau^2_{min} = ' num2str(params.tau2_min)];
-    ['tau^2_{max} = ' num2str(params.tau2_max)];
-    ['p_{spike} = ' num2str(params.p_spike)]
-    ['num sweeps = ' num2str(params.num_sweeps)]};
+    descr = {'Parameters:'
+        ['a_{min} = ' num2str(params.a_min)];
+        ['tau^1_{min} = ' num2str(params.tau1_min)];
+        ['tau^1_{max} = ' num2str(params.tau1_max)];
+        ['tau^2_{min} = ' num2str(params.tau2_min)];
+        ['tau^2_{max} = ' num2str(params.tau2_max)];
+        ['p_{spike} = ' num2str(params.p_spike)]
+        ['num sweeps = ' num2str(params.num_sweeps)]};
 
 
-axes(ax1) % sets ax1 to current axes
-text(.025,0.6,descr)
+    axes(ax1) % sets ax1 to current axes
+    text(.025,0.6,descr)
 
-axes(ax2)
-plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[.005 10],0)
-hold on
-if exist('true_signal','var')
-    times_vec = zeros(size(time_posteriors));
-    for i = 1:size(time_posteriors,1)        
-        times_vec(i,ceil(true_event_times{i})) = max(max(time_posteriors))+.1;
-    end
-    plot_scatter_stack(times_vec,trace_offset,[0 0],20,100,[0 0 0])
+    axes(ax2)
+    plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[.005 10],0)
     hold on
-    %plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
-    %hold on
+    if exist('true_signal','var')
+        times_vec = zeros(size(time_posteriors));
+        for i = 1:size(time_posteriors,1)        
+            times_vec(i,ceil(true_event_times{i})) = max(max(time_posteriors))+.1;
+        end
+        plot_scatter_stack(times_vec,trace_offset,[0 0],20,100,[0 0 0])
+        hold on
+        %plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
+        %hold on
+    end
+    plot_scatter_stack(time_posteriors,trace_offset,[0 0],5,100,[0 0 1])
+    hold off
+
+    title(strrep(results_file,'_','-'))
+
+    % if length(varargin) > 1 && varargin{2}
+    %     [dir,name,~] = fileparts(results_file);
+    %     savefig([dir '/' name '.fig'])
+    % end
+
+    % map = params.event_sign*map_curves;
 end
-plot_scatter_stack(time_posteriors,trace_offset,[0 0],5,100,[0 0 1])
-hold off
-
-title(strrep(results_file,'_','-'))
-
-% if length(varargin) > 1 && varargin{2}
-%     [dir,name,~] = fileparts(results_file);
-%     savefig([dir '/' name '.fig'])
-% end
-
-% map = params.event_sign*map_curves;
-
 
 
 
