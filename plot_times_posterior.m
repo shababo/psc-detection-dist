@@ -1,6 +1,7 @@
-function time_posteriors = get_times_posterior(results_file, trace_offset, do_plot, varargin)
+function plot_times_posterior(results_file, posterior_file, trace_offset, varargin)
 
-load(results_file)
+load(results_file,'params')
+load(posterior_file,'posterior')
 params.traces_filename
 try
     load(params.traces_filename)
@@ -50,49 +51,9 @@ else
     event_samples = 4000;
 end
 
-time_posteriors = zeros(size(traces));
-
-burn_in = 250;
 
 
-for ii = 1:length(params.traces_ind)
-    
-    i = params.traces_ind(ii);
-    
-    if ~exist('max_sample','var')
-        map_i = results(i).map_ind;
-    else
-        [map_val, map_i] = max(results(i).trials.obj(1:max_sample));
-    end
-    this_posterior = zeros(1,T);
-    
-    for j = burn_in:length(results(i).trials.times)
-        
-        these_inds = ceil(results(i).trials.times{j});
-        
-%         if ~isempty(these_inds)
-            this_posterior(these_inds) = this_posterior(these_inds) + 1/length(results(i).trials.times(burn_in:end));
-%         end
-    end
-    
-    time_posteriors(ii,:) = this_posterior;
-%     for j = 1:length(results(i).trials.times{map_i})
-%         
-%         
-%         ef = genEfilt_ar(results(i).trials.tau{map_i}{j},event_samples);
-%         [~, this_curve, ~] = addSpike_ar(results(i).trials.times{map_i}(j),...
-%                                             this_curve, 0, ef, ...
-%                                             results(i).trials.amp{map_i}(j),...
-%                                             results(i).trials.tau{map_i}{j},...
-%                                             traces(i,:), ...
-%                                             results(i).trials.times{map_i}(j), ...
-%                                             2, 1, 1);
-%                                         
-%     end
-%     map_curves(i,:) = this_curve + results(i).trials.base{map_i};
-end
 
-if do_plot
     ax1 = axes('Position',[0 0 1 1],'Visible','off');
     ax2 = axes('Position',[.3 .1 .6 .8]);
 
@@ -113,16 +74,16 @@ if do_plot
     plot_trace_stack(traces,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 0]),'-',[.005 10],0)
     hold on
     if exist('true_signal','var')
-        times_vec = zeros(size(time_posteriors));
-        for i = 1:size(time_posteriors,1)        
-            times_vec(i,ceil(true_event_times{i})) = max(max(time_posteriors))+.1;
+        times_vec = zeros(size(posterior));
+        for i = 1:size(posterior,1)        
+            times_vec(i,ceil(true_event_times{i})) = max(max(posterior))+.1;
         end
         plot_scatter_stack(times_vec,trace_offset,[0 0],20,100,[0 0 0])
         hold on
         %plot_trace_stack(true_signal,trace_offset,bsxfun(@plus,zeros(length(traces),3),[0 0 1]),'-',[],80)
         %hold on
     end
-    plot_scatter_stack(time_posteriors,trace_offset,[0 0],5,100,[0 0 1])
+    plot_scatter_stack(posterior,trace_offset,[0 0],5,100,[0 0 1])
     hold off
 
     title(strrep(results_file,'_','-'))
@@ -133,7 +94,7 @@ if do_plot
     % end
 
     % map = params.event_sign*map_curves;
-end
+
 
 
 
