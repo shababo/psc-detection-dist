@@ -277,7 +277,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/evoked-20160102_ExpI-10.mat'];
+            ['data/evoked-20160102_ExpI-neg50_fix.mat'];
 
 %     end
 end
@@ -297,7 +297,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-2000.mat'];
 %     end
 
 end
