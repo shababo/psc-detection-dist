@@ -145,5 +145,17 @@ template = template/num_events;
 
 % save('data/for-paper/real-vs-ar0-vs-ar2-sim-cosyne-abs.mat','traces','true_signal','true_event_times','true_amplitudes','true_taus','template')
 
+%%
+
+
+pos = -40:10:40;
+trials_array = cell(length(pos));
+for i = 1:length(pos)
+    for j = 1:length(pos)
+        
+        trials_array{i,j} = [pos(i) pos(j) 0];
+        
+    end
+end
 
 
