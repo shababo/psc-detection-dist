@@ -123,10 +123,10 @@ for ki = 1:K
     d = ci + stim_response;
 
 
-    sigmasq = results(1).trials.noise{results(1).map_ind};;%2.0;
+    sigmasq = results(1).trials.noise{results(1).map_ind}%2.0;
     c_noise = sqrt(sigmasq);
     
-    phi = results(1).trials.phi{results(1).map_ind};%[1, 1.0, -.42]; %this determines what the AR noise looks like.
+    phi = results(1).trials.phi{results(1).map_ind}%[1, 1.0, -.42]; %this determines what the AR noise looks like.
     p = length(phi) - 1;
     U = c_noise*randn(nc,T);
     er = zeros(T,1);
