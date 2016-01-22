@@ -89,8 +89,10 @@ for ki = 1:K
             a_init = a_min + (a_max-a_min)*rand;
             
             tmpi_ = tmpi+(st_std*randn);
-            tau(1) = diff(tau_r_bounds)*rand() + tau_r_bounds(1);
-            tau(2) = diff(tau_f_bounds)*rand() + tau_f_bounds(1);
+%             tau(1) = diff(tau_r_bounds)*rand() + tau_r_bounds(1);
+%             tau(2) = diff(tau_f_bounds)*rand() + tau_f_bounds(1);
+            tau(1) = lognrnd(0,.15)*8;
+            tau(2) = lognrnd(0,1.25)*45;
             ef=genEfilt(tau,T);
             [si_, ci_, logC_] = addSpike(sti{ti},ci(ti,:),logC_,ef,a_init,tau,ci(ti,:),tmpi_, N+1, Dt, A); %adds all trials' spikes at same time
             sti_{ti} = si_;
@@ -197,8 +199,12 @@ legend_names = {};
 
 figure;
 subplot(211)
+all_tau_decays = [];
+all_tau_rise = [];
 for i = 1:length(true_amplitudes{1})
     t = 0:1:.030*20000;
+    all_tau_decays = [all_tau_decays taus{1}{i}(2)];
+    all_tau_rise = [all_tau_rise taus{1}{i}(1)];
     tau_decay = taus{1}{i}(2); decay = exp(-t/tau_decay);
     tau_rise = taus{1}{i}(1); rise = -exp(-t/tau_rise);
     % plot(decay); hold on; plot(rise)
@@ -269,3 +275,8 @@ title('Real EPSCs (fit with algorithm)')
 %     % plot(decay); hold on; plot(rise)
 %     hold on; plot((decay + rise)/max(decay+rise)*true_amplitudes{1}(2))
 
+figure;
+subplot(121)
+hist(all_tau_rise)
+subplot(122)
+hist(all_tau_decays)
