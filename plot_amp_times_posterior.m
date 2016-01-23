@@ -150,7 +150,7 @@ legend([leg_dummy_1, leg_dummy_2, leg_dummy_3, leg_dummy_4],{'observation','Baye
 hold off
 
 title(strrep(results_file,'_','-'))
-% xlim([2*.2e4 2*.5e4])
+xlim([2*.2e4 2*.5e4]/20000)
     
 if length(varargin) > 2 && ~isempty(varargin{3})
     [dir,name,~] = fileparts(results_file);
