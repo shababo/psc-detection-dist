@@ -5,7 +5,7 @@ params.traces_filename
 try
     load(params.traces_filename)
 catch
-    load('data/for-paper/all-evoked-ipscs.mat')
+    load('data/simulated-data-longer-traces-epsc.mat')
 end
 
 % load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
