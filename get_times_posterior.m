@@ -3,8 +3,10 @@ function time_posteriors = get_times_posterior(results_file, trace_offset, do_pl
 load(results_file)
 params.traces_filename
 try
+    disp('succesfully loaded')
     load(params.traces_filename)
 catch
+    disp('loading default')
     load('data/for-paper/all-evoked-ipscs.mat')
 end
 
