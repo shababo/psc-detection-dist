@@ -6,12 +6,12 @@ end
 
 if ~isfield(params,'cluster')
 
-    params.cluster = 1;
+    params.cluster = 0;
 
 end
 
 if ~isfield(params,'par')
-    params.par = 1;
+    params.par = 0;
 end
 %% use an rng seed
 
@@ -37,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = 1;
+    params.event_sign = -1;
 end
 
 %% subtraces
@@ -73,10 +73,10 @@ end
 
 % baseline bounds
 if ~isfield(params,'b_min')
-    params.b_min = -50;
+    params.b_min = -200;
 end
 if ~isfield(params,'b_max')
-    params.b_max = 50;
+    params.b_max = 200;
 end
 
 % event kernel params
@@ -96,14 +96,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 60/20000;
+    params.tau1_max = 35/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
     params.tau2_min = 20/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 500/20000;
+    params.tau2_max = 150/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -112,7 +112,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-4;%1e-4;
+    params.p_spike = 1e-1;%1e-4;
 end
 
 
@@ -277,7 +277,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/evoked-20160102_ExpI-neg50_fix.mat'];
+            ['data/invivo_pscs.mat'];
 
 %     end
 end
@@ -297,7 +297,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-2000.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-0001.mat'];
 %     end
 
 end

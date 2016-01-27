@@ -8,6 +8,7 @@ try
 catch
     disp('loading default')
     load('data/for-paper/all-evoked-ipscs.mat')
+
 end
 
 % load('/home/shababo/Projects/Mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
@@ -54,7 +55,8 @@ end
 
 time_posteriors = zeros(size(traces));
 
-burn_in = 250;
+burn_in = 1;
+% burn_in = 250;
 
 
 for ii = 1:length(params.traces_ind)

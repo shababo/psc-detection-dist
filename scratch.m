@@ -173,7 +173,7 @@ savefile_basename = 'data/cluster-param-files/params-pspike-%0.0e-amin-%0.0e-num
 
 for i = 1:length(p_spike)
     for j = 1:length(a_min)
-        for k = 1:length(num_sweeps)roc 
+        for k = 1:length(num_sweeps) 
             params.cluster = 1;
             params.p_spike = p_spike(i);
             params.a_min = a_min(j);
@@ -198,8 +198,8 @@ title('each line is diff a_{min}, within varies p_{spike}')
 %%
 figure
 
-for i = 1:size(roc_deconv,2)
-    plot(roc_deconv(:,i,1),roc_deconv(:,i,2),'-o'); hold on
+for i = 1:size(roc,2)
+    plot(roc(:,i,1),roc(:,i,2),'-o'); hold on
 end
 hold off
 title('deconv')
@@ -227,11 +227,59 @@ title('each line is diff p_spike, within varies a_min')
 
 figure
 for i = 1:size(roc,2)
-    plot(roc(:,i,1),roc(:,i,2),'-o'); hold on
+    plot(roc(3:end,i,1),roc(3:end,i,2),'-o'); hold on
 end
+
+
+
 hold off
 legend
+%% false pos
 
+figure
+plot(threshold,roc_cb(:,1,1),'.-g','linewidth',2,'markersize',25)
+hold on
+plot(threshold,roc_deconv(:,1,1),'.-m','linewidth',2,'markersize',25)
+hold on
+plot(threshold,roc_wiener(:,1,1),'.-r','linewidth',2,'markersize',25)
+hold on
+plot(threshold,roc_bayes(:,1,1),'.-b','linewidth',2,'markersize',25)
+
+%% true pos
+
+figure
+plot(threshold,roc_cb(:,1,2),'.-g','linewidth',2,'markersize',25)
+hold on
+plot(threshold,roc_deconv(:,1,2),'.-m','linewidth',2,'markersize',25)
+hold on
+plot(threshold,roc_wiener(:,1,2),'.-r','linewidth',2,'markersize',25)
+hold on
+plot(threshold,roc_bayes(:,1,2),'.-b','linewidth',2,'markersize',25)
+
+%% ratio tp/fp
+
+
+figure
+plot(threshold,roc_cb(:,1,2)./(roc_cb(:,1,1) + 1),'.-g','linewidth',2,'markersize',25)
+hold on
+plot(threshold,roc_deconv(:,1,2)./(roc_deconv(:,1,1) + 1),'.-m','linewidth',2,'markersize',25)
+hold on
+plot(threshold,roc_wiener(:,1,2)./(roc_wiener(:,1,1) + 1),'.-r','linewidth',2,'markersize',25)
+hold on
+plot(threshold,roc_bayes(:,1,2)./(roc_bayes(:,1,1) + 1),'.-b','linewidth',2,'markersize',25)
+
+
+%% ratio fp/tp
+
+
+figure
+plot(threshold,1./(roc_cb(:,1,2)./roc_cb(:,1,1) ),'.-g','linewidth',2,'markersize',25)
+hold on
+plot(threshold,1./(roc_deconv(:,1,2)./roc_deconv(:,1,1) ),'.-m','linewidth',2,'markersize',25)
+hold on
+plot(threshold,1./(roc_wiener(:,1,2)./roc_wiener(:,1,1) ),'.-r','linewidth',2,'markersize',25)
+hold on
+plot(threshold,1./(roc_bayes(:,1,2)./roc_bayes(:,1,1) ),'.-b','linewidth',2,'markersize',25)
 %% plot noise examples noise model figure
 
 % load('data/work/example_noise_traces_work.mat')
