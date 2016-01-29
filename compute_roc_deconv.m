@@ -14,7 +14,7 @@ for thresh_i = 1:length(threshold)
         
         for j = 1:length(event_times{thresh_i,min_spacing_i})
             
-            num_est_events = length(event_times{thresh_i,min_spacing_i}{j})
+            num_est_events = length(event_times{thresh_i,min_spacing_i}{j});
             roc(thresh_i,min_spacing_i,1) = roc(thresh_i,min_spacing_i,1) + num_est_events - length(timing_score(thresh_i,min_spacing_i,j).correct_inds);
             roc(thresh_i,min_spacing_i,2) = roc(thresh_i,min_spacing_i,2) + length(timing_score(thresh_i,min_spacing_i,j).correct_inds);
             

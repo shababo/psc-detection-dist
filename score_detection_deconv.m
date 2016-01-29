@@ -3,8 +3,8 @@ function score_detection_deconv(resultsfile, tolerance)
 load(resultsfile)
 
 % load(params.traces_filename,'true_event_times')
-% load('/home/shababo/projects/mapping/code/psc-detection/data/simulated-epscs-1027.mat')
-load('/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
+load('/home/shababo/projects/mapping/code/psc-detection/data/simulated-epscs-1027.mat')
+% load('/home/shababo/projects/mapping/code/psc-detection/data/simulated-data-longer-traces-epsc.mat')
 clear timing_score
 clear timing_score_tolerance
 num_traces = length(event_times{1})

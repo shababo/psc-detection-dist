@@ -234,27 +234,37 @@ end
 
 hold off
 legend
+%% all rocs
+figure
+plot(roc_bayes(3:end,1,1),roc_bayes(3:end,1,2),'.-b','linewidth',2,'markersize',25); hold on
+
+plot(roc_cb(3:end,1,1),roc_cb(3:end,1,2),'.-g','linewidth',2,'markersize',25); hold on
+% plot(roc_deconv(:,1,1),roc_deconv(:,1,2),'.-m','linewidth',2,'markersize',25); hold on
+plot(roc_wiener(3:end,1,1),roc_wiener(3:end,1,2),'.-r','linewidth',2,'markersize',25); hold on
+
+hold off
+
 %% false pos
 
 figure
-plot(threshold,roc_cb(:,1,1),'.-g','linewidth',2,'markersize',25)
+plot(threshold(3:end),roc_cb(3:end,1,1),'.-g','linewidth',2,'markersize',25)
 hold on
-plot(threshold,roc_deconv(:,1,1),'.-m','linewidth',2,'markersize',25)
+% plot(threshold,roc_deconv(:,1,1),'.-m','linewidth',2,'markersize',25)
+% hold on
+plot(threshold(3:end),roc_wiener(3:end,1,1),'.-r','linewidth',2,'markersize',25)
 hold on
-plot(threshold,roc_wiener(:,1,1),'.-r','linewidth',2,'markersize',25)
-hold on
-plot(threshold,roc_bayes(:,1,1),'.-b','linewidth',2,'markersize',25)
+plot(threshold(3:end),roc_bayes(3:end,1,1),'.-b','linewidth',2,'markersize',25)
 
 %% true pos
 
 figure
-plot(threshold,roc_cb(:,1,2),'.-g','linewidth',2,'markersize',25)
+plot(threshold(3:end),roc_cb(3:end,1,2),'.-g','linewidth',2,'markersize',25)
 hold on
-plot(threshold,roc_deconv(:,1,2),'.-m','linewidth',2,'markersize',25)
+% plot(threshold,roc_deconv(:,1,2),'.-m','linewidth',2,'markersize',25)
+% hold on
+plot(threshold(3:end),roc_wiener(3:end,1,2),'.-r','linewidth',2,'markersize',25)
 hold on
-plot(threshold,roc_wiener(:,1,2),'.-r','linewidth',2,'markersize',25)
-hold on
-plot(threshold,roc_bayes(:,1,2),'.-b','linewidth',2,'markersize',25)
+plot(threshold(3:end),roc_bayes(3:end,1,2),'.-b','linewidth',2,'markersize',25)
 
 %% ratio tp/fp
 
