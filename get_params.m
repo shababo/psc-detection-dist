@@ -6,7 +6,7 @@ end
 
 if ~isfield(params,'cluster')
 
-    params.cluster = 1;
+    params.cluster = 0;
 
 end
 
@@ -37,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = 1;
+    params.event_sign = -1;
 end
 
 %% subtraces
@@ -54,7 +54,7 @@ end
 % if you want all traces, omit
 if ~isfield(params,'traces_ind')
 %     params.traces_ind = randsample(80,18);
-    params.traces_ind = [1:10 60:70 120:130];
+%     params.traces_ind = [1:10 60:70 120:130];
 %     params.traces_ind = 1278;
 %     params.traces_ind = 1;
 
@@ -67,7 +67,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = -Inf;
+    params.a_min = .5;
 
 end
 
@@ -277,7 +277,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/evoked-ipscs-FS_to_PC.mat'];
+            ['data/l23_traces.mat'];
 
 %     end
 end
@@ -297,7 +297,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-1000.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-0001.mat'];
 %     end
 
 end
