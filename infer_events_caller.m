@@ -26,9 +26,9 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     params.par = 0;
     params = rmfield(params,'start_ind');
     params = rmfield(params,'duration');
-    params.p_spike = 1e-4;
+    params.p_spike = 1e-7;
 %     params.noise_est_subset = 1:800;
-    params.a_min = 2.5;
+    params.a_min = 5;
 %     params.start_ind = 7200;
 %     params.duration = 800;
     params.tau1_min = 2.5000e-04;
