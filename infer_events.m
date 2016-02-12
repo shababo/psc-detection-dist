@@ -97,7 +97,7 @@ else
 
         event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
             params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
-
+        event_times_init = [];
         tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
 
         if params.direct_stim

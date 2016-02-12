@@ -11,7 +11,7 @@ if ~isfield(params,'cluster')
 end
 
 if ~isfield(params,'par')
-    params.par = 1;
+    params.par = 0;
 end
 %% use an rng seed
 
@@ -86,7 +86,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 1/20000;
+    params.tau1_min = 5/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -96,14 +96,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 60/20000;
+    params.tau1_max = 30/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
     params.tau2_min = 20/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 600/20000;
+    params.tau2_max = 100/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -112,7 +112,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-3;%1e-4;
+    params.p_spike = 1e-4;%1e-4;
 end
 
 
@@ -132,6 +132,14 @@ if ~isfield(params,'noise_var_init')
     params.noise_var_init = 1.0;
 end
 
+if ~isfield(params, 'noise_known')
+    params.noise_known = 1;
+    if params.noise_known
+        params.phi_known = [1.0 0.78 -0.13];
+        params.noise_var_known = 4.3;
+    end
+end
+
 if ~isfield(params,'noise_est_subset')
 %     params.noise_est_subset = 1:5000;
 %     params.noise_est_subset = 1:1000;
@@ -144,7 +152,7 @@ if ~isfield(params,'direct_stim')
 end
 
 if ~isfield(params,'stim_tau_rise')
-    params.stim_tau_rise = .003;
+    params.stim_tau_rise = .001;
 end
 if ~isfield(params,'stim_tau_fall')
     params.stim_tau_fall = .050;
@@ -163,11 +171,11 @@ if ~isfield(params,'stim_amp_max')
 end
 
 if ~isfield(params,'stim_tau_rise_min')
-    params.stim_tau_rise_min = .0005;
+    params.stim_tau_rise_min = .00001;
 end
 
 if ~isfield(params,'stim_tau_rise_max')
-    params.stim_tau_rise_max = .010;
+    params.stim_tau_rise_max = .100;
 end
 
 if ~isfield(params,'stim_tau_fall_min')
@@ -175,7 +183,7 @@ if ~isfield(params,'stim_tau_fall_min')
 end
 
 if ~isfield(params,'stim_tau_fall_max')
-    params.stim_tau_fall_max = .200;
+    params.stim_tau_fall_max = .500;
 end
 
 if ~isfield(params,'stim_tau_rise_std')
@@ -202,7 +210,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 2000;
+    params.num_sweeps = 1000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -277,7 +285,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/l23_traces.mat'];
+            ['data/direct_stim_2_9_s3c1_spont_trace.mat'];
 
 %     end
 end
@@ -297,7 +305,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-0001.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
 %     end
 
 end
