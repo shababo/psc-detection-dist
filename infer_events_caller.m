@@ -13,27 +13,42 @@ if ~isempty(varargin) && ~isempty(varargin{1})
     load(varargin{1},'params');
 %     [pathname, filename] = fileparts(params.traces_filename);
 %     pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
-%     params.traces_filename = [pathname filename];
- %   params.savename = 'evoked_pscs-new-results-0012.mat';
-% %     params.stim_in = [zeros(1,20*10) ones(1,20*10) zeros(1,2000-20*20)];%linspace(0,1,20*10)
+    params.traces_filename = 'data/direct_stim_smaller_furtherest.mat';
+    params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
+    params.stim_in = [zeros(1,5*20) ones(1,20*10) zeros(1,1500-15*20)];%linspace(0,1,20*10)
 %     % ar noise model
-%     params.p = 3; % how many time steps to regress on
+%     params.p = 0; % how many time steps to regress on
 %     params.phi_0 = zeros(params.p,1);
 %     params.Phi_0 = 10*eye(params.p); %inverse covariance 3
 %     params.a_min = .5;
 %     load('data/for-paper/chr2-stim-response.mat');
 %     params.stim_shape = chr2_response;
 %     params.par = 0;
-
-%     params.p_spike = 1e-3;
+    params = rmfield(params,'start_ind');
+    params = rmfield(params,'duration');
+    params.p_spike = 1e-8;
 %     params.noise_est_subset = 1:800;
-%     params.a_min = 1;
+    params.a_min = 2.5;
 %     params.start_ind = 7200;
 %     params.duration = 800;
-%     params.tau1_max = 25;
-%     params.tau2_min = 5;
-%     params.tau2_max = 200;
-    params.num_sweeps = 5000;
+    params.tau1_min = 2.5000e-04;
+    params.tau1_max = .0010;
+    params.tau2_min = 1.0000e-03;
+    params.tau2_max = 0.0030;
+    params.num_sweeps = 3000;
+    params.par = 1;
+    
+    params.stim_tau_rise = 6.5000e-04;
+    params.stim_tau_rise_min = 6.5000e-06;
+    params.stim_tau_rise_max = .0025;
+    params.stim_tau_rise_std = .00001;
+    params.stim_tau_fall_std = .001;
+    params.stim_tau_fall = .0138;
+    params.stim_tau_fall_min = .001;
+    params.stim_tau_fall_max = .1;
+    
+    load('data/direct_stim_2_9_s3c1_emperical.mat')
+    params.stim_shape = -direct_stim_in;
     
 end
 
