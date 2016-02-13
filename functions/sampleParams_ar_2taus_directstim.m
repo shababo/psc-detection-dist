@@ -281,7 +281,7 @@ end
         
     
     
-    if mod(i,25) == 1 || i < 50
+    if mod(i,10) == 1 || i < 50
 
         for ii = 1:3
 
@@ -807,11 +807,11 @@ end
             end
         end
     end
-%     if params.noise_known
-%         phi = params.phi_known;
-%         NoiseVar = params.noise_var_known;
-%         
-%     else
+    if params.noise_known
+        phi = params.phi_known;
+        NoiseVar = params.noise_var_known;
+        
+    else
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % re-estimate the noise model
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -863,7 +863,7 @@ end
     %             keyboard
     %         end
     %     end
-%     end
+    end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
