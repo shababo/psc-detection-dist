@@ -55,7 +55,7 @@ end
 
 time_posteriors = zeros(size(traces));
 
-burn_in = 1000;
+burn_in = 250;
 % burn_in = 250;
 
 
