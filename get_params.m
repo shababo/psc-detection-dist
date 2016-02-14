@@ -6,7 +6,7 @@ end
 
 if ~isfield(params,'cluster')
 
-    params.cluster = 0;
+    params.cluster = 1;
 
 end
 
@@ -58,7 +58,7 @@ if ~isfield(params,'traces_ind')
 %     params.traces_ind = 1278;
 %     params.traces_ind = 1;
 
-    params.traces_ind = 1:6;
+%     params.traces_ind = 1:4;
 end
 %% inference params
 
@@ -112,7 +112,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-4;%1e-4;
+    params.p_spike = 1e-6;%1e-4;
 end
 
 
@@ -285,7 +285,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/pv_ipsc_neg50.mat'];
+            ['data/pv_ipsc_neg60.mat'];
 
 %     end
 end
@@ -305,7 +305,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-2000.mat'];
 %     end
 
 end
