@@ -6,12 +6,12 @@ end
 
 if ~isfield(params,'cluster')
 
-    params.cluster = 0;
+    params.cluster = 1;
 
 end
 
 if ~isfield(params,'par')
-    params.par = 0;
+    params.par = 1;
 end
 %% use an rng seed
 
@@ -37,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = -1;
+    params.event_sign = 1;
 end
 
 %% subtraces
@@ -58,7 +58,7 @@ if ~isfield(params,'traces_ind')
 %     params.traces_ind = 1278;
 %     params.traces_ind = 1;
 
-%     params.traces_ind = 1:6;
+%     params.traces_ind = 1:4;
 end
 %% inference params
 
@@ -67,7 +67,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = .5;
+    params.a_min = -Inf;
 
 end
 
@@ -96,14 +96,14 @@ end
 % % poisson/rate
 % params.p_spike = 1e-3;
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 30/20000;
+    params.tau1_max = 60/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
     params.tau2_min = 20/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 100/20000;
+    params.tau2_max = 600/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -112,7 +112,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-4;%1e-4;
+    params.p_spike = 1e-6;%1e-4;
 end
 
 
@@ -133,7 +133,7 @@ if ~isfield(params,'noise_var_init')
 end
 
 if ~isfield(params, 'noise_known')
-    params.noise_known = 1;
+    params.noise_known = 0;
     if params.noise_known
         params.phi_known = [1.0 0.78 -0.13];
         params.noise_var_known = 4.3;
@@ -210,7 +210,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 1000;
+    params.num_sweeps = 2000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -285,7 +285,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/direct_stim_2_9_s3c1_spont_trace.mat'];
+            ['data/pv_ipsc_neg60.mat'];
 
 %     end
 end
@@ -305,7 +305,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-2000.mat'];
 %     end
 
 end
