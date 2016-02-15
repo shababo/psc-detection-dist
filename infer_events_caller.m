@@ -14,7 +14,7 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     [pathname, filename] = fileparts(params.traces_filename);
 %     pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
 %     params.traces_filename = 'data/direct_stim_smaller_events_further.mat';
-    params.savename = [params.traces_filename(1:end-4) '-3001.mat'];
+    params.savename = [params.traces_filename(1:end-4) '-3002.mat'];
 %     params.stim_in = [zeros(1,5*20) ones(1,20*10) zeros(1,1500-15*20)];%linspace(0,1,20*10)
 %     % ar noise model
 %     params.p = 0; % how many time steps to regress on
@@ -31,10 +31,10 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     params.a_min = 2.5;
 %     params.start_ind = 7200;
 %     params.duration = 800;
-    params.tau1_min = 5.0000e-04;
-    params.tau1_max = .0020;
+    params.tau1_min = 1.0000e-04;
+    params.tau1_max = .0010;
     params.tau2_min = 1.0000e-03;
-    params.tau2_max = 0.0100;
+    params.tau2_max = 0.0080;
 %     params.num_sweeps = 3000;
 %     params.par = 1;
 %     
