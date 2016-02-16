@@ -81,6 +81,8 @@ for i = 1:length(results)
         stim_in = params.stim_in(1:nBins);
     end
     t = 0:nBins-1;
+    results(i).trials.stim_tau_fall{min_i}
+    results(i).trials.stim_tau_rise{min_i}
     stim_decay = exp(-t/results(i).trials.stim_tau_fall{min_i});
     stim_rise = -exp(-t/results(i).trials.stim_tau_rise{min_i});
     stim_kernel = (stim_decay + stim_rise)/sum(stim_decay + stim_rise);
