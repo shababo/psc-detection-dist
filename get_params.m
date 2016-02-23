@@ -60,6 +60,12 @@ if ~isfield(params,'traces_ind')
 
 %     params.traces_ind = 1:4;
 end
+
+% is this a matrix of traces or a grid array
+if ~isfield(params,'is_grid')
+    params.is_grid = 0;
+end
+
 %% inference params
 
 % event amplitude bounds

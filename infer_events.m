@@ -26,6 +26,14 @@ end
 % of samples
 % load(params.traces_filename,'traces');
 
+if params.is_grid
+    [traces, rebuild_map] = stack_traces(traces);
+    params.rebuild_map = rebuild_map;
+end
+
+% assignin('base','rebuild_map',rebuild_map)
+% return
+
 % grab section in time
 traces = traces(:,params.start_ind:(params.start_ind + params.duration - 1));
 
@@ -116,6 +124,12 @@ for trace_ind = 1:size(traces,1);
     [results(trace_ind).map, results(trace_ind).map_ind] = max(results(trace_ind).trials.obj);
     
 end
+
+% if params.is_grid
+%     results_grid = unstack_results(results, rebuild_map);
+% end
+
+% results = results_grid;
 
 disp('saving...')
 save(params.full_save_string,'results','params','-v7.3')

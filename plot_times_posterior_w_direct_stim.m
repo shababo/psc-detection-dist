@@ -18,6 +18,11 @@ if ~isfield(params,'duration')
     params.duration = size(traces,2);
 end
 
+if params.is_grid
+    [traces, rebuild_map] = stack_traces(traces);
+    results = stack_results(results);
+end
+
 traces = traces(:,params.start_ind:(params.start_ind + params.duration - 1));
 
 if isfield(params,'traces_ind')
