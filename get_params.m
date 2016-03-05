@@ -6,12 +6,12 @@ end
 
 if ~isfield(params,'cluster')
 
-    params.cluster = 1;
+    params.cluster = 0;
 
 end
 
 if ~isfield(params,'par')
-    params.par = 1;
+    params.par = 0;
 end
 %% use an rng seed
 
@@ -37,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = 1;
+    params.event_sign = -1;
 end
 
 %% subtraces
@@ -118,7 +118,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-6;%1e-4;
+    params.p_spike = 1e-20;%1e-4;
 end
 
 
@@ -216,7 +216,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 2000;
+    params.num_sweeps = 1000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -291,7 +291,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/pv_ipsc_neg60.mat'];
+            ['data/for-paper/kynurenic_noise.mat'];
 
 %     end
 end
@@ -311,7 +311,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-2000.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
 %     end
 
 end
