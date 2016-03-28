@@ -275,6 +275,12 @@ if ~isfield(params,'init_method')
     params.init_method.tau = .002; % min seconds
     params.init_method.amp_thresh = 5;
     params.init_method.conv_thresh = 1;
+    params.init_method.template_file = 'data/epsc_template.mat';
+    params.init_method.ar_noise_params.sigma_sq = 2.948727926352792;
+    params.init_method.ar_noise_params.phi = [1.000000000000000, -0.982949319747574, 0.407063852831604];
+    params.init_method.gamma = 0;
+    params.init_method.theshold = 2;
+    params.init_method.min_interval = 20;
 end
 
 

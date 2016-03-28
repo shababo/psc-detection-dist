@@ -812,6 +812,21 @@ figure; plot(traces_avg)
              '12_3_slice5_cell1.mat',...
              '12_3_slice6_cell1.mat',...
              '12_3_slice6_cell2.mat'};
+         
+         
+         
+%% testing wiener filter
+
+trace = traces(1,:);
+nfft = length(trace) + length(template) - 1
+
+ar_noise_params.sigma_sq = 2.948727926352792;
+ar_noise_params.phi = [1.000000000000000, -0.982949319747574, 0.407063852831604];
+gamma = 1e6;
+
+[filtered_trace, event_times_init] = wiener_filter(trace,template,ar_noise_params,...
+            gamma, nfft, 1/20000, 2, 20);
+
     
     
     

@@ -74,8 +74,15 @@ if params.par
         trace = params.event_sign*traces(trace_ind,:);
         trace = trace - min(trace);
 
-        event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
-            params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
+%         event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
+%             params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
+        
+        load_struct = load(params.init_method.template_file);
+        template = load_struct.template;
+        
+        nfft = length(trace) + length(template) - 1
+        [~, event_times_init] = wiener_filter(trace,template,params.init_method.ar_noise_params,...
+            params.init_method.gamma, nfft, dt, params.init_method.theshold, params.init_method.min_interval)
 
         tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
 
