@@ -817,15 +817,27 @@ figure; plot(traces_avg)
          
 %% testing wiener filter
 
-trace = traces(1,:);
-nfft = length(trace) + length(template) - 1
+trace = traces{1,1}(1,:);
+nfft = length(trace) + length(template);
+dt = 1/20000;
+threshold = 2.0;
+min_window = 20;
 
 ar_noise_params.sigma_sq = 2.948727926352792;
 ar_noise_params.phi = [1.000000000000000, -0.982949319747574, 0.407063852831604];
 gamma = 1e6;
 
+figure;
+subplot(1,2,1)
 [filtered_trace, event_times_init] = wiener_filter(trace,template,ar_noise_params,...
-            gamma, nfft, 1/20000, 2, 20);
+            nfft, 1/20000, threshold, min_window);
+        
+subplot(1,2,2)
+plot(filtered_trace/max(filtered_trace)*5)
+hold on
+plot(trace + 40 - trace(1))
+hold on
+scatter(event_times_init, 8*ones(1,length(event_times_init)))
 
     
     

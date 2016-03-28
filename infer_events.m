@@ -17,9 +17,7 @@ catch e
     load('data/for-paper/direct-stim-w-events-real.mat')
 end
 
-if ~isfield(params,'duration')
-    params.duration = size(traces,2);
-end
+
 
 % the file were your traces are, traces should be saved in this mat file in
 % an N x T matrix called 'traces' where N = number of traces and T = number
@@ -33,6 +31,10 @@ end
 
 % assignin('base','rebuild_map',rebuild_map)
 % return
+
+if ~isfield(params,'duration')
+    params.duration = size(traces,2);
+end
 
 % grab section in time
 traces = traces(:,params.start_ind:(params.start_ind + params.duration - 1));
@@ -68,21 +70,27 @@ if params.par
 
     end
     
+    load_struct = load(params.init_method.template_file);
+    template = load_struct.template;
+    
     parfor trace_ind = 1:size(traces,1)
     %     
         disp(['Starting trace #' num2str(trace_ind)])
         trace = params.event_sign*traces(trace_ind,:);
         trace = trace - min(trace);
 
-%         event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
+%         event_times_init_old = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
 %             params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
         
-        load_struct = load(params.init_method.template_file);
-        template = load_struct.template;
         
-        nfft = length(trace) + length(template) - 1
+        
+        nfft = length(trace) + length(template);
         [~, event_times_init] = wiener_filter(trace,template,params.init_method.ar_noise_params,...
-            params.init_method.gamma, nfft, dt, params.init_method.theshold, params.init_method.min_interval)
+            nfft, params.dt, params.init_method.theshold, params.init_method.min_interval);
+        
+%         assignin('base','event_times_init_old',event_times_init_old)
+%         assignin('base','event_times_init',event_times_init)
+        
 
         tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
 
@@ -105,14 +113,28 @@ if params.par
     end
 
 else
+    
+            
+    load_struct = load(params.init_method.template_file);
+    template = load_struct.template;
+
     for trace_ind = 1:size(traces,1)
         disp(['Starting trace #' num2str(trace_ind)])
         trace = params.event_sign*traces(trace_ind,:);
         trace = trace - min(trace);
 
-        event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
-            params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
-        event_times_init = [];
+%         event_times_init_old = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
+%             params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
+
+
+        
+        nfft = length(trace) + length(template);
+        [~, event_times_init] = wiener_filter(trace,template,params.init_method.ar_noise_params,...
+            nfft, params.dt, params.init_method.theshold, params.init_method.min_interval);
+        
+%         assignin('base','event_times_init_old',event_times_init_old)
+%         assignin('base','event_times_init',event_times_init)
+        
         tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
 
         if params.direct_stim

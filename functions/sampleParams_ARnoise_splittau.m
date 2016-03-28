@@ -64,7 +64,7 @@ maxNbursts = Inf;
 
 indreport=.1:.1:1;
 indreporti=round(num_sweeps*indreport);
-fprintf('Progress:')
+% fprintf('Progress:')
 
 % initialize some parameters
 nBins = length(trace); %for all of this, units are bins and spiketrains go from 0 to T where T is number of bins
@@ -694,9 +694,9 @@ for i = 1:num_sweeps
 %     drawnow
 %     plot(ci{1});hold on;
 %     plot(CaF{1},'r');hold off
-    if sum(ismember(indreporti,i))
-        fprintf([num2str(indreport(ismember(indreporti,i)),2),','])
-    end
+%     if sum(ismember(indreporti,i))
+%         fprintf([num2str(indreport(ismember(indreporti,i)),2),','])
+%     end
 end
 
 %% Vigi's Clean up

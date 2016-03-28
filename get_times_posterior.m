@@ -23,7 +23,7 @@ if ~isfield(params,'duration')
     params.duration = size(traces,2);
 end
 
-if params.is_grid
+if isfield(params,'is_grid') && params.is_grid
     traces = stack_traces(traces);
 %     results = stack_results(results);
 end
@@ -61,7 +61,7 @@ end
 
 time_posteriors = zeros(size(traces));
 
-burn_in = 250;
+burn_in = 1;
 % burn_in = 250;
 
 

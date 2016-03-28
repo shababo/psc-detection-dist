@@ -15,7 +15,7 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
 %     params.is_grid = 1;
 %     params.traces_filename = 'data/2_9_slice3_cell1_run10_trace_grid.mat';
-    params.savename = [params.traces_filename(1:end-4) '-x.mat'];
+    params.savename = [params.traces_filename(1:end-4) '-1003.mat'];
 %     params.stim_in = [zeros(1,5*20) ones(1,20*10) zeros(1,1500-15*20)];%linspace(0,1,20*10)
 %     % ar noise model
 %     params.p = 0; % how many time steps to regress on
@@ -24,11 +24,11 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     params.a_min = .5;
 %     load('data/for-paper/chr2-stim-response.mat');
 %     params.stim_shape = chr2_response;
-%     params.par = 0;
+    params.par = 0;
 %     params = rmfield(params,'start_ind');
 %     params = rmfield(params,'duration');
 %     params = rmfield(params,'trace_ind');
-    params.p_spike = 1e-9;
+%     params.p_spike = 1e-9;
 %     params.noise_est_subset = 1:800;
 %     params.a_min = 2.5;
 %     params.start_ind = 7200;
@@ -37,8 +37,9 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     params.tau1_max = .0010;
 %     params.tau2_min = 1.0000e-03;
 %     params.tau2_max = 0.0080;
-
-%     params.num_sweeps = 1000;
+    params.phi_0 = [0.982949319747574 -0.407063852831604]';
+    params.noise_var_init = 3.0;
+    params.num_sweeps = 50;
 %     params.par = 1;
 %     
 %     params.stim_tau_rise = 6.5000e-04;
