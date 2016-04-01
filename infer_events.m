@@ -85,13 +85,14 @@ if params.par
         
         
         nfft = length(trace) + length(template);
-        [~, event_times_init] = wiener_filter(trace,template,params.init_method.ar_noise_params,...
+        [filtered_trace, event_times_init] = wiener_filter(trace,template,params.init_method.ar_noise_params,...
             nfft, params.dt, params.init_method.theshold, params.init_method.min_interval);
         
 %         assignin('base','event_times_init_old',event_times_init_old)
 %         assignin('base','event_times_init',event_times_init)
+        results(trace_ind).event_times_init = event_times_init;
+        results(trace_ind).filtered_trace = filtered_trace;
         
-
         tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
 
         if params.direct_stim
@@ -148,7 +149,7 @@ end
 
 disp('finding min err...')
 % map sample
-for trace_ind = 1:size(traces,1);
+for trace_ind = 1:size(traces,1)
 
     [results(trace_ind).map, results(trace_ind).map_ind] = max(results(trace_ind).trials.obj);
     

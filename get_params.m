@@ -282,7 +282,7 @@ end
     params.init_method.ar_noise_params.sigma_sq = 3.0;
     params.init_method.ar_noise_params.phi = [1.000000000000000, -0.982949319747574, 0.407063852831604];
     params.init_method.theshold = 2.0;
-    params.init_method.min_interval = 20;
+    params.init_method.min_interval = 100;
 % end
 
 
