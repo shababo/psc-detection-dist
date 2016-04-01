@@ -839,6 +839,102 @@ plot(trace + 40 - trace(1))
 hold on
 scatter(event_times_init, 8*ones(1,length(event_times_init)))
 
+%% spike detection on grid
+
+trace_grids = {traces_by_location_3_31_s2c2_r3_5mw, traces_by_location_3_31_s2c2_r3_10mw, traces_by_location_3_31_s2c2_r3_15mw,...
+    traces_by_location_3_31_s2c2_r3_25mw, traces_by_location_3_31_s2c2_r3_50mw, traces_by_location_3_31_s2c2_r3_100mw};
+
+detection_grids = cell(size(trace_grids));
+
+for i = 1:length(trace_grids)
+    
+    trace_grid_tmp = trace_grids{i};
+    [traces_tmp, rebuild_map] = stack_traces(trace_grid_tmp);
+
+    detection_results = detect_peaks(-1.0*bsxfun(@minus,traces_tmp,median(traces_tmp,2)),2.5,20,1,1,0)*70;
+    detection_grids{i} = unstack_traces(detection_results,rebuild_map);
+    
+end
+
+
+figure; compare_trace_stack_grid({trace_grids{:},detection_grids{:}},...
+    5,1,0)
+
+
+%% count spikes and get means
+
+spike_counts = zeros([size(detection_grids{1}) length(detection_grids)]);
+max_val = 0;
+
+axs = [];
+
+figure
+colormap hot
+for i = 1:length(detection_grids)
+    
+    this_grid = detection_grids{i};
+    for j = 1:size(this_grid,1)
+        for k = 1:size(this_grid,2)
+            
+            spike_counts(j,k,i) = length(find(this_grid{j,k}(:)))/size(this_grid{j,k},1);
+            if spike_counts(j,k,i) > max_val
+                max_val = spike_counts(j,k,i);
+            end
+            
+        end
+    end
+    subplot(2,ceil(length(detection_grids)/2),i)
+    imagesc(spike_counts(:,:,i));
+    axis square
+    axis off
+end
+
+for i = 1:length(detection_grids)
+    subplot(2,ceil(length(detection_grids)/2),i)
+    caxis([0 max_val])
+end
+
+%% delay times and get means
+
+delays = zeros([size(detection_grids{1}) length(detection_grids)]);
+max_val = 0;
+
+axs = [];
+
+figure
+colormap hot
+for i = 1:length(detection_grids)
+    
+    this_grid = detection_grids{i};
+    for j = 1:size(this_grid,1)
+        for k = 1:size(this_grid,2)
+            
+            these_delays = [];
+            
+            for m = 1:size(this_grid{j,k},1)
+                these_delays = [these_delays find(this_grid{j,k}(m,:),1,'first')/20000 - .005];
+            end
+            
+            delays(j,k,i) = mean(these_delays);
+            
+            if delays(j,k,i) > max_val
+                max_val = delays(j,k,i);
+            end
+            
+        end
+    end
+    subplot(2,ceil(length(detection_grids)/2),i)
+    pcolor(delays(:,:,i));
+    axis ij
+    axis square
+    axis off
+end
+
+for i = 1:length(detection_grids)
+    subplot(2,ceil(length(detection_grids)/2),i)
+    caxis([0 max_val])
+end
+
     
     
     
