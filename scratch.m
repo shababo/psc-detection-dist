@@ -841,8 +841,19 @@ scatter(event_times_init, 8*ones(1,length(event_times_init)))
 
 %% spike detection on grid
 
-trace_grids = {traces_by_location_3_31_s2c2_r3_5mw, traces_by_location_3_31_s2c2_r3_10mw, traces_by_location_3_31_s2c2_r3_15mw,...
+trace_grids_3_31_s2c2_r2_3 = {traces_by_location_3_31_s2c2_r3_5mw, traces_by_location_3_31_s2c2_r3_10mw, traces_by_location_3_31_s2c2_r3_15mw,...
     traces_by_location_3_31_s2c2_r3_25mw, traces_by_location_3_31_s2c2_r3_50mw, traces_by_location_3_31_s2c2_r3_100mw};
+
+trace_grids_3_29_s1c2_r2 = {traces_by_location_3_29_s1c2_r2_25mw, traces_by_location_3_29_s1c2_r2_50mw, traces_by_location_3_29_s1c2_r2_100mw};
+
+trace_grids_3_29_s1c4_r2 = {traces_by_location_3_29_s1c4_r2_25mw, traces_by_location_3_29_s1c4_r2_50mw, traces_by_location_3_29_s1c4_r2_100mw};
+
+trace_grids_3_31_s1c2_r4_5 = {traces_by_location_3_31_s1c2_r5_5mw, traces_by_location_3_31_s1c2_r5_10mw, traces_by_location_3_31_s1c2_r5_15mw,...
+    traces_by_location_3_31_s1c2_r4_25mw, traces_by_location_3_31_s1c2_r4_50mw, traces_by_location_3_31_s1c2_r4_100mw};
+
+%%
+
+trace_grids = trace_grids_3_29_s1c2_r2;
 
 detection_grids = cell(size(trace_grids));
 
@@ -860,7 +871,8 @@ end
 figure; compare_trace_stack_grid({trace_grids{:},detection_grids{:}},...
     5,1,0)
 
-
+detection_results_3_31_s2c2_r2_3 = detection_results;
+detection_grids_3_31_s2c2_r2_3 = detection_grids;
 %% count spikes and get means
 
 spike_counts = zeros([size(detection_grids{1}) length(detection_grids)]);
@@ -893,6 +905,8 @@ for i = 1:length(detection_grids)
     subplot(2,ceil(length(detection_grids)/2),i)
     caxis([0 max_val])
 end
+
+spike_counts_3_31_s2c2_r2_3 = spike_counts;
 
 %% delay times and get means
 
@@ -930,6 +944,8 @@ for i = 1:length(detection_grids)
     axis off
 end
 
+delays_3_31_s2c2_r2_3 = delays;
+
 for i = 1:length(detection_grids)
     subplot(2,ceil(length(detection_grids)/2),i)
     caxis([0 max_val])
@@ -938,11 +954,4 @@ end
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
+
