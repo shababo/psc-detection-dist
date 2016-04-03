@@ -37,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = 1;
+    params.event_sign = -1;
 end
 
 %% subtraces
@@ -101,18 +101,16 @@ end
 % 
 % % poisson/rate
 % params.p_spike = 1e-3;
-if ~isfield(params,'tau1_min')
-    params.tau1_max = 20/20000;
-end
+
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 60/20000;
+    params.tau1_max = 20/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 100/20000;
+    params.tau2_min = 30/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 600/20000;
+    params.tau2_max = 150/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -121,7 +119,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-4;%1e-4;
+    params.p_spike = 1e-6;%1e-4;
 end
 
 
@@ -142,10 +140,10 @@ if ~isfield(params,'noise_var_init')
 end
 
 if ~isfield(params, 'noise_known')
-    params.noise_known = 0;
+    params.noise_known = 1;
     if params.noise_known
-        params.phi_known = [1.0 0.78 -0.13];
-        params.noise_var_known = 4.3;
+        params.phi_known = [1.000000000000000, -0.982949319747574, 0.407063852831604];%[1.0 0.78 -0.13];
+        params.noise_var_known = 3.0;%4.3;
     end
 end
 
@@ -157,7 +155,7 @@ end
 %% direct stim
 
 if ~isfield(params,'direct_stim')
-    params.direct_stim = 0;
+    params.direct_stim = 1;
 end
 
 if ~isfield(params,'stim_tau_rise')
@@ -168,7 +166,7 @@ if ~isfield(params,'stim_tau_fall')
 end
 
 if ~isfield(params,'stim_amp_std')
-    params.stim_amp_std = 10; %pA
+    params.stim_amp_std = 2; %pA
 end
 
 if ~isfield(params,'stim_amp_min')
@@ -176,7 +174,7 @@ if ~isfield(params,'stim_amp_min')
 end
 
 if ~isfield(params,'stim_amp_max')
-    params.stim_amp_max = Inf;
+    params.stim_amp_max = 50;
 end
 
 if ~isfield(params,'stim_tau_rise_min')
@@ -207,19 +205,33 @@ if ~isfield(params,'stim_shape') && params.direct_stim
 %     load('data/for-paper/chr2-stim-response.mat');
 %     params.stim_shape = chr2_response;
     
-    load('data/2P-Chrimson-10ms-template.mat');
-    params.stim_shape = -template_clean;
+%     load('data/2P-Chrimson-10ms-template.mat');
+%     params.stim_shape = -template_clean;
     
 %     params.stim_shape = [];
 end
 
+if ~isfield(params,'stim_in')
+    stim_duration = .01*20000;
+    stim_start = .005*20000;
+    trace_duration = 1500;
+    params.stim_in = [zeros(1,stim_start) zeros(1,stim_duration) zeros(1,trace_duration - stim_start - stim_duration)];
+end
+
+if ~isfield(params,'stim_amp_init')
+    params.stim_amp_init = 5;
+end
+
+if ~isfield(params,'noise_est_subset')
+    params.noise_est_subset = 1:100;
+end
 
 %% sampling params
 
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 50;
+    params.num_sweeps = 500;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -278,7 +290,10 @@ end
     params.init_method.tau = .002; % min seconds
     params.init_method.amp_thresh = 5;
     params.init_method.conv_thresh = 1;
-    params.init_method.template_file = 'data/ipsc-template.mat';
+    % epsc
+    params.init_method.template_file = 'data/templatemat.mat';
+    % ipsc
+%     params.init_method.template_file = 'data/epsc-template.mat';
     params.init_method.ar_noise_params.sigma_sq = 3.0;
     params.init_method.ar_noise_params.phi = [1.000000000000000, -0.982949319747574, 0.407063852831604];
     params.init_method.theshold = 2.0;
@@ -299,7 +314,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/3_8_s5c2_r5_grid.mat'];
+            ['data/3_7_s3c1_r4_grid.mat'];
 
 %     end
 end
