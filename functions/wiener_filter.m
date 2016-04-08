@@ -39,8 +39,7 @@ template_f_clean = template_f;
 inverse_template_f = 1./template_f_clean;
 % inverse_template_f = inverse_template_f.*(abs(template_f)*gamma>1)+gamma*abs(template_f_clean).*inverse_template_f.*(abs(template_f_clean)*gamma<=1);
 
-% THIS NEEDS ELEMENTWISE LOGIC OPERATIONS... OR AT LEAST CHECKING THAT IT
-% IS
+
 
 noise_P = noise_P'/sum(noise_P);
 % size(trace_P)

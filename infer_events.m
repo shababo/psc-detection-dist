@@ -130,9 +130,9 @@ else
 
         
         nfft = length(trace) + length(template);
-        [~, event_times_init] = wiener_filter(trace,template,params.init_method.ar_noise_params,...
+        [~, event_times_init] = wiener_filter(params.event_sign*trace,template,params.init_method.ar_noise_params,...
             nfft, params.dt, params.init_method.theshold, params.init_method.min_interval);
-        
+        length(event_times_init)
 %         assignin('base','event_times_init_old',event_times_init_old)
 %         assignin('base','event_times_init',event_times_init)
         

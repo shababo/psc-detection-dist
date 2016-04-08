@@ -73,7 +73,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 5;
+    params.a_min = 20;
 
 end
 
@@ -103,14 +103,14 @@ end
 % params.p_spike = 1e-3;
 
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 20/20000;
+    params.tau1_max = 50/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
     params.tau2_min = 30/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 150/20000;
+    params.tau2_max = 200/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -119,7 +119,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-6;%1e-4;
+    params.p_spike = 1e-10;%1e-4;
 end
 
 
@@ -155,7 +155,7 @@ end
 %% direct stim
 
 if ~isfield(params,'direct_stim')
-    params.direct_stim = 1;
+    params.direct_stim = 0;
 end
 
 if ~isfield(params,'stim_tau_rise')
@@ -250,7 +250,7 @@ if ~isfield(params,'tau2_prop_std')
 end
 
 if ~isfield(params,'amp_prop_std')
-    params.amp_prop_std = .3;
+    params.amp_prop_std = 3;
 end
 if ~isfield(params,'baseline_prop_std')
     params.baseline_prop_std = 2;
@@ -273,6 +273,10 @@ if ~isfield(params,'tau1_sweeps')
 end
 if ~isfield(params,'tau2_sweeps')
     params.tau2_sweeps = 1;
+end
+
+if ~isfield(params,'a_init_window')
+    params.a_init_window = 50;
 end
 
 if ~isfield(params,'exclusion_bound')
@@ -314,7 +318,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/3_7_s3c1_r4_grid.mat'];
+            ['data/4_6_s3c1_r2_traces.mat'];
 
 %     end
 end
