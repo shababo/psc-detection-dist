@@ -92,7 +92,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 5/20000;
+    params.tau1_min = 1/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -110,7 +110,7 @@ if ~isfield(params,'tau2_min')
     params.tau2_min = 30/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 200/20000;
+    params.tau2_max = 300/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -318,7 +318,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/4_6_s3c1_r2_traces.mat'];
+            ['data/4_6_s3c1_r4_traces.mat'];
 
 %     end
 end
