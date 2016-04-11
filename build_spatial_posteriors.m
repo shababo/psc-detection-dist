@@ -2,6 +2,17 @@ function spatial_posteriors = build_spatial_posteriors(posteriors_grid, neighbor
 
 spatial_posteriors = struct();
 
+figure(9991)
+subplot1(size(posteriors_grid,1), size(posteriors_grid,2), 'Gap', [.01 .03], 'XTickL', 'Margin', 'YTickL', 'Margin');
+figure(9992)
+subplot1(size(posteriors_grid,1), size(posteriors_grid,2), 'Gap', [.01 .03], 'XTickL', 'Margin', 'YTickL', 'Margin');
+figure(9993)
+subplot1(size(posteriors_grid,1), size(posteriors_grid,2), 'Gap', [.01 .03], 'XTickL', 'Margin', 'YTickL', 'Margin');
+figure(9994)
+subplot1(size(posteriors_grid,1), size(posteriors_grid,2), 'Gap', [.01 .03], 'XTickL', 'Margin', 'YTickL', 'Margin');
+figure(9995)
+subplot1(size(posteriors_grid,1), size(posteriors_grid,2), 'Gap', [.01 .03], 'XTickL', 'Margin', 'YTickL', 'Margin');
+
 for i = 1:size(posteriors_grid,1)
     for j = 1:size(posteriors_grid,2)
         
@@ -27,37 +38,43 @@ for i = 1:size(posteriors_grid,1)
                      end
                 end
             end
-            (i-1)*size(posteriors_grid,2) + j + 1
+            
             figure(9991)
             subplot(size(posteriors_grid,1),size(posteriors_grid,2),(i-1)*size(posteriors_grid,2) + j)
             histogram(spatial_posteriors(i,j).amps)
 %             axis off
-%             ylim([0 2500*9])
+            ylim([0 12000])
+            xlim([0 200])
             
             figure(9992)
             subplot(size(posteriors_grid,1),size(posteriors_grid,2),(i-1)*size(posteriors_grid,2) + j)
             histogram(spatial_posteriors(i,j).num_events)
 %             axis off
-%             ylim([0 2500*9])
-            
+            ylim([0 12000])
+            xlim([0 5])
+        
             figure(9993)
             subplot(size(posteriors_grid,1),size(posteriors_grid,2),(i-1)*size(posteriors_grid,2) + j)
             histogram(spatial_posteriors(i,j).tau1)
 %             axis off
-%             ylim([0 2500*9])
+            ylim([0 12000])
+            xlim([0 50])
+            
             
             figure(9994)
             subplot(size(posteriors_grid,1),size(posteriors_grid,2),(i-1)*size(posteriors_grid,2) + j)
             histogram(spatial_posteriors(i,j).tau2)
 %             axis off
-%             ylim([0 2500*9])
+            ylim([0 12000])
+            xlim([30 200])
+            
             
             figure(9995)
             subplot(size(posteriors_grid,1),size(posteriors_grid,2),(i-1)*size(posteriors_grid,2) + j)
             histogram(spatial_posteriors(i,j).times)
 %             axis off
-%             ylim([0 2500*9])
-            
+            ylim([0 12000])
+            xlim([0 .1])
         end
     end
 end
