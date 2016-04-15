@@ -37,7 +37,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = -1;
+    params.event_sign = 1;
 end
 
 %% subtraces
@@ -73,7 +73,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 20;
+    params.a_min = 10;
 
 end
 
@@ -92,7 +92,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 1/20000;
+    params.tau1_min = 20/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -103,14 +103,14 @@ end
 % params.p_spike = 1e-3;
 
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 50/20000;
+    params.tau1_max = 100/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 30/20000;
+    params.tau2_min = 60/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 300/20000;
+    params.tau2_max = 600/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -231,7 +231,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 500;
+    params.num_sweeps = 1000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -295,7 +295,7 @@ end
     params.init_method.amp_thresh = 5;
     params.init_method.conv_thresh = 1;
     % epsc
-    params.init_method.template_file = 'data/templatemat.mat';
+    params.init_method.template_file = 'data/ipsc-template.mat';
     % ipsc
 %     params.init_method.template_file = 'data/epsc-template.mat';
     params.init_method.ar_noise_params.sigma_sq = 3.0;
@@ -318,7 +318,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/4_6_s3c1_r4_traces.mat'];
+            ['data/3_8_s5c2_r4_grid.mat'];
 
 %     end
 end
@@ -338,7 +338,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-1001.mat'];
 %     end
 
 end

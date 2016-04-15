@@ -47,11 +47,11 @@ for i = 1:size(posteriors_grid,1)
             figure(9991)
             subplot1((i-1)*size(posteriors_grid,2) + j);
             if ~isempty(spatial_posteriors(i,j).amps)
-                hist3([spatial_posteriors(i,j).amps' spatial_posteriors(i,j).times'],'Edges',{[40:20:300],[0:.005:.1]*20000},'EdgeAlpha',0)
+                hist3([spatial_posteriors(i,j).amps' spatial_posteriors(i,j).times'],'Edges',{[40:20:150],[0:.005:.1]*20000},'EdgeAlpha',0)
                 colormap(hot)
                 set(get(gca,'child'),'FaceColor','interp','CDataMode','auto');
             end
-%             view(3); 
+            view(3); 
             axis off
 %             ylim([0 10000])
 %             xlim([20 250])
