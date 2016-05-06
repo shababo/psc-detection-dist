@@ -840,7 +840,7 @@ hold on
 scatter(event_times_init, 8*ones(1,length(event_times_init)))
 
 %% spike detection on grid
-
+ 
 trace_grids_3_31_s2c2_r2_3 = {traces_by_location_3_31_s2c2_r3_5mw, traces_by_location_3_31_s2c2_r3_10mw, traces_by_location_3_31_s2c2_r3_15mw,...
     traces_by_location_3_31_s2c2_r3_25mw, traces_by_location_3_31_s2c2_r3_50mw, traces_by_location_3_31_s2c2_r3_100mw};
 
@@ -848,14 +848,19 @@ trace_grids_3_29_s1c2_r2 = {traces_by_location_3_29_s1c2_r2_25mw, traces_by_loca
 
 trace_grids_3_29_s1c4_r2 = {traces_by_location_3_29_s1c4_r2_25mw, traces_by_location_3_29_s1c4_r2_50mw, traces_by_location_3_29_s1c4_r2_100mw};
 
+trace_grids_3_31_s1c1_r4_5 = {traces_by_location_3_31_s1c1_r4_5_25mw, traces_by_location_3_31_s1c1_r4_5_50mw, traces_by_location_3_31_s1c1_r4_5_100mw};
+
 trace_grids_3_31_s1c2_r4_5 = {traces_by_location_3_31_s1c2_r5_5mw, traces_by_location_3_31_s1c2_r5_10mw, traces_by_location_3_31_s1c2_r5_15mw,...
     traces_by_location_3_31_s1c2_r4_25mw, traces_by_location_3_31_s1c2_r4_50mw, traces_by_location_3_31_s1c2_r4_100mw};
+
+trace_grids_4_5_s2c1_r5 = {traces_by_location_4_5_s2c1_r5_25mw, traces_by_location_4_5_s2c1_r5_50mw, traces_by_location_4_5_s2c1_r5_100mw};
+
 
 
 
 %%
 
-trace_grids = trace_grids_3_29_s1c2_r2;
+trace_grids = trace_grids_4_5_s2c1_r5;
 
 detection_grids = cell(size(trace_grids));
 
@@ -864,17 +869,21 @@ for i = 1:length(trace_grids)
     trace_grid_tmp = trace_grids{i};
     [traces_tmp, rebuild_map] = stack_traces(trace_grid_tmp);
 
-    detection_results = detect_peaks(-1.0*bsxfun(@minus,traces_tmp,median(traces_tmp,2)),2.5,20,1,1,0)*70;
+    detection_results = detect_peaks(-1.0*bsxfun(@minus,traces_tmp,median(traces_tmp,2)),8.0,20,1,1,0)*70;
     detection_grids{i} = unstack_traces(detection_results,rebuild_map);
     
 end
 
+detection_results_4_5_s2c1_r5 = detection_results;
+detection_grids_4_5_s2c1_r5 = detection_grids;
 
-figure; compare_trace_stack_grid({trace_grids{:},detection_grids{:}},...
-    5,1,0)
+%%
 
-detection_results_3_31_s2c2_r2_3 = detection_results;
-detection_grids_3_31_s2c2_r2_3 = detection_grids;
+
+figure; compare_trace_stack_grid({trace_grids{:},detection_grids_4_5_s2c1_r5{:}},...
+    5,1,0,{'25 mW', '50 mW', '100 mW'},2)
+
+
 %% count spikes and get means
 
 spike_counts = zeros([size(detection_grids{1}) length(detection_grids)]);
@@ -908,7 +917,7 @@ for i = 1:length(detection_grids)
     caxis([0 max_val])
 end
 
-spike_counts_3_31_s2c2_r2_3 = spike_counts;
+spike_counts_4_5_s2c1_r5 = spike_counts;
 
 %% delay times and get means
 
@@ -918,6 +927,7 @@ max_val = 0;
 axs = [];
 
 figure
+
 colormap hot
 for i = 1:length(detection_grids)
     
@@ -946,14 +956,101 @@ for i = 1:length(detection_grids)
     axis off
 end
 
-delays_3_31_s2c2_r2_3 = delays;
+delays_4_5_s2c1_r5 = delays;
 
 for i = 1:length(detection_grids)
     subplot(2,ceil(length(detection_grids)/2),i)
     caxis([0 max_val])
 end
 
+%%
+
+figure 
+
+for i = 1:3
     
+    subplot(3,3,i)
+    pcolor(flipud(delays_3_31_s2c2_r2_3(:,:,i+3)));
+    caxis([0 .05])
+    axis square
+    axis off
+end
+
+for i = 1:3
     
+    subplot(3,3,i+3)
+    pcolor(flipud(delays_3_29_s1c2_r2(:,:,i)));
+    caxis([0 .05])
+    axis square
+    axis off
+end
+
+
+for i = 1:3
     
+    subplot(3,3,i+6)
+    pcolor(flipud(delays_3_31_s1c2_r4_5(:,:,i+3)));
+    caxis([0 .05])
+    axis square
+    axis off
+end
+
+
+colormap hot
+
+%%
+
+figure 
+
+for i = 1:3
+    
+    subplot(3,3,i)
+    imagesc(spike_counts_3_31_s2c2_r2_3(:,:,i+3));
+    caxis([0 3])
+    axis square
+    axis off
+end
+
+for i = 1:3
+    
+    subplot(3,3,i+3)
+    imagesc(spike_counts_3_29_s1c2_r2(:,:,i));
+    caxis([0 3])
+    axis square
+    axis off
+end
+
+
+for i = 1:3
+    
+    subplot(3,3,i+6)
+    imagesc(spike_counts_3_31_s1c2_r4_5(:,:,i+3));
+    caxis([0 3])
+    axis square
+    axis off
+end
+
+%%
+figure
+for i = 1:6
+    
+    subplot(2,6,i)
+    imagesc(spike_counts_3_31_s2c2_r2_3(:,:,i));
+    caxis([0 3])
+%     axis square
+    axis off
+end
+
+for i = 1:6
+    
+    subplot(2,6,i + 6)
+    imagesc(spike_counts_3_31_s1c2_r4_5(:,:,i));
+    caxis([0 3])
+%     axis square
+    axis off
+end
+
+
+
+colormap hot
 

@@ -52,4 +52,4 @@ for i = 1:length(dirinfo)
 end
 
 figure;
-histogram(errs,'normalization','pdf')
+histogram(errs)
