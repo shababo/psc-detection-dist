@@ -9,8 +9,8 @@ clear timing_score
 clear timing_score_tolerance
 num_traces = length(event_times{1})
 
-for i = 1:length(threshold)
-    for j = 1:length(min_spacing)
+for i = 1:size(event_times,1)
+    for j = 1:size(event_times,2)
         for k = 1:num_traces
 
         est_times = event_times{i,j}{k};

@@ -2,10 +2,10 @@ function roc = compute_roc_deconv(filename)
 
 load(filename)
 
-roc = zeros(length(threshold),length(min_spacing),2);
+roc = zeros(size(event_times,1),size(event_times,2),2);
 
-for thresh_i = 1:length(threshold)
-    for min_spacing_i = 1:length(min_spacing)
+for thresh_i = 1:size(event_times,1)
+    for min_spacing_i = 1:size(event_times,2)
        
         if ~exist('timing_score','var')
             disp(['not scored: '])
