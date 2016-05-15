@@ -309,19 +309,25 @@ end
 figure
 subplot(131)
 histogram(cb_errs,'FaceColor','g','Normalization','pdf')
-title(['Template Matching, mean error: ' num2str(mean(cb_errs)/20) 'msec'])
+hold on
+plot(ones(2,1)*median(cb_errs),[0 .25],'--k'); hold off
+title(['Template Matching, mean error: ' num2str(median(cb_errs)/20) 'msec'])
 ylim([0 .25])
 xlim([0 20])
 set(gca,'xticklabel',{'0','.25','.50','.75','1.0'})
 subplot(132)
 histogram(wiener_errs,'FaceColor','r','Normalization','pdf')
-title(['Wiener Filter, mean error: ' num2str(mean(wiener_errs)/20) 'msec'])
+hold on
+plot(ones(2,1)*median(wiener_errs),[0 .25],'--k'); hold off
+title(['Wiener Filter, mean error: ' num2str(median(wiener_errs)/20) 'msec'])
 ylim([0 .25])
 xlim([0 20])
 set(gca,'xticklabel',{'0','.25','.50','.75','1.0'})
 subplot(133)
 histogram(bayes_errs,'FaceColor','b','Normalization','pdf')
-title(['Bayesian, mean error: ' num2str(mean(bayes_errs)/20) 'msec'])
+hold on
+plot(ones(2,1)*median(bayes_errs),[0 .25],'--k'); hold off
+title(['Bayesian, mean error: ' num2str(median(bayes_errs)/20) 'msec'])
 ylim([0 .25])
 xlim([0 20])
 set(gca,'xticklabel',{'0','.25','.50','.75','1.0'})
