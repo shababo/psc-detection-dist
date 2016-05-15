@@ -87,7 +87,7 @@ if params.par
         nfft = length(trace) + length(template);
         [filtered_trace, event_times_init] = wiener_filter(trace,template,params.init_method.ar_noise_params,...
             nfft, params.dt, params.init_method.theshold, params.init_method.min_interval);
-        
+        event_times_init
 %         assignin('base','event_times_init_old',event_times_init_old)
 %         assignin('base','event_times_init',event_times_init)
         results(trace_ind).event_times_init = event_times_init;
