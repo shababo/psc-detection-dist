@@ -13,6 +13,10 @@ end
 if ~isfield(params,'par')
     params.par = 1;
 end
+
+if ~isfield(params,'init_only')
+    params.init_only = 0;
+end
 %% use an rng seed
 
 if ~isfield(params,'rand')
@@ -107,7 +111,7 @@ if ~isfield(params,'tau1_max')
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 60/20000;
+    params.tau2_min = 100/20000;
 end
 if ~isfield(params,'tau2_max')
     params.tau2_max = 600/20000;
@@ -119,7 +123,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-10;%1e-4;
+    params.p_spike = 1e-5;%1e-4;
 end
 
 
@@ -231,7 +235,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 1000;
+    params.num_sweeps = 500;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -300,8 +304,8 @@ end
 %     params.init_method.template_file = 'data/epsc-template.mat';
     params.init_method.ar_noise_params.sigma_sq = 3.0;
     params.init_method.ar_noise_params.phi = [1.000000000000000, -0.982949319747574, 0.407063852831604];
-    params.init_method.theshold = 2.0;
-    params.init_method.min_interval = 100;
+    params.init_method.theshold = 2.25;
+    params.init_method.min_interval = 20;
 % end
 
 
@@ -318,7 +322,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/3_8_s5c2_r4_grid.mat'];
+            ['data/5_16_s3c1_r1_grid.mat'];
 
 %     end
 end
@@ -338,7 +342,7 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-1001.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-1000.mat'];
 %     end
 
 end

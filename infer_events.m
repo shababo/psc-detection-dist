@@ -85,25 +85,28 @@ if params.par
         
         
         nfft = length(trace) + length(template);
-        [filtered_trace, event_times_init] = wiener_filter(trace,template,params.init_method.ar_noise_params,...
+        [filtered_trace, event_times_init,event_sizes_init] = wiener_filter(trace,template,params.init_method.ar_noise_params,...
             nfft, params.dt, params.init_method.theshold, params.init_method.min_interval);
         event_times_init
+        event_sizes_init
 %         assignin('base','event_times_init_old',event_times_init_old)
 %         assignin('base','event_times_init',event_times_init)
         results(trace_ind).event_times_init = event_times_init;
         results(trace_ind).filtered_trace = filtered_trace;
+        results(trace_ind).event_sizes_init = event_sizes_init;
         
         tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
-
-        if params.direct_stim
-%             event_times_init = ceil(length(trace)*rand(1,length(trace)*params.p_spike));
-            [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
-        else
-%             event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
-%                 params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
-            [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
+        
+        if isfield(params,'init_only') && ~params.init_only
+            if params.direct_stim
+    %             event_times_init = ceil(length(trace)*rand(1,length(trace)*params.p_spike));
+                [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
+            else
+    %             event_times_init = template_matching(-1*params.event_sign*traces(trace_ind,:), params.dt,...
+    %                 params.init_method.tau, params.init_method.amp_thresh, params.init_method.conv_thresh);
+                [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
+            end
         end
-
     end
     
     
@@ -130,29 +133,38 @@ else
 
         
         nfft = length(trace) + length(template);
-        [~, event_times_init] = wiener_filter(params.event_sign*trace,template,params.init_method.ar_noise_params,...
+        [~, event_times_init,event_sizes_init] = wiener_filter(params.event_sign*trace,template,params.init_method.ar_noise_params,...
             nfft, params.dt, params.init_method.theshold, params.init_method.min_interval);
-        length(event_times_init)
+        event_times_init
+        event_sizes_init
+        results(trace_ind).event_times_init = event_times_init;
+        results(trace_ind).filtered_trace = filtered_trace;
+        results(trace_ind).event_sizes_init = event_sizes_init;
 %         assignin('base','event_times_init_old',event_times_init_old)
 %         assignin('base','event_times_init',event_times_init)
         
         tau = [mean([params.tau1_min params.tau1_max]) mean([params.tau2_min params.tau2_max])]/params.dt;
+        
+        if isfield(params,'init_only') && ~params.init_only
 
-        if params.direct_stim
-%             event_times_init = ceil(length(trace)*rand(1,length(trace)*params.p_spike));
-            [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
-        else
-            [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
+            if params.direct_stim
+    %             event_times_init = ceil(length(trace)*rand(1,length(trace)*params.p_spike));
+                [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ar_2taus_directstim(trace,tau,event_times_init,params);
+            else
+                [results(trace_ind).trials, results(trace_ind).mcmc]  = sampleParams_ARnoise_splittau(trace,tau,event_times_init,params);
+            end
         end
     end
 end
 
-disp('finding min err...')
-% map sample
-for trace_ind = 1:size(traces,1)
+if isfield(params,'init_only') && ~params.init_only
+    disp('finding min err...')
+    % map sample
+    for trace_ind = 1:size(traces,1)
 
-    [results(trace_ind).map, results(trace_ind).map_ind] = max(results(trace_ind).trials.obj);
-    
+        [results(trace_ind).map, results(trace_ind).map_ind] = max(results(trace_ind).trials.obj);
+
+    end
 end
 
 % if params.is_grid
