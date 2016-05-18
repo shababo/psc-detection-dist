@@ -5,8 +5,8 @@ spatial_posteriors = struct();
 
 figure(9991)
 subplot1(size(posteriors_grid,1), size(posteriors_grid,2), 'Gap', [.005 .005], 'XTickL', 'Margin', 'YTickL', 'Margin');
-% figure(9992)
-% subplot1(size(posteriors_grid,1), size(posteriors_grid,2), 'Gap', [.005 .005], 'XTickL', 'Margin', 'YTickL', 'Margin');
+figure(9992)
+subplot1(size(posteriors_grid,1), size(posteriors_grid,2), 'Gap', [.005 .005], 'XTickL', 'Margin', 'YTickL', 'Margin');
 % figure(9993)
 % subplot1(size(posteriors_grid,1), size(posteriors_grid,2), 'Gap', [.005 .005], 'XTickL', 'Margin', 'YTickL', 'Margin');
 figure(99944)
@@ -51,10 +51,10 @@ for i = 1:size(posteriors_grid,1)
             ylim([0 40]*10*3)
             xlim([20 300])
             
-%             figure(9992)
-%             subplot1((i-1)*size(posteriors_grid,2) + j);
-%             histogram(spatial_posteriors(i,j).num_events,0:8,'Normalization','countdensity')
-%             axis off
+            figure(9992)
+            subplot1((i-1)*size(posteriors_grid,2) + j);
+            histogram(spatial_posteriors(i,j).num_events,0:8,'Normalization','countdensity')
+            axis off
 % 
 %             ylim([0 40]*10)
 %             xlim([0 8])
