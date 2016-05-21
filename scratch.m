@@ -1120,3 +1120,26 @@ end
 
 colormap hot
 
+%%
+
+%%
+trace_grid_ch1 = traces_by_location_5_12_s2c1_2_r4{1};
+trace_grid_ch2= traces_by_location_5_12_s2c1_2_r4{2};
+
+across_ch_corr_image = zeros(size(trace_grid_ch1));
+
+for i = 1:size(trace_grid_ch1,1)
+    for j = 1:size(trace_grid_ch1,2)
+        for k = 1:size(trace_grid_ch1{i,j},1)
+            corr_mat = corr([trace_grid_ch1{i,j}(k,:); trace_grid_ch2{i,j}(k,:)]');
+            across_ch_corr_image(i,j) = across_ch_corr_image(i,j) + corr_mat(1,2);
+        end
+        across_ch_corr_image(i,j) = across_ch_corr_image(i,j)/size(trace_grid_ch1{i,j},1);
+    end
+end
+
+figure; 
+imagesc(across_ch_corr_image)
+colormap hot
+colorbar
+
