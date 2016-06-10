@@ -5,7 +5,7 @@
 #noise_type=1
 
 
-dirname="/vega/stats/users/bms2156/psc-detection/data/param-files/doublets"
+dirname="/vega/stats/users/bms2156/psc-detection/data/param-files/som-test-1"
 for param_file in "$dirname"/*; #486
 do
 	response=`qsub -v param_file=$param_file /vega/stats/users/bms2156/psc-detection/yeti-scripts/detection-submit.sh`

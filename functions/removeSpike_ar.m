@@ -1,4 +1,4 @@
-function [newSpikeTrain, newCalcium, newLL] = removeSpike(oldSpikeTrain,oldCalcium,oldLL,filter,amp,tau,obsCalcium,timeToRemove,indx,Dt,A)
+function [newSpikeTrain, newCalcium, newLL, tmp] = removeSpike(oldSpikeTrain,oldCalcium,oldLL,filter,amp,tau,obsCalcium,timeToRemove,indx,Dt,A)
     
     tau_h = tau(1);
     tau_d = tau(2);

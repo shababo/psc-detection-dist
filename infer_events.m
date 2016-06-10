@@ -138,7 +138,7 @@ else
         event_times_init
         event_sizes_init
         results(trace_ind).event_times_init = event_times_init;
-        results(trace_ind).filtered_trace = filtered_trace;
+%         results(trace_ind).filtered_trace = filtered_trace;
         results(trace_ind).event_sizes_init = event_sizes_init;
 %         assignin('base','event_times_init_old',event_times_init_old)
 %         assignin('base','event_times_init',event_times_init)

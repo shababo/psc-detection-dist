@@ -1,4 +1,4 @@
-function [newSpikeTrain, newCalcium, newLL] = addSpike(oldSpikeTrain,oldCalcium,oldLL,filter,amp,tau,obsCalcium,timeToAdd,indx,Dt,A)
+function [newSpikeTrain, newCalcium, newLL, tmp] = addSpike(oldSpikeTrain,oldCalcium,oldLL,filter,amp,tau,obsCalcium,timeToAdd,indx,Dt,A)
 
     tau_h = tau(1);
     tau_d = tau(2);
