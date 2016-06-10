@@ -6,7 +6,7 @@ end
 
 if ~isfield(params,'cluster')
 
-    params.cluster = 1;
+    params.cluster = 0;
 
 end
 
@@ -67,7 +67,7 @@ end
 
 % is this a matrix of traces or a grid array
 if ~isfield(params,'is_grid')
-    params.is_grid = 0;
+    params.is_grid = 1;
 end
 
 %% inference params
@@ -322,7 +322,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/5_13_s2c2_r4_tracegrid.mat'];
+            ['data/5_13_s2c1_r4_tracegrid.mat'];
 
 %     end
 end

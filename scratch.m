@@ -1143,3 +1143,67 @@ imagesc(across_ch_corr_image)
 colormap hot
 colorbar
 
+%%
+
+event_timeseries2 = get_event_times_init(results2,2000,1,10);
+event_timeseries1 = get_event_times_init(results,2000,1,10);
+event_timeseries1_smooth = smoothts(event_timeseries1,'g',100,20);
+event_timeseries2_smooth = smoothts(event_timeseries2,'g',100,20);
+events_ts_grid1_smooth = unstack_traces(event_timeseries1_smooth*1000,params.rebuild_map);
+events_ts_grid2_smooth = unstack_traces(event_timeseries2_smooth*1000,params2.rebuild_map);
+figure; compare_trace_stack_grid_overlap({events_ts_grid1_smooth,events_ts_grid2_smooth},3,1,[],0,{'L4','L5'},1)
+
+%%
+
+max_xcorr = cell(size(events_ts_grid1_smooth));
+mad_xcorr_lag = cell(size(events_ts_grid1_smooth));
+
+for i = 1:size(events_ts_grid1_smooth,1)
+    for j = 1:size(events_ts_grid1_smooth,2)
+        max_xcorr{i,j} = zeros(size(events_ts_grid1_smooth{i,j},1),1);
+        mad_xcorr_lag{i,j} = zeros(size(events_ts_grid1_smooth{i,j},1),1);
+        for k = 1:size(events_ts_grid1_smooth{i,j},1)
+            [max_xcorr{i,j}(k), mad_xcorr_lag{i,j}(k)] = max(xcorr(events_ts_grid1_smooth{i,j}(k,:),events_ts_grid1_smooth{i,j}(k,:)));
+        end
+    end
+end
+
+%%
+
+max_xcorr_img = zeros(size(events_ts_grid1_smooth));
+mad_xcorr_lag_img = zeros(size(events_ts_grid1_smooth));
+
+for i = 1:size(events_ts_grid1_smooth,1)
+    for j = 1:size(events_ts_grid1_smooth,2)
+        max_xcorr_img(i,j) = mean(max_xcorr{i,j});
+        mad_xcorr_lag_img(i,j) = mean(mad_xcorr_lag{i,j});
+
+    end
+end
+
+figure;
+subplot(121)
+imagesc(max_xcorr_img)
+colorbar
+subplot(122)
+imagesc(mad_xcorr_lag_img)
+colorbar
+
+%%
+
+
+xcorrs = cell(size(events_ts_grid1_smooth));
+
+for i = 1:size(events_ts_grid1_smooth,1)
+    for j = 1:size(events_ts_grid1_smooth,2)
+        xcorrs{i,j} = zeros(size(events_ts_grid1_smooth{i,j}));
+        for k = 1:size(events_ts_grid1_smooth{i,j},1)
+            xcorrs{i,j}(k,:) = max(xcorr(events_ts_grid1_smooth{i,j}(k,:),events_ts_grid1_smooth{i,j}(k,:)));
+        end
+    end
+end
+
+
+
+
+

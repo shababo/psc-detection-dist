@@ -4,6 +4,9 @@ if params.rand == 1
     rng(params.seed)
 end
 
+if params.cluster
+    addpath('/vega/stats/users/bms2156/psc-detection/functions')
+end
 
 
 if ~isfield(params,'start_ind')
@@ -174,7 +177,7 @@ end
 % results = results_grid;
 
 disp('saving...')
-save(params.full_save_string,'results','params','-v7.3')
+save(params.full_save_string,'results','params')
 
 disp('done')
 

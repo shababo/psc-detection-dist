@@ -701,7 +701,7 @@ for i = 1:num_sweeps
         samples_a = [samples_a ati]; %trial amplitudes
         samples_b = [samples_b baseline]; %trial baselines
         samples_s = [samples_s sti]; %shared bursts
-        for event_i = 1:length(taus)
+        for event_i = 1:N
             samples_tau_rise = [samples_tau_rise taus{event_i}(1)]; %save tau values
             samples_tau_fall = [samples_tau_fall taus{event_i}(2)];
         end
