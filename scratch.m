@@ -1120,3 +1120,27 @@ end
 
 colormap hot
 
+%%
+baseline_window = [1800 2000];
+measure_window = [2000 3000];
+
+amps_50 = get_current_amp(traces_s1c1_50mw,baseline_window,measure_window);
+amps_75 = get_current_amp(traces_s1c1_75mw,baseline_window,measure_window);
+amps_100 = get_current_amp(traces_s1c1_100mw,baseline_window,measure_window);
+amps_125 = get_current_amp(traces_s1c1_125mw,baseline_window,measure_window);
+amps_150 = get_current_amp(traces_s1c1_150mw,baseline_window,measure_window);
+amps_175 = get_current_amp(traces_s1c1_175mw,baseline_window,measure_window);
+
+baseline_window = [3800 4000];
+measure_window = [4000 5000];
+
+amps2_50 = get_current_amp(traces_s2c2_50mw,baseline_window,measure_window);
+% amps2_75 = get_current_amp(traces_s2c2_75mw,baseline_window,measure_window);
+amps2_100 = get_current_amp(traces_s2c2_100mw,baseline_window,measure_window);
+amps2_125 = get_current_amp(traces_s2c2_125mw,baseline_window,measure_window);
+amps2_150 = get_current_amp(traces_s2c2_150mw,baseline_window,measure_window);
+amps2_175 = get_current_amp(traces_s2c2_175mw,baseline_window,measure_window);
+
+figure; plot([50 75 100 125 150 175], [mean(amps_50) mean(amps_75) mean(amps_100) mean(amps_125) mean(amps_150) mean(amps_175)])
+hold on; plot([50 100 125 150 175], [mean(amps2_50) mean2(amps2_100) mean(amps2_125) mean(amps2_150) mean(amps2_175)])
+
