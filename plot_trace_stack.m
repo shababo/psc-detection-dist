@@ -59,7 +59,7 @@ for trial = 1:size(traces,1)
     
     trace_to_plot = traces(trial,:);
     %median(trace_to_plot)
-    plot((0:trial_length-1)/20000,trace_to_plot - offset - trace_to_plot(1) + vert_offset,linespec,'LineWidth',linewidth,'Color',colors(trial,:))
+    plot((0:trial_length-1),trace_to_plot - offset - trace_to_plot(1) + vert_offset,linespec,'LineWidth',linewidth,'Color',colors(trial,:))
     hold on
    
 %     if ~isempty(events)
@@ -77,7 +77,7 @@ if ~isempty(varargin)
 
     if ~isempty(bar_limits)
 
-        bar_corner_time = trial_length/10/20000;
+        bar_corner_time = trial_length/10;
         bar_corner_y = -offset + vert_offset;
 
         plot([bar_corner_time; bar_corner_time], bar_corner_y + [0; bar_limits(2)], '-k',  bar_corner_time + [0; bar_limits(1)], [bar_corner_y; bar_corner_y], '-k', 'LineWidth', 2)

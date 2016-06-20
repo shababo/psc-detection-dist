@@ -1186,6 +1186,33 @@ events_ts_grid2_smooth = unstack_traces(event_timeseries2_smooth*300,params2.reb
 figure; compare_trace_stack_grid_overlap({events_ts_grid1_smooth,traces_by_location_5_13_s2c1_2_r4{1}},3,1,[],0,{'L4','L5'},1)
 
 %%
+event_timeseries2 = get_event_times_init(results_5_12_s2c2_r4_tracegrid,2000,1,10);
+event_timeseries1 = get_event_times_init(results_5_12_s2c1_r4_tracegrid,2000,1,10);
+event_timeseries1_smooth = smoothts(event_timeseries1,'g',100,20);
+event_timeseries2_smooth = smoothts(event_timeseries2,'g',100,20);
+events_ts_grid1_smooth = unstack_traces(event_timeseries1_smooth*1000,params.rebuild_map);
+events_ts_grid2_smooth = unstack_traces(event_timeseries2_smooth*1000,params.rebuild_map);
+figure; compare_trace_stack_grid([traces_by_location_5_12_s2c1_2_r4(:); {events_ts_grid1_smooth}; {events_ts_grid2_smooth}],3,1,[],0,{'L4','L5'},1)
+% figure; compare_trace_stack_grid_overlap({events_ts_grid1_smooth,events_ts_grid2_smooth},3,1,[],0,{'L4','L5'},1)
+
+%%
+event_timeseries2 = zeros(length(results_5_12_s2c1_r4_tracegrid),2000);
+event_timeseries1 = zeros(length(results_5_12_s2c2_r4_tracegrid),2000);
+
+for i = 1:length(results_5_12_s2c1_r4_tracegrid)
+    event_timeseries1(i,:) = histcounts(results_5_12_s2c1_r4_tracegrid(i).trials.times,0:1:2000);
+    event_timeseries2(i,:) = histcounts(results_5_12_s2c2_r4_tracegrid(i).trials.times,0:1:2000);
+    event_timeseries1(i,1:20) = 0;
+    event_timeseries2(i,1:20) = 0;
+end
+
+events_ts_grid1_smooth = unstack_traces(event_timeseries1/10,params.rebuild_map);
+events_ts_grid2_smooth = unstack_traces(event_timeseries2/10,params.rebuild_map);
+% figure; compare_trace_stack_grid({events_ts_grid1_smooth,events_ts_grid2_smooth},3,1,[],0,{'L4','L5'},1)
+
+
+
+%%
 
 max_xcorr = cell(size(events_ts_grid1_smooth));
 mad_xcorr_lag = cell(size(events_ts_grid1_smooth));
@@ -1195,7 +1222,7 @@ for i = 1:size(events_ts_grid1_smooth,1)
         max_xcorr{i,j} = zeros(size(events_ts_grid1_smooth{i,j},1),1);
         mad_xcorr_lag{i,j} = zeros(size(events_ts_grid1_smooth{i,j},1),1);
         for k = 1:size(events_ts_grid1_smooth{i,j},1)
-            [max_xcorr{i,j}(k), mad_xcorr_lag{i,j}(k)] = max(xcorr(events_ts_grid1_smooth{i,j}(k,:),events_ts_grid1_smooth{i,j}(k,:)));
+            [max_xcorr{i,j}(k), mad_xcorr_lag{i,j}(k)] = max(xcorr(events_ts_grid1_smooth{i,j}(k,:),events_ts_grid2_smooth{i,j}(k,:)));
         end
     end
 end
@@ -1207,8 +1234,8 @@ mad_xcorr_lag_img = zeros(size(events_ts_grid1_smooth));
 
 for i = 1:size(events_ts_grid1_smooth,1)
     for j = 1:size(events_ts_grid1_smooth,2)
-        max_xcorr_img(i,j) = mean(max_xcorr{i,j});
-        mad_xcorr_lag_img(i,j) = mean(mad_xcorr_lag{i,j});
+        [max_xcorr_img(i,j), max_i] = max(max_xcorr{i,j});
+        mad_xcorr_lag_img(i,j) = mad_xcorr_lag{i,j}(max_i);
 
     end
 end
@@ -1218,7 +1245,7 @@ subplot(121)
 imagesc(max_xcorr_img)
 colorbar
 subplot(122)
-imagesc(mad_xcorr_lag_img)
+imagesc(mad_xcorr_lag_img - 2000)
 colorbar
 
 %%
@@ -1235,6 +1262,8 @@ for i = 1:size(events_ts_grid1_smooth,1)
     end
 end
 
+%%
+results_5_12_s2c1_r4_tracegrid
 
 
 

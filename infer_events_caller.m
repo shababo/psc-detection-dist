@@ -14,7 +14,7 @@ if ~isempty(varargin) && ~isempty(varargin{1})
 %     [pathname, filename] = fileparts(params.traces_filename);
 %     pathname = '/media/shababo/Layover/projects/mapping/code/psc-detection/data/for-paper/';
 %     params.is_grid = 1;
-    params.traces_filename = 'data/5_13_s2c2_r4_tracegrid.mat';
+%     params.traces_filename = 'data/5_13_s2c2_r4_tracegrid.mat';
 %     params.savename = [params.traces_filename(1:end-4) '-0003-new.mat'];
 %     params.stim_in = [zeros(1,5*20) ones(1,20*10) zeros(1,1500-15*20)];%linspace(0,1,20*10)
 %     % ar noise model
