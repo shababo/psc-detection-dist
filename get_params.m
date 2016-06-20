@@ -1,12 +1,14 @@
 function params = get_params(varargin)
 
 if ~isempty(varargin)
-    params = varargin{1};
+    load(varargin{1});
+else
+    params = struct();
 end
 
 if ~isfield(params,'cluster')
 
-    params.cluster = 0;
+    params.cluster = 1;
 
 end
 
@@ -77,7 +79,7 @@ if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
-    params.a_min = 10;
+    params.a_min = 5;
 
 end
 
@@ -123,7 +125,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-7;%1e-4;
+    params.p_spike = 1e-5;%1e-4;
 end
 
 
@@ -152,8 +154,7 @@ if ~isfield(params, 'noise_known')
 end
 
 if ~isfield(params,'noise_est_subset')
-%     params.noise_est_subset = 1:5000;
-%     params.noise_est_subset = 1:1000;
+    params.noise_est_subset = [];
 end
 
 %% direct stim
@@ -226,16 +227,13 @@ if ~isfield(params,'stim_amp_init')
     params.stim_amp_init = 5;
 end
 
-if ~isfield(params,'noise_est_subset')
-    params.noise_est_subset = [];
-end
 
 %% sampling params
 
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 1000;
+    params.num_sweeps = 5000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -335,17 +333,17 @@ if ~isfield(params,'savepath')
 %     end
     params.savepath = '';
 end
-if ~isfield(params,'savename')
+% if ~isfield(params,'savename')
 %     if params.cluster
 %         savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
 %         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-1000.mat'];
 %     end
 
-end
+% end
 
 params.full_save_string = [params.savename];
 
