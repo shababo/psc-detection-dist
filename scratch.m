@@ -1144,3 +1144,98 @@ amps2_175 = get_current_amp(traces_s2c2_175mw,baseline_window,measure_window);
 figure; plot([50 75 100 125 150 175], [mean(amps_50) mean(amps_75) mean(amps_100) mean(amps_125) mean(amps_150) mean(amps_175)])
 hold on; plot([50 100 125 150 175], [mean(amps2_50) mean2(amps2_100) mean(amps2_125) mean(amps2_150) mean(amps2_175)])
 
+%%
+trace_grid_ch1 = traces_by_location_5_12_s2c1_2_r4{1};
+trace_grid_ch2= traces_by_location_5_12_s2c1_2_r4{2};
+
+across_ch_corr_image = zeros(size(trace_grid_ch1));
+
+for i = 1:size(trace_grid_ch1,1)
+    for j = 1:size(trace_grid_ch1,2)
+        for k = 1:size(trace_grid_ch1{i,j},1)
+            corr_mat = corr([trace_grid_ch1{i,j}(k,:); trace_grid_ch2{i,j}(k,:)]');
+            across_ch_corr_image(i,j) = across_ch_corr_image(i,j) + corr_mat(1,2);
+        end
+        across_ch_corr_image(i,j) = across_ch_corr_image(i,j)/size(trace_grid_ch1{i,j},1);
+    end
+end
+
+figure; 
+imagesc(across_ch_corr_image)
+colormap hot
+colorbar
+
+%%
+
+time_posteriors = zeros(length(results),2000);
+
+
+for i = 1:length(results)
+    time_posteriors(i,:) = histcounts(results(i).trials.times,0:2000);
+end
+%%
+
+event_timeseries2 = get_event_times_init(results2,2000,1,10);
+event_timeseries1 = get_event_times_init(results,2000,1,5);
+event_timeseries1_smooth = smoothts(event_timeseries1,'g',100,20);
+event_timeseries2_smooth = smoothts(event_timeseries2,'g',100,20);
+time_posteriors(:,1:50) = 0;
+events_ts_grid1_smooth = unstack_traces(time_posteriors/5,params.rebuild_map);
+
+events_ts_grid2_smooth = unstack_traces(event_timeseries2_smooth*300,params2.rebuild_map);
+figure; compare_trace_stack_grid_overlap({events_ts_grid1_smooth,traces_by_location_5_13_s2c1_2_r4{1}},3,1,[],0,{'L4','L5'},1)
+
+%%
+
+max_xcorr = cell(size(events_ts_grid1_smooth));
+mad_xcorr_lag = cell(size(events_ts_grid1_smooth));
+
+for i = 1:size(events_ts_grid1_smooth,1)
+    for j = 1:size(events_ts_grid1_smooth,2)
+        max_xcorr{i,j} = zeros(size(events_ts_grid1_smooth{i,j},1),1);
+        mad_xcorr_lag{i,j} = zeros(size(events_ts_grid1_smooth{i,j},1),1);
+        for k = 1:size(events_ts_grid1_smooth{i,j},1)
+            [max_xcorr{i,j}(k), mad_xcorr_lag{i,j}(k)] = max(xcorr(events_ts_grid1_smooth{i,j}(k,:),events_ts_grid1_smooth{i,j}(k,:)));
+        end
+    end
+end
+
+%%
+
+max_xcorr_img = zeros(size(events_ts_grid1_smooth));
+mad_xcorr_lag_img = zeros(size(events_ts_grid1_smooth));
+
+for i = 1:size(events_ts_grid1_smooth,1)
+    for j = 1:size(events_ts_grid1_smooth,2)
+        max_xcorr_img(i,j) = mean(max_xcorr{i,j});
+        mad_xcorr_lag_img(i,j) = mean(mad_xcorr_lag{i,j});
+
+    end
+end
+
+figure;
+subplot(121)
+imagesc(max_xcorr_img)
+colorbar
+subplot(122)
+imagesc(mad_xcorr_lag_img)
+colorbar
+
+%%
+
+
+xcorrs = cell(size(events_ts_grid1_smooth));
+
+for i = 1:size(events_ts_grid1_smooth,1)
+    for j = 1:size(events_ts_grid1_smooth,2)
+        xcorrs{i,j} = zeros(size(events_ts_grid1_smooth{i,j}));
+        for k = 1:size(events_ts_grid1_smooth{i,j},1)
+            xcorrs{i,j}(k,:) = max(xcorr(events_ts_grid1_smooth{i,j}(k,:),events_ts_grid1_smooth{i,j}(k,:)));
+        end
+    end
+end
+
+
+
+
+

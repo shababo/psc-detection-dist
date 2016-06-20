@@ -96,7 +96,7 @@ end
 % params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 20/20000;
+    params.tau1_min = 10/20000;
 end
 % params.tau1_max = 60/20000;
 % params.tau2_min = 75/20000;
@@ -107,14 +107,14 @@ end
 % params.p_spike = 1e-3;
 
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 100/20000;
+    params.tau1_max = 50/20000;
 end
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
     params.tau2_min = 100/20000;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 600/20000;
+    params.tau2_max = 500/20000;
 end
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
@@ -123,7 +123,7 @@ end
 
 % poisson/rate - that is the probability of seeing a spike/sample
 if ~isfield(params,'p_spike')
-    params.p_spike = 1e-5;%1e-4;
+    params.p_spike = 1e-7;%1e-4;
 end
 
 
@@ -144,7 +144,7 @@ if ~isfield(params,'noise_var_init')
 end
 
 if ~isfield(params, 'noise_known')
-    params.noise_known = 1;
+    params.noise_known = 0;
     if params.noise_known
         params.phi_known = [1.000000000000000, -0.982949319747574, 0.407063852831604];%[1.0 0.78 -0.13];
         params.noise_var_known = 3.0;%4.3;
@@ -227,7 +227,7 @@ if ~isfield(params,'stim_amp_init')
 end
 
 if ~isfield(params,'noise_est_subset')
-    params.noise_est_subset = 1:100;
+    params.noise_est_subset = [];
 end
 
 %% sampling params
@@ -235,7 +235,7 @@ end
 
 % how long to run the sampler
 if ~isfield(params,'num_sweeps')
-    params.num_sweeps = 500;
+    params.num_sweeps = 1000;
 end
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
@@ -322,7 +322,7 @@ if ~isfield(params,'traces_filename')
 
 %     else
         params.traces_filename = ...
-            ['data/5_16_s3c1_r1_grid.mat'];
+            ['data/5_13_s2c1_r4_tracegrid.mat'];
 
 %     end
 end
@@ -342,11 +342,15 @@ if ~isfield(params,'savename')
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else
-        params.savename = [params.traces_filename(1:end-4) '-1000.mat'];
+        params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
 %     end
 
 end
 
 params.full_save_string = [params.savename];
+
+if ~isfield(params,'posterior_data_struct')
+    params.posterior_data_struct = 'arrays';
+end
 
 

@@ -1,7 +1,7 @@
-function [trials, mcmc, runtime]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
+function [posterior, mcmc, runtime]  = sampleParams_ARnoise_splittau(trace,tau, Tguess, params)
 %parameters
 
-if ~isfield(params,'noise_est_subset')
+if ~isfield(params,'noise_est_subset') || isempty(params.noise_est_subset)
     params.noise_est_subset = 1:length(trace);
 end
 
@@ -73,13 +73,24 @@ event_samples = params.event_samples;
 ef = genEfilt_ar(tau,event_samples);%exponential filter
 ef_init = ef;
 
-samples_a  = cell(1,num_sweeps);
-samples_b = cell(1,num_sweeps);
-samples_s = cell(1,num_sweeps);
-samples_pr = cell(1,num_sweeps);
-samples_tau = cell(1,num_sweeps);
-samples_phi = cell(1,num_sweeps);
-samples_noise = cell(1,num_sweeps);
+if ~isfield(params,'posterior_data_struct') || strcmp(params.posterior_data_struct,'cells')
+    samples_a  = cell(1,num_sweeps);
+    samples_b = cell(1,num_sweeps);
+    samples_s = cell(1,num_sweeps);
+%     samples_pr = cell(1,num_sweeps);
+    samples_tau = cell(1,num_sweeps);
+    samples_phi = cell(1,num_sweeps);
+    samples_noise = cell(1,num_sweeps);
+elseif strcmp(params.posterior_data_struct,'arrays')
+    samples_a  = [];
+    samples_b = [];
+    samples_s = [];
+    samples_tau_rise = [];
+    samples_tau_fall = [];
+    samples_phi = [];
+    samples_noise = [];
+end
+
 N_sto = [];
 objective = [];
 
@@ -133,7 +144,7 @@ for i = 1:length(Tguess)
     ati_ = ati;
 %     a_init = max(max(trace(max(tmpi-params.a_init_window,1):min(tmpi+params.a_init_window,length(trace))))/A,a_min);
 %     a_init = max(diffY(max(1,floor(tmpi)))/A + a_std*randn,a_min);
-    [sti_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,efs{i},a_init,tau,trace,tmpi, N+1, Dt, A); %adds all trials' spikes at same time
+    [sti_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,efs{i},a_init,tau,trace,tmpi, N+1, Dt, A); %adds all posterior' spikes at same time
 
      if observe
                 plot(pr_)
@@ -413,7 +424,7 @@ for i = 1:num_sweeps
                 tmpi = tmpi_tmp + start_ind - 1;
                 sti_ = [sti tmpi];
                 a_init = max(local_max/A + a_std*randn,a_min);
-                [si_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,ef_init,a_init,tau,trace,tmpi, N+1, Dt, A); %adds all trials' bursts at same time
+                [si_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,ef_init,a_init,tau,trace,tmpi, N+1, Dt, A); %adds all posterior' bursts at same time
                 sti_ = si_;
                 ati_ = [ati_ a_init];
                 fprob = 1;%1/nBins(1);%forward probability
@@ -675,14 +686,28 @@ for i = 1:num_sweeps
     
 
     %store things
+    
     N_sto = [N_sto N];
-    samples_a{i} = ati; %trial amplitudes
-    samples_b{i} = baseline; %trial baselines
-    samples_s{i} = sti; %shared bursts
-    samples_pr{i} = pr; %save calcium traces
-    samples_tau{i} = taus; %save tau values
-    samples_phi{i} = phi;
-    samples_noise{i} = NoiseVar;
+    
+    if ~isfield(params,'posterior_data_struct') || strcmp(params.posterior_data_struct,'cells')
+        samples_a{i} = ati; %trial amplitudes
+        samples_b{i} = baseline; %trial baselines
+        samples_s{i} = sti; %shared bursts
+%         samples_pr{i} = pr; %save calcium traces
+        samples_tau{i} = taus; %save tau values
+        samples_phi{i} = phi;
+        samples_noise{i} = NoiseVar;
+    elseif strcmp(params.posterior_data_struct,'arrays')
+        samples_a = [samples_a ati]; %trial amplitudes
+        samples_b = [samples_b baseline]; %trial baselines
+        samples_s = [samples_s sti]; %shared bursts
+        for event_i = 1:N
+            samples_tau_rise = [samples_tau_rise taus{event_i}(1)]; %save tau values
+            samples_tau_fall = [samples_tau_fall taus{event_i}(2)];
+        end
+        samples_phi = [samples_phi; phi];
+        samples_noise = [samples_noise NoiseVar];
+    end
     %store overall logliklihood as well
 %     if abs(sum(logC)-sum(sum(-(pr)-cell2mat(trace)).^2)))>1
 %         figure(90)
@@ -714,13 +739,26 @@ mcmc.ampMoves=ampMoves;
 mcmc.tauMoves=tauMoves;
 mcmc.N_sto=N_sto;%number of bursts
 
-trials.amp=samples_a;
-trials.base=samples_b;
-trials.tau=samples_tau;
-trials.phi=samples_phi;
-trials.noise = samples_noise;
-trials.obj = objective;
-trials.times = samples_s;
+if ~isfield(params,'posterior_data_struct') || strcmp(params.posterior_data_struct,'cells')
+    posterior.amp=samples_a;
+    posterior.base=samples_b;
+    posterior.tau=samples_tau;
+    posterior.phi=samples_phi;
+    posterior.noise = samples_noise;
+    posterior.obj = objective;
+    posterior.times = samples_s;
+elseif strcmp(params.posterior_data_struct,'arrays')
+    posterior.amp=samples_a;
+    posterior.base=samples_b;
+    posterior.tau1=samples_tau_rise;
+    posterior.tau2=samples_tau_fall;
+    posterior.num_events = N_sto;
+    posterior.phi=samples_phi;
+    posterior.noise = samples_noise;
+    posterior.obj = objective;
+    posterior.times = samples_s;
+end
+
 
 
 

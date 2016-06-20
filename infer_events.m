@@ -4,6 +4,9 @@ if params.rand == 1
     rng(params.seed)
 end
 
+if params.cluster
+    addpath('/vega/stats/users/bms2156/psc-detection/functions')
+end
 
 
 if ~isfield(params,'start_ind')
@@ -138,7 +141,7 @@ else
         event_times_init
         event_sizes_init
         results(trace_ind).event_times_init = event_times_init;
-        results(trace_ind).filtered_trace = filtered_trace;
+%         results(trace_ind).filtered_trace = filtered_trace;
         results(trace_ind).event_sizes_init = event_sizes_init;
 %         assignin('base','event_times_init_old',event_times_init_old)
 %         assignin('base','event_times_init',event_times_init)
@@ -174,7 +177,7 @@ end
 % results = results_grid;
 
 disp('saving...')
-save(params.full_save_string,'results','params','-v7.3')
+save(params.full_save_string,'results','params')
 
 disp('done')
 
