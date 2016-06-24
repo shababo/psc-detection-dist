@@ -1173,26 +1173,37 @@ time_posteriors = zeros(length(results),2000);
 for i = 1:length(results)
     time_posteriors(i,:) = histcounts(results(i).trials.times,0:2000);
 end
+
+time_posteriors2 = zeros(length(results),2000);
+
+
+for i = 1:length(results2)
+    time_posteriors2(i,:) = histcounts(results2(i).trials.times,0:2000);
+end
 %%
 
 event_timeseries2 = get_event_times_init(results2,2000,1,10);
 event_timeseries1 = get_event_times_init(results,2000,1,5);
-event_timeseries1_smooth = smoothts(event_timeseries1,'g',100,20);
-event_timeseries2_smooth = smoothts(event_timeseries2,'g',100,20);
-time_posteriors(:,1:50) = 0;
-events_ts_grid1_smooth = unstack_traces(time_posteriors/5,params.rebuild_map);
+event_timeseries1_smooth = smoothts(time_posteriors,'g',100,20);
+event_timeseries2_smooth = smoothts(time_posteriors2,'g',100,20);
+% time_posteriors(:,1:50) = 0;
+events_ts_grid1_smooth = unstack_traces(event_timeseries1_smooth/5,params.rebuild_map);
+events_ts_grid2_smooth = unstack_traces(event_timeseries2_smooth/5,params.rebuild_map);
+events_ts_grid1_smooth = unstack_traces(event_timeseries1_smooth*300,params.rebuild_map);
 
-events_ts_grid2_smooth = unstack_traces(event_timeseries2_smooth*300,params2.rebuild_map);
-figure; compare_trace_stack_grid_overlap({events_ts_grid1_smooth,traces_by_location_5_13_s2c1_2_r4{1}},3,1,[],0,{'L4','L5'},1)
+events_ts_grid2_smooth = unstack_traces(event_timeseries2_smooth*300,params.rebuild_map);
+figure; compare_trace_stack_grid_overlap({events_ts_grid1_smooth,events_ts_grid2_smooth},3,1,[],0,{'L4','L5'},1)
 
 %%
 event_timeseries2 = get_event_times_init(results_5_12_s2c2_r4_tracegrid,2000,1,10);
 event_timeseries1 = get_event_times_init(results_5_12_s2c1_r4_tracegrid,2000,1,10);
 event_timeseries1_smooth = smoothts(event_timeseries1,'g',100,20);
 event_timeseries2_smooth = smoothts(event_timeseries2,'g',100,20);
-events_ts_grid1_smooth = unstack_traces(event_timeseries1_smooth*1000,params.rebuild_map);
+events_ts_grid1_smooth = unstack_traces(event_timeseries1*50,params.rebuild_map);
 events_ts_grid2_smooth = unstack_traces(event_timeseries2_smooth*1000,params.rebuild_map);
 figure; compare_trace_stack_grid([traces_by_location_5_12_s2c1_2_r4(:); {events_ts_grid1_smooth}; {events_ts_grid2_smooth}],3,1,[],0,{'L4','L5'},1)
+figure; compare_trace_stack_grid_overlap({events_ts_grid1_smooth,traces},3,1,[],0,{'L4','L5'},1)
+
 % figure; compare_trace_stack_grid_overlap({events_ts_grid1_smooth,events_ts_grid2_smooth},3,1,[],0,{'L4','L5'},1)
 
 %%
@@ -1214,16 +1225,55 @@ events_ts_grid2_smooth = unstack_traces(event_timeseries2/10,params.rebuild_map)
 
 %%
 
-max_xcorr = cell(size(events_ts_grid1_smooth));
-mad_xcorr_lag = cell(size(events_ts_grid1_smooth));
 
-for i = 1:size(events_ts_grid1_smooth,1)
-    for j = 1:size(events_ts_grid1_smooth,2)
-        max_xcorr{i,j} = zeros(size(events_ts_grid1_smooth{i,j},1),1);
-        mad_xcorr_lag{i,j} = zeros(size(events_ts_grid1_smooth{i,j},1),1);
-        for k = 1:size(events_ts_grid1_smooth{i,j},1)
-            [max_xcorr{i,j}(k), mad_xcorr_lag{i,j}(k)] = max(xcorr(events_ts_grid1_smooth{i,j}(k,:),events_ts_grid2_smooth{i,j}(k,:)));
+max_xcorr = cell(size(detection_grid_5_12_s2c1_r4_2000));
+mad_xcorr_lag = cell(size(detection_grid_5_12_s2c1_r4_2000));
+
+max_xcorr_img = zeros(size(detection_grid_5_12_s2c1_r4_2000));
+mad_xcorr_lag_img = zeros(size(detection_grid_5_12_s2c1_r4_2000));
+
+for i = 1:size(detection_grid_5_12_s2c1_r4_2000,1)
+    for j = 1:size(detection_grid_5_12_s2c1_r4_2000,2)
+        max_xcorr{i,j} = zeros(size(detection_grid_5_12_s2c1_r4_2000{i,j},1),1);
+        mad_xcorr_lag{i,j} = zeros(size(detection_grid_5_12_s2c1_r4_2000{i,j},1),1);
+        trace1_tmp = [];
+        trace2_tmp = [];
+        for k = 1:size(detection_grid_5_12_s2c1_r4_2000{i,j},1)
+            trace1_tmp = [trace1_tmp smoothts(detection_grid_5_12_s2c1_r4_2000{i,j}(k,:),'g',100,10)];
+            trace2_tmp = [trace2_tmp smoothts(detection_grid_5_12_s2c2_r4_2000{i,j}(k,:),'g',100,10)];
         end
+        full_xcorr = xcorr(trace1_tmp,trace2_tmp,'coeff');
+        [max_xcorr_img(i,j), mad_xcorr_lag_img(i,j)] = max(full_xcorr(9900:10100));
+    end
+end
+
+%%
+
+max_xcorr = cell(size(detection_grid_5_12_s2c1_r4_2000));
+mad_xcorr_lag = cell(size(detection_grid_5_12_s2c1_r4_2000));
+
+max_xcorr_img_shuff = zeros(size(detection_grid_5_12_s2c1_r4_2000));
+mad_xcorr_lag_img = zeros(size(detection_grid_5_12_s2c1_r4_2000));
+
+shuffle_rows = randperm(size(detection_grid_5_12_s2c1_r4_2000,1));
+shuffle_cols = randperm(size(detection_grid_5_12_s2c1_r4_2000,2));
+shuffle_trials = randperm(size(detection_grid_5_12_s2c1_r4_2000{1,1},1));
+while isequal(1:size(detection_grid_5_12_s2c1_r4_2000{1,1},1),shuffle_trials)
+    shuffle_trials = randperm(size(detection_grid_5_12_s2c1_r4_2000{1,1},1));
+end
+
+for i = 1:size(detection_grid_5_12_s2c1_r4_2000,1)
+    for j = 1:size(detection_grid_5_12_s2c1_r4_2000,2)
+        max_xcorr{i,j} = zeros(size(detection_grid_5_12_s2c1_r4_2000{i,j},1),1);
+        mad_xcorr_lag{i,j} = zeros(size(detection_grid_5_12_s2c1_r4_2000{i,j},1),1);
+        trace1_tmp = [];
+        trace2_tmp = [];
+        for k = 1:size(detection_grid_5_12_s2c1_r4_2000{i,j},1)
+            trace1_tmp = [trace1_tmp smoothts(detection_grid_5_12_s2c1_r4_2000{i,j}(k,:),'g',100,10)];
+            trace2_tmp = [trace2_tmp smoothts(detection_grid_5_12_s2c2_r4_2000{i,j}(shuffle_trials(k),:),'g',100,10)];
+        end
+        full_xcorr = xcorr(trace1_tmp,trace2_tmp,'coeff');
+        [max_xcorr_img_shuff(i,j), mad_xcorr_lag_img(i,j)] = max(full_xcorr(9900:10100));
     end
 end
 
@@ -1240,13 +1290,48 @@ for i = 1:size(events_ts_grid1_smooth,1)
     end
 end
 
+%%
+
+
 figure;
 subplot(121)
 imagesc(max_xcorr_img)
 colorbar
 subplot(122)
-imagesc(mad_xcorr_lag_img - 2000)
+% mad_xcorr_lag_img(mad_xcorr_lag_img >= 5060) = 0;
+imagesc(mad_xcorr_lag_img)
+% caxis([4940 5060])
 colorbar
+
+colormap hot
+
+%%
+
+figure; histogram(max_xcorr_img_shuff(:))
+
+%%
+
+max_xcorr_img_sig = max_xcorr_img;
+mad_xcorr_lag_img_sig = mad_xcorr_lag_img;
+max_xcorr_img_sig(max_xcorr_img_sig < quantile(max_xcorr_img_shuff(:),.0)) = 0;
+mad_xcorr_lag_img_sig(max_xcorr_img_sig < quantile(max_xcorr_img_shuff(:),.0)) = 0;
+
+figure;
+subplot(121)
+imagesc(max_xcorr_img_sig)
+axis off
+title('Correlations')
+colorbar
+subplot(122)
+% mad_xcorr_lag_img(mad_xcorr_lag_img >= 5060) = 0;
+imagesc(mad_xcorr_lag_img_sig - 100)
+axis off
+title('Max Correlation Lag (samples)')
+% caxis([4940 5060])
+colorbar
+
+colormap hot
+
 
 %%
 

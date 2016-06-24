@@ -9,7 +9,7 @@ end
 for i = 1:length(results)
     if do_bit_vec
         for j = 1:length(results(i).event_times_init)
-            if results(i).event_sizes_init >= min_size
+            if isempty(min_size) || results(i).event_sizes_init >= min_size
                 results_out(i,results(i).event_times_init(j)) = 1;
             end
 
@@ -17,12 +17,10 @@ for i = 1:length(results)
     else
         results_out{i} = [];
         for j = 1:length(results(i).event_times_init)
-            if results(i).event_sizes_init >= min_size
+            if isempty(min_size) || results(i).event_sizes_init >= min_size
                 results_out(i,results(i).event_times_init(j)) = 1;
                 results_out{i} = [results_out{i} results(i).event_times_init(j)];
             end
-
         end
-        
     end
 end
