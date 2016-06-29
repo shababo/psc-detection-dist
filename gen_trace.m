@@ -101,7 +101,7 @@ nc = 1; %trials
         logC_ = 0;
         for ti = 1:nc
             a_init = bg_params.a_min + (bg_params.a_max-bg_params.a_min)*rand;
-            tmpi_ = tmpi+(st_std*randn);
+            tmpi_ = tmpi+(st_std*randn)
             tau(1) = diff(bg_params.tau_r_bounds)*rand() + bg_params.tau_r_bounds(1);
             tau(2) = diff(bg_params.tau_f_bounds)*rand() + bg_params.tau_f_bounds(1);
             ef=genEfilt(tau,data_params.T);
@@ -121,12 +121,16 @@ nc = 1; %trials
     end
     
     % evoked spikes
-    ssi = [];
-    ati = cell(nc,1); % array of lists of individual trial spike times
-    ati_ = cell(nc,1); 
-    sti = cell(nc,1); 
-    sti_ = cell(nc,1); 
+%     ssi = [];
+%     ati = cell(nc,1); % array of lists of individual trial spike times
+%     ati_ = cell(nc,1); 
+%     sti = cell(nc,1); 
+%     sti_ = cell(nc,1); 
+    
+
+    
     for i = 1:length(evoked_params.times)        
+        
         tmpi = evoked_params.times(i); 
         ssi_ = [ssi tmpi];
         cti_ = ci;
@@ -134,8 +138,9 @@ nc = 1; %trials
         ati_ = ati;
         logC_ = 0;
         for ti = 1:nc
-            a_init = evoked_params.a(i);
+            a_init = evoked_params.a(i)
 %             tmpi_ = tmpi+(st_std*randn);
+            tmpi_ = tmpi
             tau(1) = evoked_params.tau_r(i);
             tau(2) = evoked_params.tau_f(i);
             ef=genEfilt(tau,data_params.T);
@@ -149,7 +154,7 @@ nc = 1; %trials
         sti = sti_;
         ci = cti_;
         logC = logC_;
-        N = length(ssi); %number of spikes in spiketrain
+        N = length(ssi) %number of spikes in spiketrain
         trace_amps = [trace_amps a_init];
         trace_taus{i} = tau;
     end
