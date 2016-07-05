@@ -1,189 +1,166 @@
-function [trace, true_signal] = gen_trace(data_params,bg_params,evoked_params)
+function [trace, true_signal] = sample_trace(K, params)
+% SAMPLE_TRACE sample a random voltage-clamp trace
+%   [trace, true_signal] = SAMPLE_TRACE(N, params) returns K voltage-clamp
+%   traces drawn from the distribution defined by params.
+%   params is a struct with these fields:
+%       params.T                length of trace in samples
+%       params.dt               sample duration in seconds
+%       params.phi              a p x 1 vector of temporal dependencies for the
+%                               AR(p) noise model
+%       params.sigma_sq         variance of noise
+%       params.baseline_bounds  a 2 x 1 vector for the bounds of the
+%                               uniform prior on the basline (holding
+%                               current)
+%       params.tau_r_bounds     a 2 x 1 vector for the bounds of the
+%                               uniform prior on rise time constants
+%       params.tau_f_bounds     a 2 x 1 vector for the bounds of the
+%                               uniform prior on fall time constants
+%       params.a_bounds         a 2 x 1 vector for the bounds of the
+%                               uniform prior on amplitudes
+%       params.rate              scalar for the Poisson event rate
+%                               (events/sec)
+%       params.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Simulate data from model
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% rng(12341)
 
-% Simulate K voltage-clamp observed neurons
 
-K = 1;
 
-% Simulation: Given sampling, what indicator timecoparamsurse. Also depends on spike rate
-% Sampling rate
-% Noise level
-% Time constants
-% Firing rate
-% Poisson or periodic
+% params.params.baseline = 0;
 
-% data_params.data_params.T = 2000; %bins - start not too long
-% data_params.data_params.dt = 1/20000; %
-% data_params.data_params.baseline = 0;
-% data_params.sigmasq = 3.5;
-% data_params.data_params.phi = [1, .80, -.12]; %this determines what the AR noise looks like.
-c_noise = sqrt(data_params.sigmasq);
-% 
-% 
-% bg_params.bg_params.tau_r_bounds = [5 20];
-% bg_params.bg_params.tau_f_bounds = [20 150];
-% bg_params.bg_params.a_min = .5;
-% bg_params.bg_params.a_max = 6;
-% bg_params.bg_params.firing_rate = 0; %spike/sec 
+c_noise = sqrt(params.sigmasq);
+
 % 
 % evoked_params.evoked_params.stim_tau_rise = .0015*20000; % values for chr2 from lin et al 2009 (biophysics)
 % evoked_params.evoked_params.stim_tau_fall = .013*20000;
 % evoked_params.evoked_params.stim_amp = 0;
 % evoked_params.evoked_params.stim_start = .05*20000;
 % evoked_params.evoked_params.stim_duration = .05*20000;
-% evoked_params.times
-% evoked_params.a
-% evoked_params.tau_r
-% evoked_params.tau_f
 
-A = 1; %magnitude scale of spike response
+% matrix of noisy data
+Y = zeros(K,params.T);
 
-Y = zeros(1,data_params.T);
-C = zeros(1,data_params.T);
-Y_AR = zeros(1,data_params.T);
 Spk = cell(1,K);
 taus = cell(1,K);
 amplitudes = cell(1,K);
 
+% compute the expected number of events
+e_num_events = params.rate*(params.T*params.dt);
+% draw events 
+num_events = poissrnd(e_num_events);
+% draw event times
+inter_event_times = -log(rand(1,num_events))/params.rate;
+event_times = cumsum(inter_event_times);
 
-tau = [mean(bg_params.tau_r_bounds)/data_params.dt mean(bg_params.tau_f_bounds)/data_params.dt]; %time constants in bin-units
-
-% compute exponential filter(s)
-ef=genEfilt(tau,data_params.T);
-
-n_spike = bg_params.firing_rate*(data_params.T*data_params.dt);
-p_spike = n_spike/data_params.T;
-
-times = cumsum(data_params.dt*1e-3*ones(1,data_params.T),2); % in sec
-
-
-
-nc = 1; %trials
+% draw baseline
+baseline = 
+C = params.baseline*ones(K,params.T); %initial calcium is set to params.baseline 
 
 
-    
-%     if ~exist('true_signal','var')
-        ssi = [];
-        % startingSpikeTimes = [10 20];
-        startingSpikeTimes = [];
-
-    num_spikes = poissrnd(n_spike);
-    startingSpikeTimes = data_params.T*rand(1,num_spikes);
-%         startingSpikeTimes = times(rand(1,data_params.T)<p_spike)/(data_params.dt*1e-3);
-
-    ci = data_params.baseline*ones(nc,data_params.T); %initial calcium is set to data_params.baseline 
-
-
-    st_std = 0; %across trials
-    ati = cell(nc,1); % array of lists of individual trial spike times
-    ati_ = cell(nc,1); 
-    sti = cell(nc,1); 
-    sti_ = cell(nc,1); 
-
-    N = 0;
+st_std = 0; %across trials
+ati = cell(nc,1); % array of lists of individual trial spike times
+ati_ = cell(nc,1); 
+sti = cell(nc,1); 
+sti_ = cell(nc,1); 
+ssi = [];
+N = 0;
 %         Dt = 1;
 
-    trace_amps = [];
-    trace_taus = {};
+trace_amps = [];
+trace_taus = {};
 
-    % generate bg events
-    for i = 1:length(startingSpikeTimes)        
-        tmpi = startingSpikeTimes(i); 
-        ssi_ = [ssi tmpi];
-        cti_ = ci;
+% generate bg events
+for i = 1:length(event_times)        
+    tmpi = event_times(i); 
+    ssi_ = [ssi tmpi];
+    cti_ = ci;
 
-        ati_ = ati;
-        logC_ = 0;
-        for ti = 1:nc
-            a_init = bg_params.a_min + (bg_params.a_max-bg_params.a_min)*rand;
-            tmpi_ = tmpi+(st_std*randn)
-            tau(1) = diff(bg_params.tau_r_bounds)*rand() + bg_params.tau_r_bounds(1);
-            tau(2) = diff(bg_params.tau_f_bounds)*rand() + bg_params.tau_f_bounds(1);
-            ef=genEfilt(tau,data_params.T);
-            [si_, ci_, logC_] = addSpike(sti{ti},ci(ti,:),logC_,ef,a_init,tau,ci(ti,:),tmpi_, N+1, 1, A); %adds all trials' spikes at same time
-            sti_{ti} = si_;
-            cti_(ti,:) = ci_;
-            ati_{ti} = [ati_{ti} a_init];
-        end
-        ati = ati_;
-        ssi = ssi_;
-        sti = sti_;
-        ci = cti_;
-        logC = logC_;
-        N = length(ssi); %number of spikes in spiketrain
-        trace_amps = [trace_amps a_init];
-        trace_taus{i} = tau;
+    ati_ = ati;
+    logC_ = 0;
+    for ti = 1:nc
+        a_init = bg_params.a_min + (bg_params.a_max-bg_params.a_min)*rand;
+        tmpi_ = tmpi+(st_std*randn)
+        tau(1) = diff(bg_params.tau_r_bounds)*rand() + bg_params.tau_r_bounds(1);
+        tau(2) = diff(bg_params.tau_f_bounds)*rand() + bg_params.tau_f_bounds(1);
+        ef=genEfilt(tau,params.T);
+        [si_, ci_, logC_] = addSpike(sti{ti},ci(ti,:),logC_,ef,a_init,tau,ci(ti,:),tmpi_, N+1, 1, A); %adds all trials' spikes at same time
+        sti_{ti} = si_;
+        cti_(ti,:) = ci_;
+        ati_{ti} = [ati_{ti} a_init];
     end
-    
-    % evoked spikes
+    ati = ati_;
+    ssi = ssi_;
+    sti = sti_;
+    ci = cti_;
+    logC = logC_;
+    N = length(ssi); %number of spikes in spiketrain
+    trace_amps = [trace_amps a_init];
+    trace_taus{i} = tau;
+end
+
+% evoked spikes
 %     ssi = [];
 %     ati = cell(nc,1); % array of lists of individual trial spike times
 %     ati_ = cell(nc,1); 
 %     sti = cell(nc,1); 
 %     sti_ = cell(nc,1); 
-    
 
-    
-    for i = 1:length(evoked_params.times)        
-        
-        tmpi = evoked_params.times(i); 
-        ssi_ = [ssi tmpi];
-        cti_ = ci;
 
-        ati_ = ati;
-        logC_ = 0;
-        for ti = 1:nc
-            a_init = evoked_params.a(i)
+
+for i = 1:length(evoked_params.times)        
+
+    tmpi = evoked_params.times(i); 
+    ssi_ = [ssi tmpi];
+    cti_ = ci;
+
+    ati_ = ati;
+    logC_ = 0;
+    for ti = 1:nc
+        a_init = evoked_params.a(i)
 %             tmpi_ = tmpi+(st_std*randn);
-            tmpi_ = tmpi
-            tau(1) = evoked_params.tau_r(i);
-            tau(2) = evoked_params.tau_f(i);
-            ef=genEfilt(tau,data_params.T);
-            [si_, ci_, logC_] = addSpike(sti{ti},ci(ti,:),logC_,ef,a_init,tau,ci(ti,:),tmpi_, N+1, 1, A); %adds all trials' spikes at same time
-            sti_{ti} = si_;
-            cti_(ti,:) = ci_;
-            ati_{ti} = [ati_{ti} a_init];
-        end
-        ati = ati_;
-        ssi = ssi_;
-        sti = sti_;
-        ci = cti_;
-        logC = logC_;
-        N = length(ssi) %number of spikes in spiketrain
-        trace_amps = [trace_amps a_init];
-        trace_taus{i} = tau;
+        tmpi_ = tmpi
+        tau(1) = evoked_params.tau_r(i);
+        tau(2) = evoked_params.tau_f(i);
+        ef=genEfilt(tau,params.T);
+        [si_, ci_, logC_] = addSpike(sti{ti},ci(ti,:),logC_,ef,a_init,tau,ci(ti,:),tmpi_, N+1, 1, A); %adds all trials' spikes at same time
+        sti_{ti} = si_;
+        cti_(ti,:) = ci_;
+        ati_{ti} = [ati_{ti} a_init];
     end
-    
-    
+    ati = ati_;
+    ssi = ssi_;
+    sti = sti_;
+    ci = cti_;
+    logC = logC_;
+    N = length(ssi) %number of spikes in spiketrain
+    trace_amps = [trace_amps a_init];
+    trace_taus{i} = tau;
+end
 
-    % add direct stim - SET TO ZERO RIGHT NOW
-    stim_in = [zeros(1,evoked_params.stim_start) ones(1,evoked_params.stim_duration) zeros(1,data_params.T-evoked_params.stim_start-evoked_params.stim_duration)];
-    t = 0:data_params.T-1;
-    stim_decay = exp(-t/evoked_params.stim_tau_fall);
-    stim_rise = -exp(-t/evoked_params.stim_tau_rise);
-    stim_kernel = (stim_decay + stim_rise)/sum(stim_decay + stim_rise);
-    stim_response = conv(stim_in,stim_kernel);
-    stim_response = evoked_params.stim_amp*stim_response(1:data_params.T)/max(stim_response(1:data_params.T));
-    d = ci + stim_response;
+
+
+% add direct stim - SET TO ZERO RIGHT NOW
+stim_in = [zeros(1,evoked_params.stim_start) ones(1,evoked_params.stim_duration) zeros(1,params.T-evoked_params.stim_start-evoked_params.stim_duration)];
+t = 0:params.T-1;
+stim_decay = exp(-t/evoked_params.stim_tau_fall);
+stim_rise = -exp(-t/evoked_params.stim_tau_rise);
+stim_kernel = (stim_decay + stim_rise)/sum(stim_decay + stim_rise);
+stim_response = conv(stim_in,stim_kernel);
+stim_response = evoked_params.stim_amp*stim_response(1:params.T)/max(stim_response(1:params.T));
+d = ci + stim_response;
 %     else
 %         disp('USING PREVIOUSLY MADE SIGNAL')
 %     end
 
 
-p = length(data_params.phi) - 1;
-U = c_noise*randn(nc,data_params.T);
-er = zeros(data_params.T,1);
+p = length(params.phi) - 1;
+U = c_noise*randn(nc,params.T);
+er = zeros(params.T,1);
 
-for t = (1+p):(data_params.T+p)
-    er(t) = data_params.phi*[U(t-p); er(t-1:-1:(t-p))];
+for t = (1+p):(params.T+p)
+    er(t) = params.phi*[U(t-p); er(t-1:-1:(t-p))];
 end
 
-er = er((1+p):(data_params.T+p))';
+er = er((1+p):(params.T+p))';
 y = d + U;
 y_ar = d + er;
 
@@ -191,23 +168,23 @@ y_ar = d + er;
 Y = y;
 C = ci;
 Y_AR = y_ar;
-Spk = startingSpikeTimes;
+Spk = event_times;
 
 
 
 % figure;
 % ax1 = subplot(311);
-% plot_trace_stack((-C' - 20*repmat(0:(K-1),data_params.T,1))',0,zeros(K,3),'-',[])
+% plot_trace_stack((-C' - 20*repmat(0:(K-1),params.T,1))',0,zeros(K,3),'-',[])
 % title('True Current')
 % 
 % ax2 = subplot(312);
-% % plot((0:data_params.T-1)/20000,-Y' - 20*repmat(0:(K-1),data_params.T,1))
-% plot_trace_stack((-er' - 20*repmat(0:(K-1),data_params.T,1))',0,zeros(K,3),'-',[])
+% % plot((0:params.T-1)/20000,-Y' - 20*repmat(0:(K-1),params.T,1))
+% plot_trace_stack((-er' - 20*repmat(0:(K-1),params.T,1))',0,zeros(K,3),'-',[])
 % title('AR(2) Noise Process')
 % 
 % ax3 = subplot(313);
-% % plot((0:data_params.T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),data_params.T,1))
-% plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),data_params.T,1))',25,zeros(K,3),'-',[.01 10])
+% % plot((0:params.T-1)/20000,-Y_AR' - 20*repmat(0:(K-1),params.T,1))
+% plot_trace_stack((-Y_AR' - 20*repmat(0:(K-1),params.T,1))',25,zeros(K,3),'-',[.01 10])
 % title(['Observation'])
 % xlimits = get(gca,'xlim');
 % ylimits = get(gca,'ylim');

@@ -130,10 +130,10 @@ for ki = 1:K
 %         disp('USING PREVIOUSLY MADE SIGNAL')
 %     end
 
-%     sigmasq = 2.0;
+    sigmasq = 2.0;
     c_noise = sqrt(sigmasq);
     
-%     phi = [1, 1.0, -.42]; %this determines what the AR noise looks like.
+    phi = [1, 1.0, -.42]; %this determines what the AR noise looks like.
     p = length(phi) - 1;
     U = c_noise*randn(nc,T);
     er = zeros(T,1);
