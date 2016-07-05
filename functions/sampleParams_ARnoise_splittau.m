@@ -12,10 +12,10 @@ observe_freq = 2;
 %should trust data for proposals vs how much it should mix based on uniform prior)
 %this is accounted for by calciumNoiseVar
 noise_var_init = params.noise_var_init; %inial noise estimate
-% p_spike=1/40;%what percent of the bins hacve a spike in then
+% p_event=1/40;%what percent of the bins hacve a spike in then
 
-p_spike=params.p_spike;
-time_proposal_var = params.time_proposal_var;
+p_event=params.p_event;
+time_proposal_var = params.time_proposal_var/params.dt;
 num_sweeps = params.num_sweeps; %number of sweeps of sampler
 % if acceptance rates are too high, increase proposal width, 
 % if too low, decrease them (for time moves, tau, amplitude)
@@ -27,7 +27,6 @@ tau1_max = params.tau1_max/params.dt;
 tau2_min = params.tau2_min/params.dt;
 tau2_max = params.tau2_max/params.dt;
 
-%all of these are multiplied by big A
 
 a_std = params.amp_prop_std; %proposal variance of amplitude
 a_min = params.a_min;
@@ -35,12 +34,9 @@ a_max = params.a_max;
 b_std = params.baseline_prop_std; %propasal variance of baseline  % was at 0.3 ... increased it for in vivo data
 b_min = params.b_min;
 b_max = params.b_max;
-exclusion_bound = params.exclusion_bound;%dont let bursts get within x bins of eachother. this should be in time
+exclusion_bound = params.exclusion_bound/params.dt;%dont let bursts get within x bins of eachother. this should be in time
 % maxNbursts = 3;%if we want to add bursts, whats the maximum bnumber that we will look for?
 
-Dt=params.Dt; %bin unit - don't change this
-% A=400; % scale factor for all magnitudes for this calcium data setup
-A=params.A; % scale factor for all magnitudes for this calcium data setup
 % b=0; %initial baseline value
 b=min(trace); %initial baseline value
 nu_0 = 0; %prior on shared burst time - ntrials
@@ -117,7 +113,7 @@ N = length(sti); %number of spikes in spiketrain
 %for AR(p) noise, we need a different difference inside the likelihood
 diffY = (trace-pr); %trace - prediction
 
-m = p_spike*nBins;
+m = p_event*nBins;
 
 if ~isfield(params,'noise_est_subset')
     params.noise_est_subset = 1:length(trace);
@@ -136,15 +132,11 @@ for i = 1:length(Tguess)
     [local_max,tmpi_tmp] = max(diffY(start_ind:end_ind));
     tmpi = tmpi_tmp + start_ind - 1;
     sti_ = [sti tmpi];
-    a_init = max(local_max/A + a_std*randn,a_min);
-%     a_init = max(local_max/A + a_std*randn,a_min);
-%     sti_ = [sti tmpi];
+    a_init = max(local_max + a_std*randn,a_min);
     %must add spike to each trial (at mean location or sampled -- more appropriate if sampled)
     pr_ = pr;
     ati_ = ati;
-%     a_init = max(max(trace(max(tmpi-params.a_init_window,1):min(tmpi+params.a_init_window,length(trace))))/A,a_min);
-%     a_init = max(diffY(max(1,floor(tmpi)))/A + a_std*randn,a_min);
-    [sti_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,efs{i},a_init,tau,trace,tmpi, N+1, Dt, A); %adds all posterior' spikes at same time
+    [sti_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,efs{i},a_init,tau,trace,tmpi, N+1); %adds all posterior' spikes at same time
 
      if observe
                 plot(pr_)
@@ -282,8 +274,8 @@ for i = 1:num_sweeps
 
             %create the proposal si_ and pr_
             %update logC_ to adjusted
-            [si_, pr_, diffY_] = removeSpike_ar(si,pr,diffY,efs{ni},ai(ni),taus{ni},trace,tmpi,ni, Dt, A);
-            [si_, pr_, diffY_] = addSpike_ar(si_,pr_,diffY_,efs{ni},ai(ni),taus{ni},trace,tmpi_,ni, Dt, A);
+            [si_, pr_, diffY_] = removeSpike_ar(si,pr,diffY,efs{ni},ai(ni),taus{ni},trace,tmpi,ni);
+            [si_, pr_, diffY_] = addSpike_ar(si_,pr_,diffY_,efs{ni},ai(ni),taus{ni},trace,tmpi_,ni);
 
             %accept or reject
             %for prior: (1) use ratio or(2) set prior to 1.
@@ -330,8 +322,8 @@ for i = 1:num_sweeps
             end
 
             %set si_ to set of bursts with the move and pr_ to adjusted calcium and update logC_ to adjusted
-            [si_, pr_, diffY_] = removeSpike_ar(si,pr,diffY,efs{ni},ai(ni),taus{ni},trace,si(ni),ni, Dt, A);
-            [si_, pr_, diffY_] = addSpike_ar(si_,pr_,diffY_,efs{ni},tmp_a_,taus{ni},trace,si(ni),ni, Dt, A);
+            [si_, pr_, diffY_] = removeSpike_ar(si,pr,diffY,efs{ni},ai(ni),taus{ni},trace,si(ni),ni);
+            [si_, pr_, diffY_] = addSpike_ar(si_,pr_,diffY_,efs{ni},tmp_a_,taus{ni},trace,si(ni),ni);
 
             ai_ = ai;
             ai_(ni) = tmp_a_;
@@ -377,8 +369,8 @@ for i = 1:num_sweeps
         end
 
         %set si_ to set of bursts with the move and pr_ to adjusted calcium and update logC_ to adjusted
-        [pr_, diffY_] = remove_base_ar(pr,diffY,tmp_b,trace,A);   
-        [pr_, diffY_] = add_base_ar(pr_,diffY_,tmp_b_,trace,A);
+        [pr_, diffY_] = remove_base_ar(pr,diffY,tmp_b,trace);   
+        [pr_, diffY_] = add_base_ar(pr_,diffY_,tmp_b_,trace);
 
         %accept or reject - include a prior?
         prior_ratio = 1;
@@ -417,14 +409,13 @@ for i = 1:num_sweeps
                 diffY_ = diffY;
                 pr_ = pr;
                 ati_ = ati;
-%                 a_init = max(trace(max(1,floor(tmpi)))/A - baseline + a_std*randn,a_min);%propose an initial amplitude for it
                 start_ind = max(1,floor(tmpi));
                 end_ind = min(start_ind + params.a_init_window*2,length(diffY));
                 [local_max,tmpi_tmp] = max(diffY(start_ind:end_ind));
                 tmpi = tmpi_tmp + start_ind - 1;
                 sti_ = [sti tmpi];
-                a_init = max(local_max/A + a_std*randn,a_min);
-                [si_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,ef_init,a_init,tau,trace,tmpi, N+1, Dt, A); %adds all posterior' bursts at same time
+                a_init = max(local_max + a_std*randn,a_min);
+                [si_, pr_, diffY_] = addSpike_ar(sti,pr,diffY_,ef_init,a_init,tau,trace,tmpi, N+1); %adds all posterior' bursts at same time
                 sti_ = si_;
                 ati_ = [ati_ a_init];
                 fprob = 1;%1/nBins(1);%forward probability
@@ -473,7 +464,7 @@ for i = 1:num_sweeps
                 pr_ = pr;
                 ati_ = ati;
                 %always remove the ith burst (the ith burst of each trial is linked)                     
-                [si_, pr_, diffY_] = removeSpike_ar(sti,pr,diffY_,efs{tmpi},ati(tmpi),taus{tmpi},trace,sti(tmpi),tmpi, Dt, A);
+                [si_, pr_, diffY_] = removeSpike_ar(sti,pr,diffY_,efs{tmpi},ati(tmpi),taus{tmpi},trace,sti(tmpi),tmpi);
                 sti_ = si_;
                 ati_(tmpi) = [];
 
@@ -543,8 +534,8 @@ for i = 1:num_sweeps
             %remove all old bumps and replace them with new bumps    
             diffY_ = diffY;
             pr_ = pr;
-            [~, pr_, diffY_] = removeSpike_ar(sti,pr_,diffY_,efs{ni},ati(ni),taus{ni},trace,sti(ni),ni, Dt, A);
-            [~, pr_, diffY_] = addSpike_ar(sti,pr_,diffY_,ef_,ati(ni),tau_,trace,sti(ni),ni, Dt, A);
+            [~, pr_, diffY_] = removeSpike_ar(sti,pr_,diffY_,efs{ni},ati(ni),taus{ni},trace,sti(ni),ni);
+            [~, pr_, diffY_] = addSpike_ar(sti,pr_,diffY_,ef_,ati(ni),tau_,trace,sti(ni),ni);
 
             %accept or reject
             prior_ratio = 1;
@@ -595,8 +586,8 @@ for i = 1:num_sweeps
             %remove all old bumps and replace them with new bumps    
             diffY_ = diffY;
             pr_ = pr;
-            [~, pr_, diffY_] = removeSpike_ar(sti,pr_,diffY_,efs{ni},ati(ni),taus{ni},trace,sti(ni),ni, Dt, A);
-            [~, pr_, diffY_] = addSpike_ar(sti,pr_,diffY_,ef_,ati(ni),tau_,trace,sti(ni),ni, Dt, A);
+            [~, pr_, diffY_] = removeSpike_ar(sti,pr_,diffY_,efs{ni},ati(ni),taus{ni},trace,sti(ni),ni);
+            [~, pr_, diffY_] = addSpike_ar(sti,pr_,diffY_,ef_,ati(ni),tau_,trace,sti(ni),ni);
 
             %accept or reject
             prior_ratio = 1;

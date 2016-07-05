@@ -1,40 +1,53 @@
 function params = get_params(varargin)
 
+% load a params struct from a file to start with
 if ~isempty(varargin)
     load(varargin{1});
+% or create a new struct
 else
     params = struct();
 end
 
+% are we using a cluster?
 if ~isfield(params,'cluster')
-
     params.cluster = 1;
-
 end
 
+% do we need to put the source into the path for MATLAB?
+if ~isfield(params,'do_addpath')
+    params.do_addpath = params.cluster; % generally we use this when we also are using the cluster
+end
+
+% if so, what is the source path?
+if ~isfield(params,'source_path')
+    params.source_path = '/vega/stats/users/bms2156/psc-detection';
+end
+
+% use MATLAB's parfor across traces?
 if ~isfield(params,'par')
     params.par = 1;
 end
 
+% only run initialization algorithm (usually Wiener Filter)
 if ~isfield(params,'init_only')
     params.init_only = 0;
 end
+
 %% use an rng seed
 
+% seed the rng?
 if ~isfield(params,'rand')
     params.rand = 1;
 end
 
+% pick a seed
 if ~isfield(params,'seed')
     params.seed = 12341;
 end
 
-% rng(params.seed)
-
-%%
-
 
 %% data params
+
 % time in seconds per sample
 if ~isfield(params,'dt')
     params.dt = 1/20000;
@@ -46,44 +59,20 @@ if ~isfield(params,'event_sign')
     params.event_sign = 1;
 end
 
-%% subtraces
-
-% first sample, if you want to start at 1, omit
-if ~isfield(params,'start_ind')
-%      params.start_ind = 1000;
-end
-% if you want to go to the end of the traces, omit
-if ~isfield(params,'duration')
-%      params.duration = 4000;
-end
-
-% if you want all traces, omit
-if ~isfield(params,'traces_ind')
-%     params.traces_ind = randsample(80,18);
-%     params.traces_ind = [1:10 60:70 120:130];
-%     params.traces_ind = 1278;
-%     params.traces_ind = 1;
-
-%     params.traces_ind = 1:4;
-end
-
-% is this a matrix of traces or a grid array
-if ~isfield(params,'is_grid')
-    params.is_grid = 1;
-end
 
 %% inference params
 
-% event amplitude bounds
+% event amplitude bounds - a_min needs to be less than a_max, but a_min
+% does not have to be greater than or equal to 0. That is,
+% you can simultaneously detect upward and downward events.
 if ~isfield(params,'a_max')
     params.a_max = Inf;
 end
 if ~isfield(params,'a_min')
     params.a_min = 5;
-
 end
 
-% baseline bounds
+% baseline bounds - i.e. the holding current
 if ~isfield(params,'b_min')
     params.b_min = -200;
 end
@@ -91,26 +80,14 @@ if ~isfield(params,'b_max')
     params.b_max = 200;
 end
 
-% event kernel params
-if ~isfield(params,'feature_names')
-    params.feature_names = {'amplitude','tau 1','tau 2','time'};
-end
-% params.kernel = @kernel_function; ignore this
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
     params.tau1_min = 10/20000;
 end
-% params.tau1_max = 60/20000;
-% params.tau2_min = 75/20000;
-% params.tau2_max = 300/20000;
-% params.event_samples = 6*params.tau2_max/params.dt;
-% 
-% % poisson/rate
-% params.p_spike = 1e-3;
-
 if ~isfield(params,'tau1_max')
     params.tau1_max = 100/20000;
 end
+
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
     params.tau2_min = 100/20000;
@@ -118,113 +95,54 @@ end
 if ~isfield(params,'tau2_max')
     params.tau2_max = 700/20000;
 end
+
 % how long to make kernel in samples
 if ~isfield(params,'event_samples')
     params.event_samples = 6*params.tau2_max/params.dt;
 end
 
-% poisson/rate - that is the probability of seeing a spike/sample
-if ~isfield(params,'p_spike')
-    params.p_spike = 1e-4;%1e-4;
+% poisson rate in events/sample
+if ~isfield(params,'p_event')
+    params.p_event = 1e-4;
 end
 
 
-
-% ar noise model
+% ar noise model parameters
+% p, the number of timesteps for filter
 if ~isfield(params,'p')
     params.p = 2; % how many time steps to regress on
 end
+% mean for MVN prior on phi - we find that the ar parameters are - to some extent - 
+% headstage dependent for voltage clamp recordings
 if ~isfield(params,'phi_0')
-    params.phi_0 = [0.982949319747574, -0.307063852831604]';
+    params.phi_0 = [1.0, -0.30]';
 end
+% inverse covariance/precision matrix for MVN prior on phi
 if ~isfield(params,'Phi_0')
-    params.Phi_0 = 10*eye(params.p); %inverse covariance 3
+    params.Phi_0 = 10*eye(params.p); %inverse covariance
 end
-
+% variance for white noise input to filter
 if ~isfield(params,'noise_var_init')
-    params.noise_var_init = 3.9;
+    params.noise_var_init = 3.5;
 end
 
+% it can be useful to estimate the noise from a small amount of data and
+% then take it as known for further analysis within that recordings - or
+% possibly even more generally across recordings. if the noise model is
+% known, then enter it here.
 if ~isfield(params, 'noise_known')
     params.noise_known = 1;
     if params.noise_known
-        params.phi_known = [1.000000000000000, 1.05, -.30];%[1.0 0.78 -0.13];
-        params.noise_var_known = 3.9;%4.3;
+        params.phi_known = [1.000000000000000 1.0 -.30];
+        params.noise_var_known = 3.5;
     end
 end
 
+% select an subset of each trace, in samples, e.g., 1:1000,
+% to use for noise estimateion. this can be useful when there are sections
+% of the trace with a high-rate of events due to some stimulus
 if ~isfield(params,'noise_est_subset')
     params.noise_est_subset = [];
-end
-
-%% direct stim
-
-if ~isfield(params,'direct_stim')
-    params.direct_stim = 0;
-end
-
-if ~isfield(params,'stim_tau_rise')
-    params.stim_tau_rise = .001;
-end
-if ~isfield(params,'stim_tau_fall')
-    params.stim_tau_fall = .050;
-end
-
-if ~isfield(params,'stim_amp_std')
-    params.stim_amp_std = 2; %pA
-end
-
-if ~isfield(params,'stim_amp_min')
-    params.stim_amp_min = 0;
-end
-
-if ~isfield(params,'stim_amp_max')
-    params.stim_amp_max = 50;
-end
-
-if ~isfield(params,'stim_tau_rise_min')
-    params.stim_tau_rise_min = .00001;
-end
-
-if ~isfield(params,'stim_tau_rise_max')
-    params.stim_tau_rise_max = .100;
-end
-
-if ~isfield(params,'stim_tau_fall_min')
-    params.stim_tau_fall_min = .005;
-end
-
-if ~isfield(params,'stim_tau_fall_max')
-    params.stim_tau_fall_max = .500;
-end
-
-if ~isfield(params,'stim_tau_rise_std')
-    params.stim_tau_rise_std = .0005;
-end
-
-if ~isfield(params,'stim_tau_fall_std')
-    params.stim_tau_fall_std = .005;
-end
-
-if ~isfield(params,'stim_shape') && params.direct_stim
-%     load('data/for-paper/chr2-stim-response.mat');
-%     params.stim_shape = chr2_response;
-    
-%     load('data/2P-Chrimson-10ms-template.mat');
-%     params.stim_shape = -template_clean;
-    
-%     params.stim_shape = [];
-end
-
-if ~isfield(params,'stim_in')
-    stim_duration = .01*20000;
-    stim_start = .005*20000;
-    trace_duration = 1500;
-    params.stim_in = [zeros(1,stim_start) zeros(1,stim_duration) zeros(1,trace_duration - stim_start - stim_duration)];
-end
-
-if ~isfield(params,'stim_amp_init')
-    params.stim_amp_init = 5;
 end
 
 
@@ -235,61 +153,82 @@ end
 if ~isfield(params,'num_sweeps')
     params.num_sweeps = 2000;
 end
+
+% nubmer of burn in sweeps to run
 if ~isfield(params,'burn_in_sweeps')
     params.burn_in_sweeps = 0;
 end
 
-% sampling spike times
+% sampling event times proposal variance in seconds
 if ~isfield(params,'time_proposal_var')
-    params.time_proposal_var = 15;
+    params.time_proposal_var = 7.5e-04;
 end
 
+% rise time proposal variance in seconds
 if ~isfield(params,'tau1_prop_std')
     params.tau1_prop_std = 2/20000;
 end
+
+% fall time proposal variance in seconds
 if ~isfield(params,'tau2_prop_std')
     params.tau2_prop_std = 20/20000;
 end
 
+% amplitude proposal variance in pA or trace units
 if ~isfield(params,'amp_prop_std')
     params.amp_prop_std = 3;
 end
+
+% baseline proposal variance in pA or trace units
 if ~isfield(params,'baseline_prop_std')
     params.baseline_prop_std = 2;
 end
 
+% for each parameter we run an inner loop and collect extra samples - this
+% can help balance the amount of samples we run for different parameters.
+% only the last sample for each parameter is kept such that there this is
+% still only one sample per sweep
+
+% number of add/drop subsweeps per sweep
 if ~isfield(params,'add_drop_sweeps')
     params.add_drop_sweeps = 10;
 end
+
+% number of event time subsweeps per sweep
 if ~isfield(params,'time_sweeps')
     params.spike_time_sweeps = 10;
 end
+
+% number of amplitude subsweeps per sweep
 if ~isfield(params,'amp_sweeps')
     params.amp_sweeps = 5;
 end
+
+% number of baseline/holding current subsweeps per sweep
 if ~isfield(params,'baseline_sweeps')
     params.baseline_sweeps = 1;
 end
+
+% number of rise time subsweeps per sweep
 if ~isfield(params,'tau1_sweeps')
     params.tau1_sweeps = 1;
 end
+% number of fall time subsweeps per sweep
 if ~isfield(params,'tau2_sweeps')
     params.tau2_sweeps = 1;
 end
 
+% number of samples for window around new event time to guide amplitude
+% initialization - essentially the max or min within that window
 if ~isfield(params,'a_init_window')
     params.a_init_window = 50;
 end
 
+% do not detect events within this many seconds of another event
 if ~isfield(params,'exclusion_bound')
-    params.exclusion_bound = 10;
+    params.exclusion_bound = 10/20000;
 end
-if ~isfield(params,'Dt')
-    params.Dt = 1;
-end
-if ~isfield(params,'A')
-    params.A = 1;
-end
+
 % params.b
 %% template-matching initialization method
 % if ~isfield(params,'init_method')
@@ -307,10 +246,6 @@ end
 % end
 
 
-%% sourcefile (for cluster)
-if ~isfield(params,'source_path')
-    params.source_path = '/vega/stats/users/bms2156/psc-detection';
-end
 
 %% filenames
 if ~isfield(params,'traces_filename')
@@ -336,7 +271,7 @@ end
 % if ~isfield(params,'savename')
 %     if params.cluster
 %         savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
-%         params.savename = sprintf(savefile_basename,params.p_spike,params.a_min,params.num_sweeps);
+%         params.savename = sprintf(savefile_basename,params.p_event,params.a_min,params.num_sweeps);
 %         params.savename = strrep(params.savename,'+','');
 %         params.savename = 'all-evoked-ipscs-0000.mat';
 %     else

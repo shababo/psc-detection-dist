@@ -1,16 +1,16 @@
-function [trace, true_signal] = sample_traces(K, params)
-% SAMPLE_TRACE sample a random voltage-clamp trace
-%   [trace, true_signal] = SAMPLE_TRACE(N, params) returns K voltage-clamp
+function [traces, true_signal] = sample_traces(K, params)
+% SAMPLE_TRACE sample a random voltage-clamp traces
+%   [traces, true_signal] = SAMPLE_TRACE(N, params) returns K voltage-clamp
 %   traces drawn from the distribution defined by params.
 %   params is a struct with these fields:
-%       params.T                length of trace in samples
+%       params.T                length of traces in samples
 %       params.dt               sample duration in seconds
 %       params.phi              a 1 x p vector of temporal dependencies for the
 %                               AR(p) noise model
-%       params.sigma_sq         variance of noise (pA^2 - or trace unit^2)
+%       params.sigma_sq         variance of noise (pA^2 - or traces unit^2)
 %       params.baseline_bounds  a 2 x 1 vector for the bounds of the
 %                               uniform prior on the basline (holding
-%                               current, in pA - or trace unit)
+%                               current, in pA - or traces unit)
 %       params.tau_r_bounds     a 2 x 1 vector for the bounds of the
 %                               uniform prior on rise time constants (in
 %                               secs)
@@ -18,11 +18,30 @@ function [trace, true_signal] = sample_traces(K, params)
 %                               uniform prior on fall time constants (in
 %                               secs)
 %       params.a_bounds         a 2 x 1 vector for the bounds of the
-%                               uniform prior on amplitudes (pA - or trace unit)
+%                               uniform prior on amplitudes (pA - or traces unit)
 %       params.rate              scalar for the Poisson event rate
 %                               (events/sec)
 %       params.event_direction  1 for IPSCs and -1 for EPSCs, corresponding
 %                               to outward and inward currents respectively 
+%   Returns a K x params.T matrix, traces, of the sampled traces. It also
+%   returns a struct of the underlying parameters, true_signal, with
+%   fields:
+%       true_signal.traces      a K x params.T matrix of the traces with
+%                               ar(p) noise
+%       true_signal.event_times a K x 1 cell array where each entry is a
+%                               vector of the event times in seconds for
+%                               the k-th trace
+%       true_signal.amplitudes  a K x 1 cell array where each entry is a
+%                               vector of the amplitdues of the events for
+%                               the k-th trace, in pA or trace units
+%       true_signal.taus        a K x 1 cell array where each entry is a
+%                               a two-column matrix with each row the rise
+%                               and fall time constant for that event
+%   Note that length(true_signal.event_times{k}),
+%   length(true_signal.amplitudes{k}), and size(true_signal.taus{k},1) are
+%   all equal to the number of events in the k-th trace.
+
+
 
 
 % matrix of noisy data
@@ -34,7 +53,7 @@ amplitudes = cell(K,1);
 
 % compute the expected number of events
 e_num_events = params.rate*(params.T*params.dt);
-% % draw number of events for each trace
+% % draw number of events for each traces
 % num_events = poissrnd(e_num_events,K);
 
 
@@ -46,7 +65,7 @@ C = bsxfun(@plus, zeros(K,params.T), baseline);
 % number of timesteps for noise filtering
 p = length(params.phi);
 
-% generate each trace
+% generate each traces
 for k = 1:K
     
     inter_event_times = -log(rand(2*e_num_events,1))/params.rate/params.dt;
@@ -79,7 +98,7 @@ for k = 1:K
         % gen exp filter
         ef=genEfilt(this_tau,params.T);
         
-        % add event to trace
+        % add event to traces
         [these_times_tmp, C(k,:)] = add_event(these_times_tmp, C(k,:), 0, ef, this_amp, this_tau, C(k,:), this_time, N+1);
         
         % update holder vecs
@@ -107,8 +126,8 @@ for k = 1:K
 end
 
 % setup output structs
-trace = params.event_direction * Y;
-true_signal.trace = params.event_direction * C;
+traces = params.event_direction * Y;
+true_signal.traces = params.event_direction * C;
 true_signal.event_times = event_times;
 true_signal.amplitudes = amplitudes; 
 true_signal.taus = taus;

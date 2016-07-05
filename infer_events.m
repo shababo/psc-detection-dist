@@ -1,11 +1,12 @@
 function infer_events(params)
 
+% if we want to seed the rng before running
 if params.rand == 1
     rng(params.seed)
 end
 
-if params.cluster
-    addpath('/vega/stats/users/bms2156/psc-detection/functions')
+if params.do_addpath
+    addpath(genpath(params.source_path));
 end
 
 
@@ -16,8 +17,8 @@ end
 try
     load(params.traces_filename,'traces')
 catch e
-    params.traces_filename = 'data/for-paper/direct-stim-w-events-real.mat';
-    load('data/for-paper/direct-stim-w-events-real.mat')
+    disp('Could not load traces file, aborting...');
+    return
 end
 
 
