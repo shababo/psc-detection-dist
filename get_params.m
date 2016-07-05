@@ -1,8 +1,10 @@
-function params = get_params(varargin)
+function params = get_params(base_params_path)
+
 
 % load a params struct from a file to start with
-if ~isempty(varargin)
-    load(varargin{1});
+if ~isempty(base_params_path)
+    load(base_params_path);
+    
 % or create a new struct
 else
     params = struct();
@@ -229,58 +231,40 @@ if ~isfield(params,'exclusion_bound')
     params.exclusion_bound = 10/20000;
 end
 
-% params.b
-%% template-matching initialization method
-% if ~isfield(params,'init_method')
-    params.init_method.tau = .002; % min seconds
-    params.init_method.amp_thresh = 5;
-    params.init_method.conv_thresh = 1;
-    % epsc
+%% initialization method - best choice is usually a wiener filter
+
+if ~isfield(params,'init_method')
+
+    % ipsc template file
     params.init_method.template_file = 'data/ipsc-template.mat';
     % ipsc
 %     params.init_method.template_file = 'data/epsc-template.mat';
+
+    % noise parameters for Wiener Filter
     params.init_method.ar_noise_params.sigma_sq = 3.0;
-    params.init_method.ar_noise_params.phi = [1.000000000000000, 0.982949319747574, -0.207063852831604];
-    params.init_method.theshold = 2.25;
-    params.init_method.min_interval = 20;
-% end
+    params.init_method.ar_noise_params.phi = [1.000000000000000, 1.0, -0.20];
+    
+    % threshold output of filter
+    params.init_method.theshold = 2.25; % in std devs of filtered trace
+    params.init_method.min_interval = 20; % in samples
+end
 
 
-
-%% filenames
+%% paths for data
 if ~isfield(params,'traces_filename')
-%     if params.cluster
-
-%         params.traces_filename = '/vega/stats/users/bms2156/psc-detection/data/evoked-neg10.mat';
-
-%     else
-        params.traces_filename = ...
-            ['data/5_13_s2c1_r4_tracegrid.mat'];
-
-%     end
+    params.traces_filename = ...
+        ['data/sample_data.mat'];
 end
 
 if ~isfield(params,'savepath')
-%     if params.cluster
-%         params.savepath = '/vega/stats/users/bms2156/psc-detection/data';
-%     else
-%         params.savepath = 'data/';
-%     end
     params.savepath = '';
 end
-% if ~isfield(params,'savename')
-%     if params.cluster
-%         savefile_basename = '/simulated-epscs-1027-results-0000-pspike-%0.0e-amin-%0.0e-num_sweeps-%0.0e.mat';
-%         params.savename = sprintf(savefile_basename,params.p_event,params.a_min,params.num_sweeps);
-%         params.savename = strrep(params.savename,'+','');
-%         params.savename = 'all-evoked-ipscs-0000.mat';
-%     else
-        params.savename = [params.traces_filename(1:end-4) '-2000.mat'];
-%     end
 
-% end
-
+% use the four digit identifier to run different versions of inference on
+% the same data. if the name is already taken, the algorithm will abort
+params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
 params.full_save_string = [params.savename];
+
 
 if ~isfield(params,'posterior_data_struct')
     params.posterior_data_struct = 'arrays';
