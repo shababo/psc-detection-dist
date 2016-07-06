@@ -1,4 +1,16 @@
 function params = get_params(base_params_path)
+% GET_PARAMS Build and return a struct of parameters for PSC detection
+% based on values set in this function.
+%   params = GET_PARAMS(base_params_path) returns a struct with fields
+%   defining the parameters for PSC detection. The input base_params_path
+%   should either be the path to a .mat file containing a struct called
+%   params or an emptry array. If it's the former the loaded struct's
+%   values will override any default parameters set below. Note that the
+%   loaded params struct does not need to contain all of the fields below.
+%   Only the ones that you want to override. If base_params_path is an
+%   empty array then only the defaults below are used.
+%   Please inspect the code/comments in this function for information on
+%   the different parameters.
 
 
 % load a params struct from a file to start with
