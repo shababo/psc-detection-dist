@@ -3,6 +3,10 @@ function [posterior, mcmc]  = sample_params(trace, params, times_init, amps_init
 % Meths. 2016 to sample from the posterior of the latent variables given
 % some noisy physiological trace (e.g. a voltage-clamp or trace imaging
 % trace)
+%   [posterior, mcmc] = SAMPLE_PARAMS(trace, params, times_init, amps_init,
+%   taus_init) samples the posterior distribution of the parameters given
+%   some phsyiological trace. The inputs to the function are
+%       trace       a T x 1 vector
 
 % number of samples in the trace
 T = length(trace);
