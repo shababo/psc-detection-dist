@@ -57,6 +57,7 @@ if params.par
         % run wiener filter to init event times
         nfft = length(trace) + length(template);
         
+        % run wiener filter
         [filtered_trace, event_times_init, event_sizes_init] = ...
             wiener_filter(trace,template,params.init_method.ar_noise_params,...
             nfft, params.dt, params.init_method.theshold, params.init_method.min_interval);
@@ -65,10 +66,15 @@ if params.par
         results(trace_ind).event_times_init = event_times_init;
         results(trace_ind).filtered_trace = filtered_trace;
         results(trace_ind).event_sizes_init = event_sizes_init;
-                
+        
+        tau = [mean([params.tau1_min params.tau1_max]) ...
+               mean([params.tau2_min params.tau2_max])]/params.dt;
+        taus_init = repmat(tau,length(event_times_init),1);
+        
         if ~params.init_only
             [results(trace_ind).trials, results(trace_ind).mcmc]  = ...
-                sample_params(trace,tau,event_times_init,params);
+                sample_params(trace, params, event_times_init, ...
+                event_sizes_init, taus_init);
         end
         
     end
@@ -104,8 +110,14 @@ else
         results(trace_ind).filtered_trace = filtered_trace;
         results(trace_ind).event_sizes_init = event_sizes_init;
         
+        tau = [mean([params.tau1_min params.tau1_max]) ...
+               mean([params.tau2_min params.tau2_max])]/params.dt;
+        taus_init = repmat(tau,length(event_times_init),1);
+        
         if ~params.init_only
-            [results(trace_ind).trials, results(trace_ind).mcmc]  = sample_params(trace,tau,event_times_init,params);
+            [results(trace_ind).trials, results(trace_ind).mcmc]  = ...
+                sample_params(trace, params, event_times_init, ...
+                event_sizes_init, taus_init);
         end
     end
 end

@@ -123,7 +123,14 @@ end
 if ~isfield(params,'Phi_0')
     params.Phi_0 = 10*eye(params.p); %inverse covariance
 end
-% variance for white noise input to filter
+% prior parameters for inverse gamma on sigma_sq
+if ~isfield(params,'nu_0')
+    params.nu_0 = 0;
+end
+if ~isfield(params,'sig2_0')
+    params.sig2_0 = .1;
+end
+% initial value for variance for white noise input to filter
 if ~isfield(params,'noise_var_init')
     params.noise_var_init = 3.5;
 end
@@ -198,7 +205,7 @@ end
 
 % number of event time subsweeps per sweep
 if ~isfield(params,'time_sweeps')
-    params.spike_time_sweeps = 10;
+    params.event_time_sweeps = 10;
 end
 
 % number of amplitude subsweeps per sweep
@@ -264,10 +271,5 @@ end
 % the same data. if the name is already taken, the algorithm will abort
 params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
 params.full_save_string = [params.savename];
-
-
-if ~isfield(params,'posterior_data_struct')
-    params.posterior_data_struct = 'arrays';
-end
 
 
