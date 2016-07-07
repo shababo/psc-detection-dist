@@ -1,4 +1,4 @@
-function infer_events(params)
+function run_posterior_sampler(params)
 
 % if we want to seed the rng before running
 if params.rand == 1

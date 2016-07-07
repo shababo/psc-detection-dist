@@ -6,7 +6,11 @@ function [posterior, mcmc]  = sample_params(trace, params, times_init, amps_init
 %   [posterior, mcmc] = SAMPLE_PARAMS(trace, params, times_init, amps_init,
 %   taus_init) samples the posterior distribution of the parameters given
 %   some phsyiological trace. The inputs to the function are
-%       trace       a T x 1 vector
+%       trace       a 1 x T vector of the noisy data
+%       params      a struct containging all of the necessary values for
+%                   running the algorithm. See the code for GET_PARAMS for
+%                   details.
+%       times_init  a K x 1 vector of the initialization times
 
 % number of samples in the trace
 T = length(trace);
@@ -42,7 +46,7 @@ Phi_0 = params.Phi_0;
 nu_0 = params.nu_0; 
 sig2_0 = params.sig2_0; 
 % if we don't want to use only a subset of the trace for noise estimation,
-% then set
+% then set subset to full trace
 if isempty(params.noise_est_subset)
     params.noise_est_subset = 1:length(trace);
 end
