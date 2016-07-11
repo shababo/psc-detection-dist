@@ -112,7 +112,7 @@ b_std = params.baseline_prop_std; %propasal variance of baseline
 
 % max length of event
 event_samples = params.event_samples;
-ef_init = genEfilt_ar([mean([tau1_min tau1_max]) mean([tau2_min tau2_max])],event_samples);
+ef_init = genEfilt([mean([tau1_min tau1_max]) mean([tau2_min tau2_max])],event_samples);
 
 
 %dont let events get within x bins of eachother
@@ -156,7 +156,7 @@ for i = 1:length(times_init)
     
     % proposed tau and build exp filter
     this_samp_taus{i} = taus_init(i,:); 
-    efs{i} = genEfilt_ar(this_samp_taus{i}, event_samples);
+    efs{i} = genEfilt(this_samp_taus{i}, event_samples);
     
     % add event
     [~, noiseless_trace, residual] = ...
@@ -463,7 +463,7 @@ for i = 1:total_sweeps
                 end
             end 
 
-            ef_ = genEfilt_ar(proposed_tau,event_samples);%exponential filter
+            ef_ = genEfilt(proposed_tau,event_samples);%exponential filter
 
             % udpate with proposal   
             [~, noiseless_trace_tmp, residual_tmp] = ...
@@ -520,7 +520,7 @@ for i = 1:total_sweeps
                 end
             end  
             
-            ef_ = genEfilt_ar(proposed_tau,event_samples);%exponential filter
+            ef_ = genEfilt(proposed_tau,event_samples);%exponential filter
 
             % update proposal
             [~, noiseless_trace_tmp, residual_tmp] = ...
