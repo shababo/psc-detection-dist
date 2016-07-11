@@ -10,6 +10,7 @@ if params.do_addpath
     addpath(genpath(params.source_path));
 end
 
+% attempt to load data
 try
     load(params.traces_filename,'traces')
 catch e
@@ -67,10 +68,12 @@ if params.par
         results(trace_ind).filtered_trace = filtered_trace;
         results(trace_ind).event_sizes_init = event_sizes_init;
         
+        % make init for taus
         tau = [mean([params.tau1_min params.tau1_max]) ...
                mean([params.tau2_min params.tau2_max])]/params.dt;
         taus_init = repmat(tau,length(event_times_init),1);
         
+        % run sampler
         if ~params.init_only
             [results(trace_ind).trials, results(trace_ind).mcmc]  = ...
                 sample_params(trace, params, event_times_init, ...
@@ -110,10 +113,12 @@ else
         results(trace_ind).filtered_trace = filtered_trace;
         results(trace_ind).event_sizes_init = event_sizes_init;
         
+        % create tau init
         tau = [mean([params.tau1_min params.tau1_max]) ...
                mean([params.tau2_min params.tau2_max])]/params.dt;
         taus_init = repmat(tau,length(event_times_init),1);
         
+        % run sampler
         if ~params.init_only
             [results(trace_ind).trials, results(trace_ind).mcmc]  = ...
                 sample_params(trace, params, event_times_init, ...

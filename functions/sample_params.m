@@ -10,7 +10,51 @@ function [posterior, mcmc]  = sample_params(trace, params, times_init, amps_init
 %       params      a struct containging all of the necessary values for
 %                   running the algorithm. See the code for GET_PARAMS for
 %                   details.
-%       times_init  a K x 1 vector of the initialization times
+%       times_init  an N x 1 vector of the initialization times
+%       amps_init   an N x 1 vector of the initialization amplitudes
+%       taus_init   an N x 1 vector of the initialization time constants
+%   where K is the number of initial events.
+%
+%   The outputs from this function are posterior and mcmc. The struct
+%   posterior has these fields:
+%       amp         a 1 x L* vector of amplitude samples
+%       base        a 1 x L vector of baseline samples
+%       tau1        a 1 x L* vector of rise tau samples
+%       tau2        a 1 x L* vector of fall tau samples
+%       num_events  a 1 x L vector of the number of event samples
+%       phi         an L x 3 matrix of phi samples
+%       noise       a 1 x L vector of samples for the noise variance
+%       obj         a 1 x L vector of the objective function value for each sweep
+%       times       a 1 x L* vector of the event time samples
+%   where L is the number of Gibbs sweeps (including burn-in) and L* is the
+%   the sum number of infered events for each sweep (i.e.
+%   sum(posterior.num_events). This structure is more memory efficient than
+%   other options. Using this structure is not too difficult. The features
+%   postiorior.amp(i), postiorior.tau1(i), postiorior.tau2(i), and 
+%   postiorior.times(i) all come from the same event. And the events from
+%   i-th sweep can be indexed like this (ignoring boundary cases):
+%       posterior.amp(sum(posterior.num_events(1:i-1))+1:...
+%                  sum(posterior.num_events(1:i-1))+posterior.num_events(i))
+%   The output mcmc is a stuct which contains some information on the
+%   accept/reject statistics for the sampler. It has fields:
+%       addMoves    a 1 x 2 vector where the first entry is the number of
+%                   accepts and the second is the total number of proposals
+%                   for the add proposals
+%       timeMoves    a 1 x 2 vector where the first entry is the number of
+%                   accepts and the second is the total number of proposals
+%                   for the time proposals
+%       dropMoves   a 1 x 2 vector where the first entry is the number of
+%                   accepts and the second is the total number of proposals
+%                   for the drop proposals
+%       ampMoves    a 1 x 2 vector where the first entry is the number of
+%                   accepts and the second is the total number of proposals
+%                   for the amplitude proposals
+%       tau1Moves    a 1 x 2 vector where the first entry is the number of
+%                   accepts and the second is the total number of proposals
+%                   for the rise time proposals
+%       tau2Moves    a 1 x 2 vector where the first entry is the number of
+%                   accepts and the second is the total number of proposals
+%                   for the fall time proposals
 
 % number of samples in the trace
 T = length(trace);
@@ -162,7 +206,8 @@ addMoves = [0 0]; %first elem is number successful, second is number total
 dropMoves = [0 0];
 timeMoves = [0 0];
 ampMoves = [0 0];
-tauMoves = [0 0];
+tau1Moves = [0 0];
+tau2Moves = [0 0];
 
 for i = 1:total_sweeps
     
@@ -170,40 +215,36 @@ for i = 1:total_sweeps
     % do event time moves
     for ii = 1:event_time_sweeps
         
-        %guess on time and amplitude
-        this_samp_amps = this_samp_amps;
         for ni = 1:N%for each event
-            proposed_time = this_samp_times(ni);
-            tmpi_ = this_samp_times(ni)+(time_proposal_var*randn); %add in noise 
+            proposed_time = this_samp_times(ni)+(time_proposal_var*randn); %add in noise 
             % bouncing off edges
-            while tmpi_>T || tmpi_<0
-                if tmpi_<0
-                    tmpi_ = -(tmpi_);
-                elseif tmpi_>T
-                    tmpi_ = T-(tmpi_-T);
+            while proposed_time>T || proposed_time<0
+                if proposed_time<0
+                    proposed_time = -(proposed_time);
+                elseif proposed_time>T
+                    proposed_time = T-(proposed_time-T);
                 end
             end
+            
             %if its too close to another event, reject this move
-            if any(abs(tmpi_-this_samp_times([1:(ni-1) (ni+1):end]))<exclusion_bound)
+            if any(abs(proposed_time-this_samp_times([1:(ni-1) (ni+1):end]))<exclusion_bound)
                 continue
             end
 
             %create the proposal this_samp_times_tmp and noiseless_trace_tmp
-            %update logC_ to adjusted
             [this_samp_times_tmp, noiseless_trace_tmp, residual_tmp] = ...
-                removeSpike_ar(this_samp_times,noiseless_trace,residual,...
-                efs{ni},this_samp_amps(ni),this_samp_taus{ni},trace,proposed_time,ni);
+                remove_event(this_samp_times,noiseless_trace,residual,...
+                efs{ni},this_samp_amps(ni),this_samp_taus{ni},trace,this_samp_times(ni),ni);
             
             [this_samp_times_tmp, noiseless_trace_tmp, residual_tmp] = ...
                 add_event(this_samp_times_tmp,noiseless_trace_tmp,...
-                residual_tmp,efs{ni},this_samp_amps(ni),this_samp_taus{ni},trace,tmpi_,ni);
+                residual_tmp,efs{ni},this_samp_amps(ni),this_samp_taus{ni},trace,proposed_time,ni);
 
             %accept or reject
-            %for prior: (1) use ratio or(2) set prior to 1.
-            
             prior_ratio = 1;
             ratio = exp(sum((1/(2*noise_var))*...
-                ( predAR(residual_tmp,phi,p,1 ) - predAR(residual,phi,p,1 ) )))*prior_ratio;            
+                ( predAR(residual_tmp,phi,p,1 ) - predAR(residual,phi,p,1 ) )))*prior_ratio;      
+            
             if ratio>1 %accept
                 this_samp_times = this_samp_times_tmp;
                 noiseless_trace = noiseless_trace_tmp;
@@ -241,7 +282,7 @@ for i = 1:total_sweeps
 
             % update sample with proposal
             [this_samp_times_tmp, noiseless_trace_tmp, residual_tmp] = ...
-                removeSpike_ar(this_samp_times,noiseless_trace,residual,...
+                remove_event(this_samp_times,noiseless_trace,residual,...
                 efs{ni},this_samp_amps(ni),this_samp_taus{ni},trace,this_samp_times(ni),ni);
             [this_samp_times_tmp, noiseless_trace_tmp, residual_tmp] = ...
                 add_event(this_samp_times_tmp,noiseless_trace_tmp,residual_tmp,...
@@ -252,7 +293,7 @@ for i = 1:total_sweeps
 
             %accept or reject - include a prior?
             prior_ratio = 1;
-            ratio = exp(sum((1/(2*noise_var))*( predAR(residual_tmp,phi,p,1 ) - predAR(residual,phi,p,1 ) )))*prior_ratio;
+            ratio = exp(sum((1/(2*noise_var))*( predAR(residual_tmp,phi,p,1) - predAR(residual,phi,p,1) )))*prior_ratio;
             if ratio>1 %accept
                 this_samp_amps = this_samp_amps_tmp;
                 this_samp_times = this_samp_times_tmp;
@@ -290,9 +331,9 @@ for i = 1:total_sweeps
 
         % update with proposal
         [noiseless_trace_tmp, residual_tmp] = ...
-            remove_base_ar(noiseless_trace,residual,baseline,trace);   
+            remove_base(noiseless_trace,residual,baseline,trace);   
         [noiseless_trace_tmp, residual_tmp] = ...
-            add_base_ar(noiseless_trace_tmp,residual_tmp,proposed_baseline,trace);
+            add_base(noiseless_trace_tmp,residual_tmp,proposed_baseline,trace);
 
         %accept or reject - include a prior?
         prior_ratio = 1;
@@ -374,7 +415,7 @@ for i = 1:total_sweeps
                 residual_tmp = residual;
                 %always remove the ith event (the ith event of each trial is linked)                     
                 [this_samp_times_tmp, noiseless_trace_tmp, residual_tmp] =...
-                    removeSpike_ar(this_samp_times,noiseless_trace,residual_tmp,...
+                    remove_event(this_samp_times,noiseless_trace,residual_tmp,...
                     efs{proposed_event_i},this_samp_amps(proposed_event_i),...
                     this_samp_taus{proposed_event_i},trace,this_samp_times(proposed_event_i),...
                     proposed_event_i);                
@@ -409,7 +450,7 @@ for i = 1:total_sweeps
     for ii = 1:tau1_sweeps
         for ni = 1:N 
             
-            % update both tau values
+            % propose new rise tau
             proposed_tau = this_samp_taus{ni};
             proposed_tau(1) = proposed_tau(1)+(tau1_std*randn); %with bouncing off min and max
             tau_max = min([proposed_tau(2) tau1_max]);
@@ -426,7 +467,7 @@ for i = 1:total_sweeps
 
             % udpate with proposal   
             [~, noiseless_trace_tmp, residual_tmp] = ...
-                removeSpike_ar(this_samp_times,noiseless_trace,residual,...
+                remove_event(this_samp_times,noiseless_trace,residual,...
                 efs{ni},this_samp_amps(ni),this_samp_taus{ni},trace,...
                 this_samp_times(ni),ni);
             [~, noiseless_trace_tmp, residual_tmp] = ...
@@ -443,19 +484,19 @@ for i = 1:total_sweeps
                 residual = residual_tmp;
                 this_samp_taus{ni} = proposed_tau;
                 efs{ni} = ef_;
-                tauMoves = tauMoves + [1 1];
+                tau1Moves = tau1Moves + [1 1];
                 tau1_std = tau1_std + .1*rand*tau1_std/(i);
             elseif rand<ratio %accept
                 noiseless_trace = noiseless_trace_tmp;
                 residual = residual_tmp;
                 this_samp_taus{ni} = proposed_tau;
                 efs{ni} = ef_;
-                tauMoves = tauMoves + [1 1];
+                tau1Moves = tau1Moves + [1 1];
                 tau1_std = tau1_std + .1*rand*tau1_std/(i);
             else
                 %reject - do nothing
                 tau1_std = tau1_std - .1*rand*tau1_std/(i);
-                tauMoves = tauMoves + [0 1];
+                tau1Moves = tau1Moves + [0 1];
             end
         end
     end
@@ -483,7 +524,7 @@ for i = 1:total_sweeps
 
             % update proposal
             [~, noiseless_trace_tmp, residual_tmp] = ...
-                removeSpike_ar(this_samp_times,noiseless_trace,residual,...
+                remove_event(this_samp_times,noiseless_trace,residual,...
                 efs{ni},this_samp_amps(ni),this_samp_taus{ni},trace,this_samp_times(ni),ni);
             [~, noiseless_trace_tmp, residual_tmp] = ...
                 add_event(this_samp_times,noiseless_trace_tmp,residual_tmp,...
@@ -498,19 +539,19 @@ for i = 1:total_sweeps
                 residual = residual_tmp;
                 this_samp_taus{ni} = proposed_tau;
                 efs{ni} = ef_;
-                tauMoves = tauMoves + [1 1];
+                tau2Moves = tau2Moves + [1 1];
                 tau2_std = tau2_std + .1*rand*tau2_std/(i);
             elseif rand<ratio %accept
                 noiseless_trace = noiseless_trace_tmp;
                 residual = residual_tmp;
                 this_samp_taus{ni} = proposed_tau;
                 efs{ni} = ef_;
-                tauMoves = tauMoves + [1 1];
+                tau2Moves = tau2Moves + [1 1];
                 tau2_std = tau2_std + .1*rand*tau2_std/(i);
             else
                 %reject - do nothing
                 tau2_std = tau2_std - .1*rand*tau2_std/(i);
-                tauMoves = tauMoves + [0 1];
+                tau2Moves = tau2Moves + [0 1];
             end
         end
     end
@@ -554,9 +595,8 @@ for i = 1:total_sweeps
     noise_var = 1/gamrnd(A_samp,B_samp); %this could be inf but it shouldn't be
 
 
-    %store things
+    %store samples
     N_sto = [N_sto N];
-    
     samples_a = [samples_a this_samp_amps]; %trial amplitudes
     samples_b = [samples_b baseline]; %trial baselines
     samples_s = [samples_s this_samp_times]; %shared events
@@ -580,8 +620,8 @@ mcmc.addMoves=addMoves;
 mcmc.timeMoves=timeMoves;
 mcmc.dropMoves=dropMoves;
 mcmc.ampMoves=ampMoves;
-mcmc.tauMoves=tauMoves;
-mcmc.N_sto=N_sto;%number of events
+mcmc.tau1Moves=tau1Moves;
+mcmc.tau2Moves=tau2Moves;
 
 
 posterior.amp=samples_a;
