@@ -1,10 +1,10 @@
 % This code generates some fake data and the runs the sampler on it
 
 % for testing
-rng(1234)
+rng(12341)
 
 % number of traces to generate
-K = 4;
+K = 1;
 
 % set parameters for generating data
 params.T = 20000;
@@ -12,22 +12,22 @@ params.dt = 1/20000;
 params.phi = [.80, -.12];
 params.sigma_sq = 3.0;
 params.baseline_bounds = [-100 0];
-params.tau_r_bounds = [0.2500    1.0000]*1e-3;
+params.tau_r_bounds = [0.25 1.0]*1e-3;
 params.tau_f_bounds = [0.0025    0.0075];
 params.a_bounds = [.5 20];
 params.rate = 20;
-params.event_direction = -1;
+params.event_sign = -1;
 
 [traces, true_signal] = sample_traces(K,params);
 
 % plot the noisy data
 figure
-plot_trace_stack(traces,100,zeros(size(traces,1),3),'-')
+plot_trace_stack(traces,40,zeros(size(traces,1),3),'-')
 title('Noisy Data')
 
 % plot the noise-free data
 figure
-plot_trace_stack(true_signal.traces,100,zeros(size(traces,1),3),'-')
+plot_trace_stack(true_signal.traces,40,zeros(size(traces,1),3),'-')
 title('Noise-free Data')
 
 % save data to runresults

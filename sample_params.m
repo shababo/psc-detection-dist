@@ -146,10 +146,15 @@ N = length(times_init);
 noiseless_trace = zeros(1,T); %initial trace is set to baseline 
 baseline = min(trace); %initial baseline value
 N = length(this_samp_times); %number of events in trace
-noise_var = params.noise_var_init;
 residual = trace - noiseless_trace; %trace - prediction
 % prior expected number of events for this trace
 e_num_events = p_event*T;
+if params.noise_known
+    phi = params.phi_known;
+    noise_var = params.noise_var_known;
+else
+    noise_var = params.noise_var_init;
+end
 
 % add initial events
 for i = 1:length(this_samp_times)
@@ -170,38 +175,41 @@ if isempty(taus_init)
 end
 
 % re-estimate the ar process parameters
-if p > 0
-    e = residual(params.noise_est_subset)'; % this is Tx1 (after transpose)
-    E = [];
-    for ip = 1:p
-        E = [E e((p+1-ip):(end-ip))];
-    end
-    e = e((p+1):end);
+if ~params.noise_known
+    
+    if p > 0
+        e = residual(params.noise_est_subset)'; % this is Tx1 (after transpose)
+        E = [];
+        for ip = 1:p
+            E = [E e((p+1-ip):(end-ip))];
+        end
+        e = e((p+1):end);
 
-    Phi_n = Phi_0 + noise_var^(-1)*(E'*E); %typo in paper
-    phi_cond_mean = Phi_n\(Phi_0*phi_0 + noise_var^(-1)*E'*e);
+        Phi_n = Phi_0 + noise_var^(-1)*(E'*E); %typo in paper
+        phi_cond_mean = Phi_n\(Phi_0*phi_0 + noise_var^(-1)*E'*e);
 
-    sample_phi = 1;
-    while sample_phi
-        phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
+        sample_phi = 1;
+        while sample_phi
+            phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
 
-        phi_poly = -phi;
-        phi_poly(1) = 1;
-        if all(abs(roots(phi_poly))<1) %check stability
-            sample_phi = 0;
+            phi_poly = -phi;
+            phi_poly(1) = 1;
+            if all(abs(roots(phi_poly))<1) %check stability
+                sample_phi = 0;
+            end
         end
     end
+
+    % re-estimate the noise variance
+    df = (numel(noiseless_trace(params.noise_est_subset))); %DOF (possibly numel(ci(ti,:))-1)
+    d1 = -predAR(residual(params.noise_est_subset),phi,p,1 )/df; 
+    nu0 = nu_0; %nu_0 or 0
+    d0 = sig2_0; %sig2_0 or 0
+    A_samp = 0.5 * (df - p + nu0); %nu0 is prior
+    B_samp = 1/(0.5 * df * (d1 + d0)); %d0 is prior
+    noise_var = 1/gamrnd(A_samp,B_samp); %this could be inf but it shouldn't be
+    
 end
-
-% re-estimate the noise variance
-df = (numel(noiseless_trace(params.noise_est_subset))); %DOF (possibly numel(ci(ti,:))-1)
-d1 = -predAR(residual(params.noise_est_subset),phi,p,1 )/df; 
-nu0 = nu_0; %nu_0 or 0
-d0 = sig2_0; %sig2_0 or 0
-A_samp = 0.5 * (df - p + nu0); %nu0 is prior
-B_samp = 1/(0.5 * df * (d1 + d0)); %d0 is prior
-noise_var = 1/gamrnd(A_samp,B_samp); %this could be inf but it shouldn't be
-
 
 %% loop over sweeps to generate samples
 
@@ -561,42 +569,43 @@ for i = 1:total_sweeps
 
     
     % re-estimate the ar process parameters
-    if p>0 %&& i>(num_sweeps/100)
-        e = residual(params.noise_est_subset)'; % this is Tx1 (after transpose)
-        E = [];
-        for ip = 1:p
-            E = [E e((p+1-ip):(end-ip))];
-        end
-        e = e((p+1):end);
-
-        Phi_n = Phi_0 + noise_var^(-1)*(E'*E); %typo in paper
-
-        phi_cond_mean = Phi_n\(Phi_0*phi_0 + noise_var^(-1)*E'*e);
-
-%         keyboard
-        sample_phi = 1;
-        while sample_phi
-            phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
-
-            phi_poly = -phi;
-            phi_poly(1) = 1;
-            if all(abs(roots(phi_poly))<1) %check stability
-                sample_phi = 0;
+    if ~params.noise_known
+        if p>0 %&& i>(num_sweeps/100)
+            e = residual(params.noise_est_subset)'; % this is Tx1 (after transpose)
+            E = [];
+            for ip = 1:p
+                E = [E e((p+1-ip):(end-ip))];
             end
+            e = e((p+1):end);
+
+            Phi_n = Phi_0 + noise_var^(-1)*(E'*E); %typo in paper
+
+            phi_cond_mean = Phi_n\(Phi_0*phi_0 + noise_var^(-1)*E'*e);
+
+    %         keyboard
+            sample_phi = 1;
+            while sample_phi
+                phi = [1 mvnrnd(phi_cond_mean,inv(Phi_n))];
+
+                phi_poly = -phi;
+                phi_poly(1) = 1;
+                if all(abs(roots(phi_poly))<1) %check stability
+                    sample_phi = 0;
+                end
+            end
+
         end
-        
+
+        % re-estimate the noise variance
+        df = (numel(noiseless_trace(params.noise_est_subset))); %DOF (possibly numel(ci(ti,:))-1)
+        d1 = -predAR(residual(params.noise_est_subset),phi,p,1 )/df; 
+        nu0 = nu_0; %nu_0 or 0
+        d0 = sig2_0; %sig2_0 or 0
+
+        A_samp = 0.5 * (df - p + nu0); %nu0 is prior
+        B_samp = 1/(0.5 * df * (d1 + d0)); %d0 is prior
+        noise_var = 1/gamrnd(A_samp,B_samp); %this could be inf but it shouldn't be
     end
-
-    % re-estimate the noise variance
-    df = (numel(noiseless_trace(params.noise_est_subset))); %DOF (possibly numel(ci(ti,:))-1)
-    d1 = -predAR(residual(params.noise_est_subset),phi,p,1 )/df; 
-    nu0 = nu_0; %nu_0 or 0
-    d0 = sig2_0; %sig2_0 or 0
-
-    A_samp = 0.5 * (df - p + nu0); %nu0 is prior
-    B_samp = 1/(0.5 * df * (d1 + d0)); %d0 is prior
-    noise_var = 1/gamrnd(A_samp,B_samp); %this could be inf but it shouldn't be
-
 
     %store samples
     N_sto = [N_sto N];
@@ -637,9 +646,3 @@ posterior.noise = samples_noise;
 posterior.obj = objective;
 posterior.times = samples_s;
 
-
-
-
-
-
- 

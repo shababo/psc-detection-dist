@@ -22,14 +22,9 @@ else
     params = struct();
 end
 
-% are we using a cluster?
-if ~isfield(params,'cluster')
-    params.cluster = 1;
-end
-
 % do we need to put the source into the path for MATLAB?
 if ~isfield(params,'do_addpath')
-    params.do_addpath = params.cluster; % generally we use this when we also are using the cluster
+    params.do_addpath = 0; % generally we use this when we also are using the cluster
 end
 
 % if so, what is the source path?
@@ -70,7 +65,7 @@ end
 % direction/sign of events: upward is 1 (e.g. ipscs, ca imaging), downard is -1
 % (e.g. epscs)
 if ~isfield(params,'event_sign')
-    params.event_sign = 1;
+    params.event_sign = -1;
 end
 
 
@@ -120,7 +115,6 @@ if ~isfield(params,'p_event')
     params.p_event = 1e-6;
 end
 
-
 % ar noise model parameters
 % p, the number of timesteps for filter
 if ~isfield(params,'p')
@@ -152,7 +146,7 @@ end
 % possibly even more generally across recordings. if the noise model is
 % known, then enter it here.
 if ~isfield(params, 'noise_known')
-    params.noise_known = 1;
+    params.noise_known = 0;
     if params.noise_known
         params.phi_known = [1.000000000000000 1.0 -.30];
         params.noise_var_known = 3.5;
@@ -217,7 +211,7 @@ end
 
 % number of event time subsweeps per sweep
 if ~isfield(params,'time_sweeps')
-    params.event_time_sweeps = 10;
+    params.event_time_sweeps = 5;
 end
 
 % number of amplitude subsweeps per sweep
@@ -281,7 +275,7 @@ end
 
 % use the four digit identifier to run different versions of inference on
 % the same data. if the name is already taken, the algorithm will abort
-params.savename = [params.traces_filename(1:end-4) '-0000.mat'];
+params.savename = [params.traces_filename(1:end-4) '-0001.mat'];
 params.full_save_string = [params.savename];
 
 
