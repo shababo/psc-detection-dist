@@ -136,14 +136,14 @@ objective = [];
 
 %initialize arrays for event features and noiseless trace
 this_samp_amps = amps_init; % amplitudes
-this_samp_times = times_init; % event times
+this_samp_times = times_init/params.dt; % event times
 this_samp_taus = cell(length(times_init),1); % array of lists of event this_samp_taus
 phi = [1 zeros(1,p)];
-efs = cell(1,times_init);
+efs = cell(1,length(times_init));
 N = length(times_init);
 
 % init some values
-noiseless_trace = b*ones(1,T); %initial trace is set to baseline 
+noiseless_trace = zeros(1,T); %initial trace is set to baseline 
 baseline = min(trace); %initial baseline value
 N = length(this_samp_times); %number of events in trace
 noise_var = params.noise_var_init;
@@ -152,7 +152,7 @@ residual = trace - noiseless_trace; %trace - prediction
 e_num_events = p_event*T;
 
 % add initial events
-for i = 1:length(times_init)
+for i = 1:length(this_samp_times)
     
     % proposed tau and build exp filter
     this_samp_taus{i} = taus_init(i,:); 
@@ -160,11 +160,14 @@ for i = 1:length(times_init)
     
     % add event
     [~, noiseless_trace, residual] = ...
-        add_event(times_init(1:i-1),noiseless_trace,residual,efs{i},...
-        amps_init(i),this_samp_taus{i},trace,times_init(i),i);
+        add_event(this_samp_times(1:i-1),noiseless_trace,residual,efs{i},...
+        amps_init(i),this_samp_taus{i},trace,this_samp_times(i),i);
     
 end
 
+if isempty(taus_init)
+    taus_init = [mean([tau1_min tau1_max]) mean([tau2_min tau2_max])];
+end
 
 % re-estimate the ar process parameters
 if p > 0
@@ -380,7 +383,7 @@ for i = 1:total_sweeps
                 
                 [this_samp_times_tmp, noiseless_trace_tmp, residual_tmp] =...
                     add_event(this_samp_times,noiseless_trace,residual_tmp,...
-                    ef_init,a_init,tau,trace,proposed_time, N+1);
+                    ef_init,a_init,taus_init(1,:),trace,proposed_time, N+1);
                 this_samp_amps_tmp = [this_samp_amps a_init];
                 
                 %accept or reject
@@ -394,7 +397,7 @@ for i = 1:total_sweeps
                     this_samp_amps = this_samp_amps_tmp;
                     this_samp_times = this_samp_times_tmp;
                     noiseless_trace = noiseless_trace_tmp;
-                    this_samp_taus{N+1} = tau;
+                    this_samp_taus{N+1} = taus_init(1,:);
                     efs{N+1} = ef_init;
                     residual = residual_tmp;
                     addMoves = addMoves + [1 1];

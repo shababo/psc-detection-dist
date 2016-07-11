@@ -63,12 +63,12 @@ filtered_trace = real(ifft2(filtered_trace));
 filtered_trace = filtered_trace(1:length(trace));
 
 
-[~, event_times] = findpeaks(filtered_trace,'MinPeakHeight',threshold*std(filtered_trace),'MinPeakDistance',min_window);
+[~, event_times] = findpeaks(zscore(filtered_trace),'MinPeakHeight',threshold,'MinPeakDistance',min_window);
 event_sizes = zeros(size(event_times));
 for j = 1:length(event_times)
     baseline = min(trace(max(1,event_times(j)-40):event_times(j)));
     event_sizes(j) = max(trace(event_times(j):min(event_times(j)+200,length(trace)))) - 10 - baseline;
 end
 
-event_times(event_sizes < 5) = [];
-event_sizes(event_sizes < 5) = [];
+event_times(event_sizes < 2) = [];
+event_sizes(event_sizes < 2) = [];

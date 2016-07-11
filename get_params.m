@@ -1,10 +1,10 @@
-function params = get_params(base_params_path)
+function params = get_params(base_params)
 % GET_PARAMS Build and return a struct of parameters for PSC detection
 % based on values set in this function.
 %   params = GET_PARAMS(base_params_path) returns a struct with fields
 %   defining the parameters for PSC detection. The input base_params_path
-%   should either be the path to a .mat file containing a struct called
-%   params or an emptry array. If it's the former the loaded struct's
+%   should either be a struct called with a subset of the fields below
+%   or an emptry array. If it's the former the loaded struct's
 %   values will override any default parameters set below. Note that the
 %   loaded params struct does not need to contain all of the fields below.
 %   Only the ones that you want to override. If base_params_path is an
@@ -14,8 +14,8 @@ function params = get_params(base_params_path)
 
 
 % load a params struct from a file to start with
-if ~isempty(base_params_path)
-    load(base_params_path);
+if ~isempty(base_params)
+    params = base_params;
     
 % or create a new struct
 else
@@ -39,7 +39,7 @@ end
 
 % use MATLAB's parfor across traces?
 if ~isfield(params,'par')
-    params.par = 1;
+    params.par = 0;
 end
 
 % only run initialization algorithm (usually Wiener Filter)
@@ -96,18 +96,18 @@ end
 
 % min and max for "rise time" in seconds
 if ~isfield(params,'tau1_min')
-    params.tau1_min = 10/20000;
+    params.tau1_min = 0.0002500;
 end
 if ~isfield(params,'tau1_max')
-    params.tau1_max = 100/20000;
+    params.tau1_max = 1e-3;
 end
 
 % min and max for "decay time" in seconds
 if ~isfield(params,'tau2_min')
-    params.tau2_min = 100/20000;
+    params.tau2_min = .0025;
 end
 if ~isfield(params,'tau2_max')
-    params.tau2_max = 700/20000;
+    params.tau2_max = .0075;
 end
 
 % how long to make kernel in samples
@@ -117,7 +117,7 @@ end
 
 % poisson rate in events/sample
 if ~isfield(params,'p_event')
-    params.p_event = 1e-4;
+    params.p_event = 1e-6;
 end
 
 
@@ -255,16 +255,16 @@ end
 if ~isfield(params,'init_method')
 
     % ipsc template file
-    params.init_method.template_file = 'data/ipsc-template.mat';
+%     params.init_method.template_file = 'data/ipsc-template.mat';
     % ipsc
-%     params.init_method.template_file = 'data/epsc-template.mat';
+    params.init_method.template_file = 'data/epsc-template.mat';
 
     % noise parameters for Wiener Filter
     params.init_method.ar_noise_params.sigma_sq = 3.0;
     params.init_method.ar_noise_params.phi = [1.000000000000000, 1.0, -0.20];
     
     % threshold output of filter
-    params.init_method.theshold = 2.25; % in std devs of filtered trace
+    params.init_method.theshold = 2.0; % in std devs of filtered trace
     params.init_method.min_interval = 20; % in samples
 end
 
