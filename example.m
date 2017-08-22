@@ -1,4 +1,4 @@
-% This code generates some fake data and the runs the sampler on it
+% This code generates some fake data and runs the sampler on it
 
 % for testing
 rng(12341)
@@ -17,6 +17,7 @@ params.tau_f_bounds = [0.0025    0.0075];
 params.a_bounds = [.5 20];
 params.rate = 20;
 params.event_sign = -1;
+params.event_direction = params.event_sign;
 
 [traces, true_signal] = sample_traces(K,params);
 
