@@ -45,6 +45,15 @@ if exist(params.full_save_string, 'file') == 2
     disp(params.full_save_string)
     return
 end
+%% 
+
+params.num_sweeps= 1000
+params.a_max = 25
+params.a_min = 5
+params.add_drop_sweeps = 1
+params.amp_sweeps = 1
+params.amp_prop_std = 0.5
+params.p_event = 1e-7
 
 %% 
 

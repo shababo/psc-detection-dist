@@ -136,7 +136,8 @@ objective = [];
 
 %initialize arrays for event features and noiseless trace
 this_samp_amps = amps_init; % amplitudes
-this_samp_times = times_init;
+this_samp_times = times_init/params.dt; % event times
+this_samp_times = times_init*params.dt;
 this_samp_taus = cell(length(times_init),1); % array of lists of event this_samp_taus
 phi = [1 zeros(1,p)];
 efs = cell(1,length(times_init));
@@ -622,7 +623,7 @@ for i = 1:total_sweeps
     
     %store overall logliklihood as well
     objective = [objective -T/2*log(noise_var) + predAR(residual,phi,p,1 )/(2*noise_var) + N*log(e_num_events) - log(factorial(N))];
-    
+    i
 end
 
 %% build output structs
